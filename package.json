@@ -1,0 +1,38 @@
+{
+  "name": "bfa-raid-tools",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/fontawesome": "^1.1.8",
+    "@fortawesome/fontawesome-free-brands": "^5.0.13",
+    "@fortawesome/fontawesome-free-solid": "^5.0.13",
+    "@fortawesome/react-fontawesome": "^0.1.0",
+    "@material-ui/core": "^1.4.1",
+    "@material-ui/icons": "^2.0.0",
+    "bootstrap": "^4.1.1",
+    "chalk": "^2.4.1",
+    "firebase": "^5.3.0",
+    "gh-pages": "^1.2.0",
+    "i18next": "^11.3.6",
+    "i18next-browser-languagedetector": "^2.2.0",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-i18next": "^7.8.0",
+    "react-scripts-ts": "2.16.0"
+  },
+  "scripts": {
+    "start": "react-scripts-ts start",
+    "build": "react-scripts-ts build",
+    "test": "react-scripts-ts test --env=jsdom",
+    "eject": "react-scripts-ts eject"
+  },
+  "devDependencies": {
+    "@types/i18next-browser-languagedetector": "^2.0.1",
+    "@types/jest": "^23.1.5",
+    "@types/node": "^10.5.2",
+    "@types/react": "^16.4.6",
+    "@types/react-dom": "^16.0.6",
+    "@types/react-i18next": "^7.6.1",
+    "typescript": "^2.9.2"
+  }
+}
