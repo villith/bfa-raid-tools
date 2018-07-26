@@ -21,3 +21,4 @@ yarn-debug.log*
 yarn-error.log*
 src/env/bfa-raid-tools-firebase-service-account.json
 src/env/firebase-config.ts
+src/env/bnet-oAuth.ts

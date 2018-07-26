@@ -1,0 +1,6 @@
+.playerIcon {
+  max-height: 35px;
+  border-radius: 50%;
+  border-width: 1.5px;
+  border-style: solid;
+}

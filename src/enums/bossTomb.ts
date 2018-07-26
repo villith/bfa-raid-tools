@@ -1,0 +1,13 @@
+enum BossTomb {
+  GOROTH,
+  DEMONIC_INQUISITION,
+  HARJATAN,
+  MISTRESS,
+  SISTERS,
+  DESOLATE_HOST,
+  MAIDEN,
+  FALLEN_AVATAR,
+  KILJAEDEN
+}
+
+export { BossTomb };

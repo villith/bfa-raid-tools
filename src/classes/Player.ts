@@ -1,5 +1,5 @@
-import { WOWClass } from '../../enums/WOWclass';
-import { WOWSpec } from '../../enums/WOWspec';
+import { WOWClass } from '../enums/WOWclass';
+import { WOWSpec } from '../enums/WOWspec';
 
 class Player {
   public id: number;

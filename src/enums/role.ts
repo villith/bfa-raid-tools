@@ -1,7 +1,7 @@
 enum Role {
-  TANK = 0,
-  HEALER = 1,
-  DPS = 2,
+  TANK,
+  HEALER,
+  DPS,
 }
 
 export { Role };

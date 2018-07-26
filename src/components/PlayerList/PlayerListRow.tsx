@@ -1,27 +1,47 @@
 import * as React from 'react';
+
+import { Checkbox, TableCell, TableRow } from '../../../node_modules/@material-ui/core';
 import { WOWClass } from '../../enums/WOWclass';
 import { WOWSpec } from '../../enums/WOWspec';
-import { getClassInfo } from '../../helpers/getClassColor';
+import { getClassInfo } from '../../helpers/getClassInfo';
 
-class PlayerListRow extends React.Component<{
-  playerClass: WOWClass,
-  playerSpec: WOWSpec,
-  playerName: string,
-  playerId: number,
-}> {
+export interface IPlayerListRowProps {
+  isSelected: boolean;
+  playerClass: WOWClass;
+  playerSpec: WOWSpec;
+  playerName: string;
+  playerId: number;
+  handleClick: ((event: any, id: number) => void);
+}
+
+class PlayerListRow extends React.Component<IPlayerListRowProps, any> {
   public render() {
-    const { playerClass, playerName } = this.props;
+    const { isSelected, playerId, playerClass, playerName, playerSpec, handleClick } = this.props;
     const classInfo = getClassInfo(playerClass);
-    const trStyle = {
-      color: classInfo.classColor
-    };
+    const specInfo = classInfo.specs.find(spec => spec.id === playerSpec);
+    // const roleIcon = getRoleIcon(classInfo.)
 
     return (
-      <div style={trStyle}>
-        <div className="row no-gutters">
-          <div className="col-9"><img src={`classIcons/${classInfo.icon}.jpg`} alt={playerName} /> {playerName}</div>
-        </div>
-      </div>
+      <TableRow
+        hover={true}
+        // tslint:disable-next-line:jsx-no-lambda
+        onClick={(event) => handleClick(event, playerId)}
+        role={'checkbox'}
+        tabIndex={-1}
+        key={playerId}
+        selected={isSelected}
+      >
+        <TableCell padding='checkbox'>
+          <Checkbox checked={isSelected} />
+        </TableCell>
+        <TableCell padding='none'>
+          <img className='playerIcon' src={`classIcons/${classInfo.icon}.jpg`} />
+        </TableCell>
+        <TableCell padding='none'>
+          <img className='playerIcon' src={`classIcons/${specInfo!.icon}.jpg`} />
+        </TableCell>
+        <TableCell>{playerName}</TableCell>
+      </TableRow>        
     );
   }
 }

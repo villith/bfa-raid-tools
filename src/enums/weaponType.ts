@@ -1,0 +1,20 @@
+enum WeaponType {
+  DAGGER,
+  WARGLAIVE,
+  FIST,
+  WAND,
+  BOW,
+  GUN,
+  SHIELD,
+  OFFHAND,
+  POLEARM,
+  STAFF,
+  ONEHAND_AXE,
+  ONEHAND_MACE,
+  ONEHAND_SWORD,
+  TWOHAND_AXE,
+  TWOHAND_MACE,
+  TWOHAND_SWORD
+}
+
+export { WeaponType };

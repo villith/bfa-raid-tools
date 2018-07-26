@@ -1,0 +1,15 @@
+enum BossAntorus {
+  GAROTHI,
+  FELHOUNDS,
+  HIGH_COMMAND,
+  PORTAL_KEEPER,
+  EONAR,
+  IMONAR,
+  KINGAROTH,
+  VARIMATHRAS,
+  COVEN,
+  AGGRAMAR,
+  ARGUS
+}
+
+export { BossAntorus };
