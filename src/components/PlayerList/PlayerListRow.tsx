@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { Checkbox, TableCell, TableRow } from '../../../node_modules/@material-ui/core';
+import { Checkbox, TableCell, TableRow } from '@material-ui/core';
 import { WOWClass } from '../../enums/WOWclass';
 import { WOWSpec } from '../../enums/WOWspec';
 import { getClassInfo } from '../../helpers/getClassInfo';

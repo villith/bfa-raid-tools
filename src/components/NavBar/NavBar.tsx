@@ -1,19 +1,32 @@
 import {
   AppBar,
   Button,
-  FormControlLabel,
-  FormGroup,
   IconButton,
   Menu,
   MenuItem,
-  Switch,
+  StyleRulesCallback,
+  Theme,
   Toolbar,
   Typography,
+  WithStyles,
+  withStyles,
 } from '@material-ui/core';
 import { AccountCircle, Menu as MenuIcon } from '@material-ui/icons';
 import * as React from 'react';
 
-class NavBar extends React.Component {
+export interface INavBarProps {
+  toggleSideMenu: (() => void);
+}
+
+export interface INavBarState {
+  anchorElement: EventTarget & HTMLElement | undefined;
+  loggedIn: boolean;
+}
+
+const styles: StyleRulesCallback<any> = (theme: Theme) => ({
+  root: {},
+});
+class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarState> {
   public state = {
     anchorElement: undefined,
     loggedIn: false,
@@ -33,21 +46,14 @@ class NavBar extends React.Component {
 
   public render() {
     const { anchorElement, loggedIn } = this.state;
+    const { toggleSideMenu } = this.props;
     const open = Boolean(anchorElement);
 
     return (
       <div className='root'>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch checked={loggedIn} onChange={this.handleChange} aria-label='LoginSwitch' />
-            }
-            label={loggedIn ? 'Logout' : 'Login'}
-          />
-        </FormGroup>
         <AppBar position='static'>
           <Toolbar>
-            <IconButton color='inherit' aria-label='Menu'>
+            <IconButton color='inherit' aria-label='Menu' onClick={toggleSideMenu}>
               <MenuIcon />
             </IconButton>
             <Typography variant='title' color='inherit'>
@@ -89,4 +95,4 @@ class NavBar extends React.Component {
   }
 };
 
-export { NavBar };
+export default withStyles(styles)(NavBar);

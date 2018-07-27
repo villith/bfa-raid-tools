@@ -27,6 +27,8 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   segmentContainer: {
     display: 'flex',
     height: '10px',
+    paddingBottom: theme.spacing.unit,
+    paddingTop: theme.spacing.unit,
     marginLeft: theme.spacing.unit * 3,
     marginRight: theme.spacing.unit * 3,
   },

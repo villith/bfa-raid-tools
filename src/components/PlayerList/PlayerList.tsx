@@ -4,8 +4,11 @@ import { Paper, StyleRulesCallback, Table, TableBody, Theme, WithStyles, withSty
 import * as React from 'react';
 
 import { Player } from '../../classes/Player';
+import { ArmorType } from '../../enums/armorType';
+import { Role } from '../../enums/role';
+import { WeaponType } from '../../enums/weaponType';
 import { WOWClass } from '../../enums/WOWclass';
-import { getClassInfo } from '../../helpers/getClassInfo';
+import { getClassInfo, getSpecInfo } from '../../helpers/getClassInfo';
 import SegmentBarContainer, { ISegmentValue } from '../SegmentBar/SegmentBarContainer';
 import PlayerListHeader from './PlayerListHeader';
 import PlayerListRow from './PlayerListRow';
@@ -109,27 +112,152 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
     });
 
     return classSegments;
+  };
+
+  public buildRoleSegments = () => {
+    type RoleSegmentMap = { [key in Role]: ISegmentValue };
+    const roleColors = [
+      '#c2185b',
+      '#388e3c',
+      '#ffa000',
+      '#e64a19',
+    ];
+    const roleLabels = [
+      'Tank',
+      'Healer',
+      'Melee DPS',
+      'Ranged DPS',
+    ];
+    const roleSegments: RoleSegmentMap = {} as RoleSegmentMap;
+    const players = [ ...this.props.players ];
+    players.map(player => {
+      const { playerClass, playerSpec } = player;
+      const specInfo = getSpecInfo(playerClass, playerSpec);
+      const playerRole = !specInfo.isMelee && specInfo.role === Role.DPS
+      ? specInfo.role + 1 : specInfo.role;
+
+      roleSegments.hasOwnProperty(playerRole)
+      ? roleSegments[playerRole].count += 1
+      : roleSegments[playerRole] = {
+        color: roleColors[playerRole],
+        count: 1,
+        label: roleLabels[playerRole],
+      };
+    });
+
+    return roleSegments;
+  };
+
+  public buildArmorTypeSegments = () => {
+    type ArmorTypeSegmentMap = { [key in ArmorType]: ISegmentValue };
+    const armorTypeColors = [
+      'red',
+      'blue',
+      'yellow',
+      'green',
+    ];
+    const armorTypeLabels = [
+      'Cloth',
+      'Leather',
+      'Mail',
+      'Plate'
+    ];
+    const armorTypeSegments: ArmorTypeSegmentMap = {} as ArmorTypeSegmentMap;
+    const players = [ ...this.props.players ];
+    players.map(player => {
+      const { playerClass } = player;
+      const classInfo = getClassInfo(playerClass);
+      const armorType = classInfo.armorType;
+      armorTypeSegments.hasOwnProperty(armorType)
+      ? armorTypeSegments[armorType].count += 1
+      : armorTypeSegments[armorType] = {
+        color: armorTypeColors[armorType],
+        count: 1,
+        label: armorTypeLabels[armorType]
+      };
+    });
+
+    return armorTypeSegments;
   }
 
-  // public buildRoleSegments = () => {}
-  // public buildArmorTypeSegments = () => {}
-  // public buildWeaponTypeSegments = () => {}
+  public buildWeaponTypeSegments = () => {
+    type WeaponTypeSegmentMap = {[key in WeaponType]: ISegmentValue };
+    const weaponTypeColors = [
+      'brown',
+      'grey',
+      'red',
+      'blue',
+      'yellow',
+      'green',
+      'pink',
+      'purple',
+      'brown',
+      'grey',
+      'red',
+      'blue',
+      'yellow',
+      'green',
+      'pink',
+      'purple'
+    ];
+
+    const weaponTypeLabels = [
+      'Dagger',
+      'Warglaive',
+      'Fist',
+      'Wand',
+      'Bow',
+      'Gun',
+      'Shield',
+      'Offhand',
+      'Polearm',
+      'Staff',
+      'One-Handed Axe',
+      'One-Handed Mace',
+      'One-Handed Sword',
+      'Two-Handed Axe',
+      'Two-Handed Mace',
+      'Two-Handed Sword'
+    ];
+    
+    const weaponTypeSegments: WeaponTypeSegmentMap = {} as WeaponTypeSegmentMap;
+    const players = [ ...this.props.players ];
+    players.map(player => {
+      const { playerClass, playerSpec } = player;
+      const specInfo = getSpecInfo(playerClass, playerSpec);
+      const weaponTypes = specInfo.weaponTypes;
+      weaponTypes.map(weaponType => {
+        weaponTypeSegments.hasOwnProperty(weaponType)
+        ? weaponTypeSegments[weaponType].count += 1
+        : weaponTypeSegments[weaponType] = {
+          color: weaponTypeColors[weaponType],
+          count: 1,
+          label: weaponTypeLabels[weaponType]
+        };
+      });
+    });
+
+    return weaponTypeSegments;
+  }
 
   public render() {
     const { order, orderBy, selected } = this.state;
     const { classes, players } = this.props;
     const classSegments = this.buildClassSegments();
+    const roleSegments = this.buildRoleSegments();
+    const armorTypeSegments = this.buildArmorTypeSegments();
+    const weaponTypeSegments = this.buildWeaponTypeSegments();
     return (
       <Paper className={classes.root}>
         <PlayerListToolbar
           numSelected={selected.length}
-          // roleSegments={roleSegments}
-          // armorTypeSegments={armorTypeSegments}
-          // weaponTypeSegments={weaponTypeSegments}
         />
         { classSegments && <SegmentBarContainer segments={classSegments} /> }
+        { roleSegments && <SegmentBarContainer segments={roleSegments} /> }
+        { armorTypeSegments && <SegmentBarContainer segments={armorTypeSegments} /> }
+        { weaponTypeSegments && <SegmentBarContainer segments={weaponTypeSegments} /> }
         <div className={classes.tableWrapper}>
-          <Table>
+          <Table style={{ tableLayout: 'auto' }}>
             <PlayerListHeader
               numSelected={selected.length}
               order={order}

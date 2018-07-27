@@ -1,6 +1,7 @@
 import { CLASSES } from '../constants/classes';
 import { Role } from '../enums/role';
 import { WOWClass } from '../enums/WOWclass';
+import { WOWSpec } from '../enums/WOWspec';
 
 const getClassInfo = (wc: WOWClass) => {
   const r = CLASSES.find(c => c.id === wc);
@@ -10,6 +11,11 @@ const getClassInfo = (wc: WOWClass) => {
 const getClassColor = (wc: WOWClass) => {
   const r = getClassInfo(wc);
   return r && r.classColor;
+};
+
+const getSpecInfo = (wc: WOWClass, ws: WOWSpec) => {
+  const r = getClassInfo(wc);
+  return r.specs.find(s => s.id === ws) || r.specs[0];
 };
 
 const getRoleIcon = (role: Role, isMelee: boolean) => {
@@ -30,4 +36,4 @@ const getRoleIcon = (role: Role, isMelee: boolean) => {
   return roleIcon;
 };
 
-export { getClassInfo, getClassColor, getRoleIcon };
+export { getClassInfo, getClassColor, getRoleIcon, getSpecInfo };
