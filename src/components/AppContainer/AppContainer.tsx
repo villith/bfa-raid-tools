@@ -5,7 +5,7 @@ import './AppContainer.css';
 class AppContainer extends React.Component {
   public render() {
     return (
-      <div style={{ padding: 8 }}>
+      <div>
         <App />
       </div>
     );

@@ -1,16 +1,36 @@
 import { Button, StyleRulesCallback, Theme, Toolbar, Tooltip, Typography, WithStyles, withStyles } from '@material-ui/core';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
-import { Add as AddIcon, Delete as DeleteIcon, FilterList as FilterListIcon } from '@material-ui/icons';
+import { Add as AddIcon, Clear as ClearIcon, Delete as DeleteIcon, Done as DoneIcon, FilterList as FilterListIcon } from '@material-ui/icons';
 import * as React from 'react';
+import { Aux } from '../winAux';
 
 export interface IPlayerListToolbarProps {
+  addPlayerVisible: boolean;
+  confirmAddPlayer: (() => void);
+  toggleAddPlayer: (() => void);
   numSelected: number;
+}
+
+export interface IPlayerListToolbarState {
+  placeholder?: string;
 }
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   actions: {
-    color: theme.palette.text.secondary,
     display: 'flex',
+  },
+  cancelButton: {
+    marginLeft: theme.spacing.unit / 2,
+    marginRight: theme.spacing.unit / 2,
+  },
+  confirmButton: {
+    backgroundColor: 'white',
+    color: '#4caf50',
+    marginLeft: theme.spacing.unit / 2,
+    marginRight: theme.spacing.unit / 2,
+    '&:hover': {
+      backgroundColor: lighten('#4caf50', 0.85)
+    }
   },
   highlight:
   theme.palette.type === 'light'
@@ -33,9 +53,9 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   },
 });
 
-class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToolbarProps> {
+class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToolbarProps, IPlayerListToolbarState> {  
   public render() {
-    const { classes, numSelected } = this.props;
+    const { addPlayerVisible, classes, confirmAddPlayer, numSelected, toggleAddPlayer } = this.props;
     return (
       <Toolbar>
         <div className={classes.title}>
@@ -45,17 +65,32 @@ class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToo
             </Typography>
           ) : (
             <Typography variant='title' id='tableTitle'>
-              Roster
+              ROSTER
             </Typography>
           )}
         </div>
         <div className={classes.spacer} />
         <div className={classes.actions}>
-          <Tooltip title='Add Player'>
-            <Button variant='flat' color='primary'>
-              <AddIcon />
-            </Button>
-          </Tooltip>
+          {addPlayerVisible ? (
+            <Aux>
+              <Tooltip title='Confirm'>
+                <Button variant='flat' className={classes.confirmButton} onClick={confirmAddPlayer}>
+                  <DoneIcon />
+                </Button>
+              </Tooltip>
+              <Tooltip title='Cancel'>
+                <Button variant='flat' color='secondary' className={classes.cancelButton} onClick={toggleAddPlayer}>
+                  <ClearIcon />
+                </Button>
+              </Tooltip> 
+            </Aux>
+          ) : (
+            <Tooltip title='Add Player'>
+              <Button variant='flat' color='primary' onClick={toggleAddPlayer}>
+                <AddIcon />
+              </Button>
+            </Tooltip>
+          )}
           {numSelected > 0 ? (
             <Tooltip title='Delete'>
               <Button variant='flat' color='secondary'>
@@ -69,7 +104,7 @@ class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToo
               </Button>
             </Tooltip>
           )}
-        </div>        
+        </div>
       </Toolbar>
     );
   }

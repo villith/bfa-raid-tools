@@ -6,8 +6,9 @@ export interface IBossAbilityListHeaderProps {
 }
 
 const columnData = [
-  { id: 'icon', numeric: false, disablePadding: true },
-  { id: 'label', numeric: false, disablePadding: false, label: 'Ability Name' }
+  { id: 'icon', numeric: false, disablePadding: false },
+  { id: 'label', numeric: false, disablePadding: false, label: 'Ability Name' },
+  { id: 'timer', numeric: false, disablePadding: false, label: 'Time' },
 ];
 
 export default class BossAbilityListHeader extends React.Component<IBossAbilityListHeaderProps, any> {

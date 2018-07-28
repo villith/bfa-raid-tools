@@ -1,6 +1,6 @@
+import { Checkbox, StyleRulesCallback, TableCell, TableRow, Theme, WithStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 
-import { Checkbox, TableCell, TableRow } from '@material-ui/core';
 import { WOWClass } from '../../enums/WOWclass';
 import { WOWSpec } from '../../enums/WOWspec';
 import { getClassInfo } from '../../helpers/getClassInfo';
@@ -14,9 +14,16 @@ export interface IPlayerListRowProps {
   handleClick: ((event: any, id: number) => void);
 }
 
-class PlayerListRow extends React.Component<IPlayerListRowProps, any> {
+const styles: StyleRulesCallback<any> = (theme: Theme) => ({
+  icon: {
+    borderRadius: '50%',
+    height: 28
+  }
+})
+
+class PlayerListRow extends React.Component<WithStyles<any> & IPlayerListRowProps, any> {
   public render() {
-    const { isSelected, playerId, playerClass, playerName, playerSpec, handleClick } = this.props;
+    const { classes, isSelected, playerId, playerClass, playerName, playerSpec, handleClick } = this.props;
     const classInfo = getClassInfo(playerClass);
     const specInfo = classInfo.specs.find(spec => spec.id === playerSpec);
     // const roleIcon = getRoleIcon(classInfo.)
@@ -35,10 +42,10 @@ class PlayerListRow extends React.Component<IPlayerListRowProps, any> {
           <Checkbox checked={isSelected} />
         </TableCell>
         <TableCell padding='none'>
-          <img className='playerIcon' src={`classIcons/${classInfo.icon}.jpg`} />
+          <img className={classes.icon} src={`classIcons/${classInfo.icon}.jpg`} />
         </TableCell>
         <TableCell padding='none'>
-          <img className='playerIcon' src={`classIcons/${specInfo!.icon}.jpg`} />
+          <img className={classes.icon} src={`classIcons/${specInfo!.icon}.jpg`} />
         </TableCell>
         <TableCell>{playerName}</TableCell>
       </TableRow>        
@@ -46,4 +53,4 @@ class PlayerListRow extends React.Component<IPlayerListRowProps, any> {
   }
 }
 
-export default PlayerListRow;
+export default withStyles(styles)(PlayerListRow);

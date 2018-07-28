@@ -31,7 +31,7 @@ class BossAbilityListToolbar extends React.Component<WithStyles<any> & IBossAbil
       <Toolbar>
         <div className={classes.title}>
           <Typography variant='title' id='BossAbilityListTitle'>
-            Cooldowns
+            COOLDOWNS
           </Typography>
         </div>
         <div className={classes.spacer} />

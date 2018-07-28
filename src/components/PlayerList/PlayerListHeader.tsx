@@ -31,7 +31,7 @@ export default class PlayerListHeader extends React.Component<IPlayerListHeaderP
           <TableCell scope='col' padding='checkbox'>
             <Checkbox
               indeterminate={numSelected > 0 && numSelected < rowCount}
-              checked={numSelected === rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
               onChange={onSelectAllClick}
             />
           </TableCell>

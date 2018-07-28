@@ -8,7 +8,9 @@ import { ArmorType } from '../../enums/armorType';
 import { Role } from '../../enums/role';
 import { WeaponType } from '../../enums/weaponType';
 import { WOWClass } from '../../enums/WOWclass';
+import { WOWSpec } from '../../enums/WOWspec';
 import { getClassInfo, getSpecInfo } from '../../helpers/getClassInfo';
+import AddPlayer from '../AddPlayer/AddPlayer';
 import SegmentBarContainer, { ISegmentValue } from '../SegmentBar/SegmentBarContainer';
 import PlayerListHeader from './PlayerListHeader';
 import PlayerListRow from './PlayerListRow';
@@ -17,20 +19,29 @@ import PlayerListToolbar from './PlayerListToolbar';
 export type Order = 'asc' | 'desc';
 
 export interface IPlayerListProps {
+  handleAddPlayer: ((player: Partial<Player>, index: number) => void);
   players: Player[];
 }
 
 export interface IPlayerListState {
+  addPlayerVisible: boolean;
   numSelected: number;
   order: Order;
   orderBy: string;
   selected: number[];
+  playerName: string;
+  playerClass: WOWClass;
+  playerSpec: WOWSpec;
 }
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   root: {
     marginTop: theme.spacing.unit * 3,
     width: '100%',
+    transition: theme.transitions.create('flex', {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.standard,
+    }),
   },
   tableWrapper: {
     overflowX: 'auto',
@@ -40,10 +51,40 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 // import Select from 'react-select';
 class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPlayerListState> {
   public state = {
+    addPlayerVisible: false,
     numSelected: 0,
     order: 'asc' as Order,
     orderBy: 'id',
     selected: [] as number[],
+    playerName: '',
+    playerClass: 0,
+    playerSpec: 0,
+  }
+
+  public handlePlayerNameChange = (event: any) => {
+    this.setState({ playerName: event.target.value });
+  }
+
+  public handleWOWClassChange = (event: any) => {
+    this.setState({ playerClass: parseInt(event.target.value, 10) });
+  }
+
+  public handleWOWSpecChange = (event: any) => {
+    this.setState({ playerSpec: parseInt(event.target.value, 10) });
+  }
+
+  public toggleAddPlayer = () => {
+    this.setState(prevState => ({ addPlayerVisible: !prevState.addPlayerVisible }));
+  }
+
+  public confirmAddPlayer = () => {
+    this.props.handleAddPlayer({
+      playerName: this.state.playerName,
+      playerClass: this.state.playerClass,
+      playerSpec: this.state.playerSpec
+    }, this.props.players.length);
+
+    this.toggleAddPlayer();
   }
 
   public getSorting = (order: Order, orderBy: string) => {
@@ -241,7 +282,7 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
   }
 
   public render() {
-    const { order, orderBy, selected } = this.state;
+    const { addPlayerVisible, order, orderBy, selected } = this.state;
     const { classes, players } = this.props;
     const classSegments = this.buildClassSegments();
     const roleSegments = this.buildRoleSegments();
@@ -250,12 +291,25 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
     return (
       <Paper className={classes.root}>
         <PlayerListToolbar
+          addPlayerVisible={addPlayerVisible}
+          confirmAddPlayer={this.confirmAddPlayer}
+          toggleAddPlayer={this.toggleAddPlayer} 
           numSelected={selected.length}
         />
-        { classSegments && <SegmentBarContainer segments={classSegments} /> }
-        { roleSegments && <SegmentBarContainer segments={roleSegments} /> }
-        { armorTypeSegments && <SegmentBarContainer segments={armorTypeSegments} /> }
-        { weaponTypeSegments && <SegmentBarContainer segments={weaponTypeSegments} /> }
+        { addPlayerVisible && (
+          <AddPlayer
+            playerClass={this.state.playerClass}
+            playerName={this.state.playerName}
+            playerSpec={this.state.playerSpec}
+            handleNameChange={this.handlePlayerNameChange}
+            handleClassChange={this.handleWOWClassChange}
+            handleSpecChange={this.handleWOWSpecChange}
+          />
+         )}
+        { Object.keys(classSegments).length > 0 && <SegmentBarContainer segments={classSegments} /> }
+        { Object.keys(roleSegments).length > 0 && <SegmentBarContainer segments={roleSegments} /> }
+        { Object.keys(armorTypeSegments).length > 0 && <SegmentBarContainer segments={armorTypeSegments} /> }
+        { Object.keys(weaponTypeSegments).length > 0 && <SegmentBarContainer segments={weaponTypeSegments} /> }
         <div className={classes.tableWrapper}>
           <Table style={{ tableLayout: 'auto' }}>
             <PlayerListHeader

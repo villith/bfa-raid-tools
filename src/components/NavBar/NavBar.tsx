@@ -1,9 +1,6 @@
 import {
   AppBar,
-  Button,
   IconButton,
-  Menu,
-  MenuItem,
   StyleRulesCallback,
   Theme,
   Toolbar,
@@ -11,24 +8,48 @@ import {
   WithStyles,
   withStyles,
 } from '@material-ui/core';
-import { AccountCircle, Menu as MenuIcon } from '@material-ui/icons';
+import { Menu as MenuIcon } from '@material-ui/icons';
+import * as classNames from 'classnames';
 import * as React from 'react';
 
 export interface INavBarProps {
+  open: boolean;
   toggleSideMenu: (() => void);
 }
 
 export interface INavBarState {
-  anchorElement: EventTarget & HTMLElement | undefined;
   loggedIn: boolean;
 }
 
+const drawerWidth = 280;
+
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
+  appBar: {
+    zIndex: theme.zIndex.drawer + 1,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  appBarShift: {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+  menuButton: {
+    marginLeft: 12,
+    marginRight: 36,
+  },
+  hide: {
+    display: 'none',
+  },
   root: {},
 });
 class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarState> {
   public state = {
-    anchorElement: undefined,
     loggedIn: false,
   };
 
@@ -36,30 +57,28 @@ class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarStat
     this.setState({ loggedIn: checked });
   };
 
-  public handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-    this.setState({ anchorElement: event.currentTarget });
-  };
-
-  public handleClose = () => {
-    this.setState({ anchorElement: undefined });
-  };
-
   public render() {
-    const { anchorElement, loggedIn } = this.state;
-    const { toggleSideMenu } = this.props;
-    const open = Boolean(anchorElement);
+    const { classes, open, toggleSideMenu } = this.props;
 
     return (
       <div className='root'>
-        <AppBar position='static'>
-          <Toolbar>
-            <IconButton color='inherit' aria-label='Menu' onClick={toggleSideMenu}>
+        <AppBar
+          position='absolute'
+          className={classNames(classes.appBar, open && classes.appBarShift)}
+        >
+          <Toolbar disableGutters={!open}>
+            <IconButton 
+              color='inherit'
+              aria-label='Menu'
+              onClick={toggleSideMenu}
+              className={classNames(classes.menuButton, open && classes.hide)}
+            >
               <MenuIcon />
             </IconButton>
             <Typography variant='title' color='inherit'>
               BFA Raid Tools
             </Typography>
-            {loggedIn && (
+            {/* {loggedIn && (
               <div>
                 <IconButton
                   aria-owns={open ? 'menu-appbar' : undefined}
@@ -86,8 +105,8 @@ class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarStat
                   <MenuItem onClick={this.handleClose}>My Account</MenuItem>
                 </Menu>
               </div>
-            )}
-            <Button color='inherit'>Login</Button>
+            )} */}
+            {/* <Button color='inherit'>Login</Button> */}
           </Toolbar>
         </AppBar>
       </div>

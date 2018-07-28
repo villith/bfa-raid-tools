@@ -8,12 +8,13 @@ class BossAbility {
   public icon: string;
   public cooldownTypes: CooldownType[];
   public cooldown: number;
-  public firstCast?: number;
   public cooldowns: Cooldown[];
+  public phases: number[];
+  public firstCast?: number;
 
   constructor(id: number, spellId: number, label: string, icon: string,
     cooldownTypes: CooldownType[], cooldown: number, cooldowns: Cooldown[],
-    firstCast?: number
+    phases: number[], firstCast?: number
   ) {
     this.id = id;
     this.spellId = spellId;
@@ -22,6 +23,7 @@ class BossAbility {
     this.cooldownTypes = cooldownTypes;    
     this.cooldown = cooldown;
     this.cooldowns = cooldowns;
+    this.phases = phases;
     this.firstCast = firstCast;
   }
 }
