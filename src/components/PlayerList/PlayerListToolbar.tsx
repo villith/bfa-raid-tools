@@ -7,6 +7,7 @@ import { Aux } from '../winAux';
 export interface IPlayerListToolbarProps {
   addPlayerVisible: boolean;
   confirmAddPlayer: (() => void);
+  deletePlayers: (() => void)
   toggleAddPlayer: (() => void);
   numSelected: number;
 }
@@ -55,7 +56,7 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToolbarProps, IPlayerListToolbarState> {  
   public render() {
-    const { addPlayerVisible, classes, confirmAddPlayer, numSelected, toggleAddPlayer } = this.props;
+    const { addPlayerVisible, classes, confirmAddPlayer, deletePlayers, numSelected, toggleAddPlayer } = this.props;
     return (
       <Toolbar>
         <div className={classes.title}>
@@ -93,7 +94,7 @@ class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToo
           )}
           {numSelected > 0 ? (
             <Tooltip title='Delete'>
-              <Button variant='flat' color='secondary'>
+              <Button variant='flat' color='secondary' onClick={deletePlayers}>
                 <DeleteIcon />
               </Button>
             </Tooltip>

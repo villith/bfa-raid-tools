@@ -17,22 +17,25 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityListProps> {
   public render() {
-    const { bossAbilities } = this.props;
+    const { bossAbilities, cooldowns } = this.props;
     return (
       <Table style={{ tableLayout: 'auto' }}>
         <BossAbilityListHeader />
         <TableBody>
-          {...bossAbilities
-            .map(bossAbility => {
-              const { firstCast, icon, id, label, spellId } = bossAbility;
-              return <BossAbilityListRow
-                key={id}
-                firstCast={firstCast}
-                icon={icon}
-                id={id}
-                label={label}
-                spellId={spellId}
-              />
+          {bossAbilities.map(bossAbility => {
+            const { firstCast, cooldownTypes, icon, id, label, spellId } = bossAbility;
+            const assignedCooldowns = bossAbility.cooldowns;
+            return <BossAbilityListRow
+              key={id}
+              assignedCooldowns={assignedCooldowns}
+              cooldowns={cooldowns}
+              cooldownTypes={cooldownTypes}
+              firstCast={firstCast}
+              icon={icon}
+              id={id}
+              label={label}
+              spellId={spellId}
+            />
           })}
         </TableBody>
       </Table>

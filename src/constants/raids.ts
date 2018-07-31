@@ -22,6 +22,7 @@ interface IBoss {
   abilities: IBossAbility[];
   phases: IBossPhase[];
   roster?: Player[];
+  cooldowns?: Cooldown[];
 }
 
 interface IBossAbility {

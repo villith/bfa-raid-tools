@@ -16,15 +16,17 @@ import { ChevronLeft as ChevronLeftIcon } from '@material-ui/icons';
 import * as classNames from 'classnames';
 import * as React from 'react';
 
-import { Boss } from '../../classes/Boss';
-import { BossAntorus } from '../../enums/bossAntorus';
-import { BossTomb } from '../../enums/bossTomb';
-import { BossUldir } from '../../enums/bossUldir';
+import { Boss, BossType } from '../../classes/Boss';
+
+interface IBossMap {
+  [index: number]: Boss;
+}
 
 export interface ISideMenuProps {
-  bosses: Boss[];
+  bosses: IBossMap;
   closeMenu: (() => void);
-  currentBoss: BossUldir | BossAntorus | BossTomb;
+  currentBoss: BossType;
+  handleChange: ((event: React.MouseEvent<HTMLElement>) => void);
   open: boolean;
   openMenu: (() => void);
 }
@@ -80,7 +82,7 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class SideMenu extends React.Component<WithStyles<any> & ISideMenuProps, ISideMenuState> {
   public render() {
-    const { bosses, classes, closeMenu, currentBoss, open, openMenu } = this.props;
+    const { bosses, classes, closeMenu, currentBoss, handleChange, open } = this.props;
     return (
       <Drawer
         open={open}
@@ -96,15 +98,17 @@ class SideMenu extends React.Component<WithStyles<any> & ISideMenuProps, ISideMe
         </div>
         <Divider />
         <List>
-          {bosses.map((boss, index) => {
+          {Object.keys(bosses).map((key, index) => {
+            const boss = bosses[key];
             const iconURL = `https://wow.zamimg.com/images/wow/icons/large/achievement_nazmir_boss_${boss.icon}.jpg`;
             const iconURLAlt = `${boss.label} Icon`;
             return (
               <ListItem 
                 key={index}
-                className={classNames(classes.listItem, currentBoss === boss.id && classes.selected)}
-                onMouseEnter={openMenu}
+                className={classNames(classes.listItem, currentBoss === boss.id && classes.selected)}                
                 button={true}
+                id={boss.id}
+                onClick={handleChange}
               >
                 <Avatar className={classes.avatar} src={iconURL} alt={iconURLAlt} />
                 <ListItemText primary={boss.label} secondary={boss.title} />

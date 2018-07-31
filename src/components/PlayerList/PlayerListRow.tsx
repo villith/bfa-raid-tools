@@ -10,8 +10,8 @@ export interface IPlayerListRowProps {
   playerClass: WOWClass;
   playerSpec: WOWSpec;
   playerName: string;
-  playerId: number;
-  handleClick: ((event: any, id: number) => void);
+  playerId: string;
+  handleClick: ((event: any, id: string) => void);
 }
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({

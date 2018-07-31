@@ -12,10 +12,10 @@ class Cooldown {
   public charges?: number;
   public cdClass: WOWClass;
   public cdSpec: WOWSpec;
-  public owner: number;
+  public owner: string;
 
   constructor(spellId: number, name: string, icon: string, cooldownType: CooldownType,
-    cooldownTime: number, cdClass: WOWClass, cdSpec: WOWSpec, owner: number,
+    cooldownTime: number, cdClass: WOWClass, cdSpec: WOWSpec, owner: string,
     altCooldownTime?: number, charges?: number)
   {
     this.spellId = spellId;

@@ -19,7 +19,8 @@ import PlayerListToolbar from './PlayerListToolbar';
 export type Order = 'asc' | 'desc';
 
 export interface IPlayerListProps {
-  handleAddPlayer: ((player: Partial<Player>, index: number) => void);
+  handleAddPlayer: ((player: Partial<Player>, index: number, callback?: () => {}) => void);
+  handleDeletePlayers: ((selected: string[]) => void);
   players: Player[];
 }
 
@@ -28,7 +29,7 @@ export interface IPlayerListState {
   numSelected: number;
   order: Order;
   orderBy: string;
-  selected: number[];
+  selected: string[];
   playerName: string;
   playerClass: WOWClass;
   playerSpec: WOWSpec;
@@ -55,7 +56,7 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
     numSelected: 0,
     order: 'asc' as Order,
     orderBy: 'id',
-    selected: [] as number[],
+    selected: [] as string[],
     playerName: '',
     playerClass: 0,
     playerSpec: 0,
@@ -87,14 +88,20 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
     this.toggleAddPlayer();
   }
 
+  public deleteSelectedPlayers = () => {
+    console.log('[deleteSelectedPlayers]');
+    const selected = [ ...this.state.selected ];
+    this.props.handleDeletePlayers(selected);
+    this.setState({ selected: [] });
+  }
+
   public getSorting = (order: Order, orderBy: string) => {
     return order === 'desc'
       ? (a: Player, b: Player) => (
         b[orderBy] === a[orderBy]
         ? a.id < b.id ? -1 : 1
         : b[orderBy] < a[orderBy] ? -1 : 1
-      )
-      : (a: Player, b: Player) => (
+      ) : (a: Player, b: Player) => (
         a[orderBy] === b[orderBy]
         ? a.id < b.id ? -1 : 1
         : a[orderBy] < b[orderBy] ? -1 : 1
@@ -120,7 +127,7 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
     this.setState({ selected: [] });
   }
 
-  public handleClick = (event: any, id: number) => {
+  public handleClick = (event: any, id: string) => {
     const selected = [ ...this.state.selected ];
     const selectedIndex = selected.indexOf(id);
 
@@ -134,7 +141,7 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
     this.setState({ selected });
   }
 
-  public isSelected = (id: number) => this.state.selected.indexOf(id) !== -1;
+  public isSelected = (id: string) => this.state.selected.indexOf(id) !== -1;
 
   public buildClassSegments = () => {
     type ClassSegmentMap = { [key in WOWClass]: ISegmentValue };
@@ -153,7 +160,7 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
     });
 
     return classSegments;
-  };
+  }
 
   public buildRoleSegments = () => {
     type RoleSegmentMap = { [key in Role]: ISegmentValue };
@@ -187,7 +194,7 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
     });
 
     return roleSegments;
-  };
+  }
 
   public buildArmorTypeSegments = () => {
     type ArmorTypeSegmentMap = { [key in ArmorType]: ISegmentValue };
@@ -293,6 +300,7 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
         <PlayerListToolbar
           addPlayerVisible={addPlayerVisible}
           confirmAddPlayer={this.confirmAddPlayer}
+          deletePlayers={this.deleteSelectedPlayers}
           toggleAddPlayer={this.toggleAddPlayer} 
           numSelected={selected.length}
         />

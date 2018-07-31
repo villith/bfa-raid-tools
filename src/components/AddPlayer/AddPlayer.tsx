@@ -63,6 +63,7 @@ class AddPlayer extends React.Component<WithStyles<any> & IAddPlayerProps, IAddP
             label={'Player Name'}
             value={playerName}
             onChange={handleNameChange}
+            required={true}
           />
         </FormControl>
         <FormControl className={classes.formControl}>
