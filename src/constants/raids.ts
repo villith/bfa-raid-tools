@@ -1,12 +1,9 @@
-import { Raid } from '../enums/raid';
-import { BossUldir } from '../enums/bossUldir';
-import { BossAntorus } from '../enums/bossAntorus';
-import { BossTomb } from '../enums/bossTomb';
-import { CooldownType } from '../enums/cooldownType';
+import { BossType } from '../classes/Boss';
 import { Cooldown } from '../classes/Cooldown';
 import { Player } from '../classes/Player';
-
-type Boss = BossUldir | BossAntorus | BossTomb;
+import { BossUldir } from '../enums/bossUldir';
+import { CooldownType } from '../enums/cooldownType';
+import { Raid } from '../enums/raid';
 
 interface IRaid {
   id: Raid;
@@ -15,7 +12,7 @@ interface IRaid {
 }
 
 interface IBoss {
-  id: Boss;
+  id: BossType;
   label: string;
   title: string;
   icon: string;
@@ -51,6 +48,14 @@ const RAIDS: IRaid[] = [
     id: Raid.ULDIR,
     label: 'Uldir',
     bosses: [
+      {
+        id: BossUldir.HOME,
+        label: 'Uldir',
+        title: 'Halls of Control',
+        icon: '',
+        abilities: [],
+        phases: []
+      },
       {
         id: BossUldir.TALOC,
         label: 'Taloc',
@@ -170,7 +175,7 @@ const RAIDS: IRaid[] = [
         icon: 'ghuun',
         abilities: [],
         phases: []
-      }, 
+      },
     ]
   }
 ];

@@ -4,7 +4,6 @@ import * as React from 'react';
 import { Cooldown } from '../../classes/Cooldown';
 import { CooldownType } from '../../enums/cooldownType';
 import { secondsToMinutes } from '../../helpers/secondsToMinutes';
-import CooldownList from '../CooldownList/CooldownList';
 import { Aux } from '../winAux';
 
 export interface IBossAbilityListRowProps {
@@ -20,7 +19,7 @@ export interface IBossAbilityListRowProps {
 
 class BossAbilityListRow extends React.Component<IBossAbilityListRowProps, any> {
   public render() {
-    const { cooldowns, firstCast, id, icon, label, spellId } = this.props;
+    const { firstCast, id, icon, label, spellId } = this.props;
     const iconURL = `https://wow.zamimg.com/images/wow/icons/medium/${icon}.jpg`;
     const iconURLAlt = `${label} Icon`;
     const wowheadTooltip = `http://www.wowhead.com/spell=${spellId}`;
@@ -38,8 +37,9 @@ class BossAbilityListRow extends React.Component<IBossAbilityListRowProps, any> 
           <TableCell><Typography>{label}</Typography></TableCell>
           { firstCast && <TableCell><Typography>{secondsToMinutes(firstCast)}</Typography></TableCell> }
         </TableRow>
-        <CooldownList
-          cooldowns={cooldowns} />
+        {/* <CooldownList
+          cooldowns={cooldowns}
+        /> */}
       </Aux>
     );
   }

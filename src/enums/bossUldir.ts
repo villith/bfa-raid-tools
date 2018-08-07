@@ -1,4 +1,5 @@
 enum BossUldir {
+  HOME,
   TALOC,
   MOTHER,
   FETID_DEVOURER,
@@ -6,7 +7,7 @@ enum BossUldir {
   VECTIS,
   ZUL,
   MYTHRAX,
-  GHUUN
+  GHUUN,
 }
 
 export { BossUldir }

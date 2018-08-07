@@ -10,6 +10,7 @@ import {
 } from '@material-ui/core';
 import * as React from 'react';
 
+import { Player } from '../../classes/Player';
 import { CLASSES } from '../../constants/classes';
 import { WOWClass } from '../../enums/WOWclass';
 import { WOWSpec } from '../../enums/WOWspec';
@@ -20,6 +21,7 @@ export interface IAddPlayerProps {
   playerClass: WOWClass;
   playerSpec: WOWSpec;
   playerName: string;
+  players: Player[];
   handleNameChange: ((event: any) => void);
   handleClassChange: ((event: any) => void);
   handleSpecChange: ((event: any) => void);
@@ -53,7 +55,8 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class AddPlayer extends React.Component<WithStyles<any> & IAddPlayerProps, IAddPlayerState> {
   public render() {
-    const { classes, handleClassChange, handleNameChange, handleSpecChange, playerClass, playerName, playerSpec } = this.props;
+    const { classes, handleClassChange, handleNameChange, handleSpecChange,
+      playerClass, playerName, playerSpec } = this.props;
     const classInfo = getClassInfo(playerClass);
     return (
       <div className={classes.root}>
@@ -64,6 +67,9 @@ class AddPlayer extends React.Component<WithStyles<any> & IAddPlayerProps, IAddP
             value={playerName}
             onChange={handleNameChange}
             required={true}
+            inputProps={{
+              maxLength: 12,
+            }}
           />
         </FormControl>
         <FormControl className={classes.formControl}>

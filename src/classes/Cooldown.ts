@@ -1,8 +1,10 @@
 import { CooldownType } from '../enums/cooldownType';
 import { WOWClass } from '../enums/WOWclass';
 import { WOWSpec } from '../enums/WOWspec';
+import { uuid } from '../helpers/createGuid';
 
 class Cooldown {
+  public id: string = uuid();
   public spellId: number;
   public name: string;
   public icon: string;

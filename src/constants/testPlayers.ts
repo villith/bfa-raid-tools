@@ -2,7 +2,7 @@ import { WOWClass } from "../enums/WOWclass";
 import { WOWSpec } from "../enums/WOWspec";
 import { Player } from "../classes/Player";
 
-const testPlayers: Partial<Player>[] = [
+const testPlayers: Player[] = [
   {
     playerClass: WOWClass.WARRIOR,
     playerName: 'Manmoth',
@@ -48,6 +48,6 @@ const testPlayers: Partial<Player>[] = [
     playerName: 'Soulmanrawr',
     playerSpec: WOWSpec.AFFLICTION,
   },
-];
+].map(player => new Player(player.playerName, player.playerClass, player.playerSpec));
 
 export { testPlayers };

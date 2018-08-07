@@ -100,7 +100,9 @@ class SideMenu extends React.Component<WithStyles<any> & ISideMenuProps, ISideMe
         <List>
           {Object.keys(bosses).map((key, index) => {
             const boss = bosses[key];
-            const iconURL = `https://wow.zamimg.com/images/wow/icons/large/achievement_nazmir_boss_${boss.icon}.jpg`;
+            let iconURL = `https://wow.zamimg.com/images/wow/icons/large/achievement_nazmir_`;
+            iconURL += boss.id === 0 ? 'zone' : `boss_${boss.icon}`;
+            iconURL += '.jpg';
             const iconURLAlt = `${boss.label} Icon`;
             return (
               <ListItem 

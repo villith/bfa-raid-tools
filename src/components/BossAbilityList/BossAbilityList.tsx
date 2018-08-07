@@ -22,11 +22,11 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
       <Table style={{ tableLayout: 'auto' }}>
         <BossAbilityListHeader />
         <TableBody>
-          {bossAbilities.map(bossAbility => {
+          {bossAbilities.map((bossAbility, index) => {
             const { firstCast, cooldownTypes, icon, id, label, spellId } = bossAbility;
             const assignedCooldowns = bossAbility.cooldowns;
             return <BossAbilityListRow
-              key={id}
+              key={index}
               assignedCooldowns={assignedCooldowns}
               cooldowns={cooldowns}
               cooldownTypes={cooldownTypes}

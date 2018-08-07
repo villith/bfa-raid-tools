@@ -1,7 +1,16 @@
 import { Button, StyleRulesCallback, Theme, Toolbar, Tooltip, Typography, WithStyles, withStyles } from '@material-ui/core';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
-import { Add as AddIcon, Clear as ClearIcon, Delete as DeleteIcon, Done as DoneIcon, FilterList as FilterListIcon } from '@material-ui/icons';
+import {
+  Add as AddIcon,
+  Clear as ClearIcon,
+  Delete as DeleteIcon,
+  Done as DoneIcon,
+  FilterList as FilterListIcon,
+  GroupAdd as GroupAddIcon,
+} from '@material-ui/icons';
 import * as React from 'react';
+
+import { PlayerListType } from '../../classes/Player';
 import { Aux } from '../winAux';
 
 export interface IPlayerListToolbarProps {
@@ -9,7 +18,9 @@ export interface IPlayerListToolbarProps {
   confirmAddPlayer: (() => void);
   deletePlayers: (() => void)
   toggleAddPlayer: (() => void);
+  toggleImportPlayers: (() => void);
   numSelected: number;
+  type: PlayerListType;
 }
 
 export interface IPlayerListToolbarState {
@@ -54,9 +65,9 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   },
 });
 
-class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToolbarProps, IPlayerListToolbarState> {  
+class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToolbarProps, IPlayerListToolbarState> {
   public render() {
-    const { addPlayerVisible, classes, confirmAddPlayer, deletePlayers, numSelected, toggleAddPlayer } = this.props;
+    const { addPlayerVisible, classes, confirmAddPlayer, deletePlayers, numSelected, toggleAddPlayer, toggleImportPlayers, type } = this.props;
     return (
       <Toolbar>
         <div className={classes.title}>
@@ -86,11 +97,20 @@ class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToo
               </Tooltip> 
             </Aux>
           ) : (
-            <Tooltip title='Add Player'>
-              <Button variant='flat' color='primary' onClick={toggleAddPlayer}>
-                <AddIcon />
-              </Button>
-            </Tooltip>
+            <Aux>
+              {type === PlayerListType.BOSS_ROSTER &&
+                <Tooltip title='Import Players'>
+                  <Button variant='flat' color='primary' onClick={toggleImportPlayers}>
+                    <GroupAddIcon />
+                  </Button>
+                </Tooltip>
+              }
+              <Tooltip title='Add New Player'>
+                <Button variant='flat' color='primary' onClick={toggleAddPlayer}>
+                  <AddIcon />
+                </Button>
+              </Tooltip>
+            </Aux>
           )}
           {numSelected > 0 ? (
             <Tooltip title='Delete'>

@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { WOWClass } from '../../enums/WOWclass';
 import { WOWSpec } from '../../enums/WOWspec';
-import { getClassInfo } from '../../helpers/getClassInfo';
+import { getClassInfo, getSpecInfo } from '../../helpers/getClassInfo';
 
 export interface IPlayerListRowProps {
   isSelected: boolean;
@@ -25,7 +25,7 @@ class PlayerListRow extends React.Component<WithStyles<any> & IPlayerListRowProp
   public render() {
     const { classes, isSelected, playerId, playerClass, playerName, playerSpec, handleClick } = this.props;
     const classInfo = getClassInfo(playerClass);
-    const specInfo = classInfo.specs.find(spec => spec.id === playerSpec);
+    const specInfo = getSpecInfo(playerClass, playerSpec);
     // const roleIcon = getRoleIcon(classInfo.)
 
     return (
@@ -45,7 +45,7 @@ class PlayerListRow extends React.Component<WithStyles<any> & IPlayerListRowProp
           <img className={classes.icon} src={`classIcons/${classInfo.icon}.jpg`} />
         </TableCell>
         <TableCell padding='none'>
-          <img className={classes.icon} src={`classIcons/${specInfo!.icon}.jpg`} />
+          <img className={classes.icon} src={`classIcons/${specInfo.icon}.jpg`} />
         </TableCell>
         <TableCell>{playerName}</TableCell>
       </TableRow>        

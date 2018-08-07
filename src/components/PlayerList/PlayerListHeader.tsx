@@ -1,6 +1,6 @@
 import { Checkbox, TableCell, TableHead, TableRow, TableSortLabel, Tooltip } from '@material-ui/core';
 import * as React from 'react';
-import { Order } from './PlayerList';
+import { Order } from './PlayerListContainer';
 
 export interface IPlayerListHeaderProps {
   numSelected: number;

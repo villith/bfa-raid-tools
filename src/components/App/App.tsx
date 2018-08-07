@@ -1,9 +1,9 @@
 import './App.css';
 
-import { Grid, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 
-import { Boss, BossType } from '../../classes/Boss';
+import { Boss, BossType, IBossMap } from '../../classes/Boss';
 import { BossAbility } from '../../classes/BossAbility';
 import { Cooldown } from '../../classes/Cooldown';
 import { Phase } from '../../classes/Phase';
@@ -12,25 +12,19 @@ import { testPlayers } from '../../constants/testPlayers';
 import { BossUldir } from '../../enums/bossUldir';
 import { Raid } from '../../enums/raid';
 import { deepCopy as dc } from '../../helpers/deepCopy';
-import { getSpecInfo } from '../../helpers/getClassInfo';
+import { getPlayerByPlayerName, getPlayerIndexById } from '../../helpers/getPlayer';
 import { getBossInfo, getRaidInfo } from '../../helpers/getRaidInfo';
-import BossAbilityListContainer from '../BossAbilityList/BossAbilityListContainer';
+import MainContent from '../MainContent/MainContent';
 import NavBar from '../NavBar/NavBar';
-import PlayerList from '../PlayerList/PlayerList';
 import SideMenu from '../SideMenu/SideMenu';
 
 // import * as db from '../../firebase/db';
 // import { auth, firebase } from '../../firebase/firebase';
 
-interface IBossMap {
-  [index: number]: Boss;
-}
-
 export interface IAppState {
   authUser: firebase.User | null;
   bosses: IBossMap;
   currentBoss: BossType;
-  currentPhase: number;
   currentRaid: Raid;
   lastPlayerId: number;
   players: Player[];
@@ -58,8 +52,7 @@ class App extends React.Component<WithStyles<any>, IAppState> {
   public state = {
     authUser: null,
     bosses: {} as IBossMap,
-    currentBoss: BossUldir.TALOC,
-    currentPhase: 0,
+    currentBoss: BossUldir.HOME,
     currentRaid: Raid.ULDIR,
     lastPlayerId: 0,
     players: [] as Player[],
@@ -103,34 +96,7 @@ class App extends React.Component<WithStyles<any>, IAppState> {
   };
 
   public buildTestPlayerList = () => {
-    let count = 0;
-    const map = (player: Partial<Player>) => {
-      this.handleAddPlayer(player, count,  () => {
-        count += 1;
-        if (count < testPlayers.length) { map(testPlayers[count]) };
-      });
-    };
-    map(testPlayers[count]);
-  }
-
-  public buildCooldowns = (player: Player) => {
-    const newCooldowns: Cooldown[] = [];    
-    const specInfo = getSpecInfo(player.playerClass, player.playerSpec);
-    specInfo!.cooldowns.map(cooldown => newCooldowns.push(
-      new Cooldown(
-        cooldown.spellId,
-        cooldown.name,
-        cooldown.icon,
-        cooldown.cooldownType,
-        cooldown.cooldownTime,
-        cooldown.WOWClass,
-        cooldown.WOWSpec,
-        player.id,
-        cooldown.altCooldownTime,
-        cooldown.charges,
-      )
-    ));
-    return newCooldowns;
+    this.handleAddPlayers(testPlayers);
   }
 
   public buildBossAbilityList = (callback?: () => void) => {
@@ -187,56 +153,59 @@ class App extends React.Component<WithStyles<any>, IAppState> {
         boss.abilities as BossAbility[],
         [] as Cooldown[],
         boss.phases as Phase[],
-        [] as Player[],
       )
     ));
     this.setState({ bosses: newBosses });
   }
 
-  public handleAddPlayer = (player: Partial<Player>, index: number, callback?: () => void) => {
-    console.log(`[handleAddPlayer]`);
-    const newPlayer = new Player(
-      player.playerName!,
-      player.playerClass!,
-      player.playerSpec!
-    );
-    const cooldowns = this.buildCooldowns(newPlayer);
-    console.log('cooldowns');
-    console.dir(cooldowns);
-    const { accessor, boss, bosses } = this.getBossStateObject();
-    boss.roster.push(newPlayer);
-    boss.cooldowns.push(...cooldowns);
-    bosses[accessor] = boss;
-    console.log('setstate');
-    this.setState({ bosses }, callback);
+  public handleAddPlayers = (players: Player[]) => {
+    const newPlayers = [ ...this.state.players ];
+    players.map(player => {
+      const playerIndex = getPlayerIndexById(player.id, newPlayers);
+      const playerNameExists = getPlayerByPlayerName(player.playerName, newPlayers);
+      if (playerIndex === -1 && !playerNameExists) {
+        newPlayers.push(player);
+      }
+    });
+    this.setState({ players: newPlayers });  
   }
 
-  public handleDeletePlayer = (playerId: string, callback?: () => void) => {
-    const { accessor, boss, bosses } = this.getBossStateObject();
-    const playerIndex = boss.roster.findIndex(player => player.id === playerId);
-    if (playerIndex === -1) {
-      console.log(`[handleDeletePlayer]: Player with playerId: ${playerId} not found in state.`);
-    }
-    else {
-      boss.roster.splice(playerIndex, 1);
-      bosses[accessor] = boss;
-      this.setState({ bosses }, callback);
-    }
+  public handleAddPlayersToBoss = (playerIds: string[], boss: BossType) => {
+    const newPlayers = [ ...this.state.players ];
+    playerIds.map(playerId => {
+      const playerIndex = getPlayerIndexById(playerId, newPlayers);
+      const player = newPlayers[playerIndex];
+
+      player.bosses[boss] = true;
+    });
+
+    this.setState({ players: newPlayers });
+  };
+
+  public handleDeletePlayers = (playerIds: string[]) => {
+    const newPlayers = [ ...this.state.players ];
+    playerIds.map(playerId => {
+      const playerIndex = getPlayerIndexById(playerId, newPlayers);
+      if (playerIndex === -1) {
+        console.log(`[handleDeletePlayer]: Player with playerId: ${playerId} not found in state.`);
+      }
+      else {
+        newPlayers.splice(playerIndex, 1);
+      }
+    });
+    this.setState({ players: newPlayers });
   }
 
-  public handleDeleteSelectedPlayers = (selected: string[]) => {
-    let count = 0;
-    const map = (playerId: string) => {
-      this.handleDeletePlayer(playerId, () => {
-        count += 1;
-        if (count < selected.length) { map(selected[count]) };
-      });
-    };
-    map(selected[count]);
-  }
+  public handleDeletePlayersFromBoss = (playerIds: string[], boss: BossType) => {
+    const newPlayers = [ ...this.state.players ];
+    playerIds.map(playerId => {
+      const playerIndex = getPlayerIndexById(playerId, newPlayers);
+      const player = newPlayers[playerIndex];
 
-  public handleAddToRoster = (player: Player, boss: Boss) => {
-    return;
+      player.bosses[boss] = false;
+    });
+
+    this.setState({ players: newPlayers });
   }
 
   public toggleSideMenu = () => {
@@ -251,21 +220,15 @@ class App extends React.Component<WithStyles<any>, IAppState> {
     this.setState({ sideMenuOpen: false });
   }
 
-  public handleChangePhase = (event: any, newPhase: number) => {
-    console.log(`[handleChangePhase]: ${newPhase}`);
-    this.setState({ currentPhase: newPhase });
-  }
-
   public handleChangeBoss = (event: React.MouseEvent<HTMLElement>) => {
-    const newBoss = parseInt(event.currentTarget.id, 10);
-    this.setState({ currentBoss: newBoss });
+    const currentBoss = parseInt(event.currentTarget.id, 10);
+    this.setState({ currentBoss });
   }
   
   public render() {
-    const { bosses, currentBoss, currentPhase, sideMenuOpen } = this.state;
+    const { bosses, currentBoss, players, sideMenuOpen } = this.state;
     const { classes } = this.props;
     const boss = this.state.bosses[currentBoss];
-    const { abilities, cooldowns, phases, roster } = boss;
     return (
       <div className={classes.root}>
         <NavBar
@@ -280,24 +243,15 @@ class App extends React.Component<WithStyles<any>, IAppState> {
           openMenu={this.openSideMenu}
           open={sideMenuOpen}
         />
-        <Grid container={true} spacing={16} className={classes.content}>
-          <Grid item={true} xs={6} md={4}>
-            <PlayerList
-              handleAddPlayer={this.handleAddPlayer}
-              handleDeletePlayers={this.handleDeleteSelectedPlayers}
-              players={roster}
-            />
-          </Grid>
-          <Grid item={true} xs={6} md={8}>
-            <BossAbilityListContainer
-              bossAbilities={abilities}
-              cooldowns={cooldowns}
-              currentPhase={currentPhase}
-              handleChangePhase={this.handleChangePhase}
-              phases={phases}
-            />
-          </Grid>
-        </Grid>
+        <MainContent
+          boss={boss}
+          bosses={bosses}
+          players={players}
+          addPlayers={this.handleAddPlayers}
+          addPlayersToBoss={this.handleAddPlayersToBoss}
+          deletePlayers={this.handleDeletePlayers}
+          deletePlayersFromBoss={this.handleDeletePlayersFromBoss}
+        />
       </div>
     );
   }

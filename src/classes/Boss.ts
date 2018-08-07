@@ -1,12 +1,13 @@
-import { BossAntorus } from '../enums/bossAntorus';
-import { BossTomb } from '../enums/bossTomb';
 import { BossUldir } from '../enums/bossUldir';
 import { BossAbility } from './BossAbility';
 import { Cooldown } from './Cooldown';
 import { Phase } from './Phase';
-import { Player } from './Player';
 
-type BossType = BossUldir | BossAntorus | BossTomb;
+type BossType = BossUldir | 'home';
+
+interface IBossMap {
+  [index: number]: Boss;
+}
 
 class Boss {
   public id: BossType;
@@ -16,10 +17,9 @@ class Boss {
   public abilities: BossAbility[];
   public cooldowns: Cooldown[];
   public phases: Phase[];
-  public roster: Player[];
 
   constructor(id: BossType, label: string, title: string, icon: string,
-    abilities: BossAbility[], cooldowns: Cooldown[], phases: Phase[], roster: Player[]
+    abilities: BossAbility[], cooldowns: Cooldown[], phases: Phase[]
   ) {
     this.id = id;
     this.label = label;
@@ -28,8 +28,7 @@ class Boss {
     this.abilities = abilities;
     this.cooldowns = cooldowns;
     this.phases = phases;
-    this.roster = roster;
   }
 }
 
-export { Boss, BossType };
+export { Boss, BossType, IBossMap };
