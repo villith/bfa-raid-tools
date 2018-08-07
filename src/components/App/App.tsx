@@ -151,7 +151,6 @@ class App extends React.Component<WithStyles<any>, IAppState> {
         boss.title,
         boss.icon,
         boss.abilities as BossAbility[],
-        [] as Cooldown[],
         boss.phases as Phase[],
       )
     ));

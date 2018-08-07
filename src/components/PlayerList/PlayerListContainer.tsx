@@ -119,19 +119,19 @@ class PlayerListContainer extends React.Component<WithStyles<any> & IPlayerListC
       this.setState({ selected: [] });
     }
     else {
+      let bossCount = 0;
       selected.map(playerId => {
         const playerIndex = getPlayerIndexById(playerId, this.props.players);
         const player = this.props.players[playerIndex];
-        let bossCount = 0;
         Object.keys(player.bosses).map(boss => player.bosses[boss] === true ? bossCount += 1 : null);
-        if (bossCount > 1) {
-          this.toggleConfirmPlayerDelete();
-        }
-        else {
-          this.props.deletePlayers(selected);
-          this.setState({ selected: [] });
-        }
-      })
+      });
+      if (bossCount / selected.length > 1) {
+        this.toggleConfirmPlayerDelete();
+      }
+      else {
+        this.props.deletePlayers(selected);
+        this.setState({ selected: [] });
+      }
     }
   }
 
@@ -148,7 +148,7 @@ class PlayerListContainer extends React.Component<WithStyles<any> & IPlayerListC
 
   public handleSelectAllClick = (event: any, checked: boolean) => {
     if (checked) {
-      this.setState(({ selected: this.props.players.map(p => p.id) }));
+      this.setState(({ selected: getPlayersByBoss(this.props.currentBoss, this.props.players).map(p => p.id) }));
       return;
     }
     this.setState({ selected: [] });

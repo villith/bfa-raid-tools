@@ -2,7 +2,9 @@ import { Grid, StyleRulesCallback, Theme, WithStyles, withStyles } from '@materi
 import * as React from 'react';
 
 import { Boss, BossType } from '../../classes/Boss';
+import { Cooldown } from '../../classes/Cooldown';
 import { Player, PlayerListType } from '../../classes/Player';
+import { getPlayersByBoss } from '../../helpers/bossFilter';
 import BossAbilityListContainer from '../BossAbilityList/BossAbilityListContainer';
 import PlayerListContainer from '../PlayerList/PlayerListContainer';
 import { Aux } from '../winAux';
@@ -34,10 +36,20 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
     this.setState({ currentPhase: newPhase });
   }
 
+  public getPlayerCooldowns = () => {
+    const players = getPlayersByBoss(this.props.boss.id, this.props.players);
+    const cooldowns: Cooldown[] = [];
+    players.map(player => {
+      cooldowns.push(...player.cooldowns);
+    });
+    return cooldowns;
+  }
+
   public render() {
     const { currentPhase } = this.state;
-    const { addPlayers, addPlayersToBoss, boss, deletePlayers, deletePlayersFromBoss, players } = this.props;
-    const { abilities, cooldowns, phases } = boss;
+    const { addPlayers, addPlayersToBoss, boss, deletePlayers, deletePlayersFromBoss, handleCooldownPickerChange, players } = this.props;
+    const { abilities, phases } = boss;
+    const cooldowns = this.getPlayerCooldowns();
     return (
       <Aux>
         <Grid item={true} xs={6} md={4}>
@@ -56,8 +68,10 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
             bossAbilities={abilities}
             cooldowns={cooldowns}
             currentPhase={currentPhase}
+            handleCooldownPickerChange={handleCooldownPickerChange}
             handleChangePhase={this.handleChangePhase}
             phases={phases}
+            players={players}
           />
         </Grid>
       </Aux>
