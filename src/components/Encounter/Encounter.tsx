@@ -1,10 +1,8 @@
 import { Grid, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 
-import { Boss, BossType } from '../../classes/Boss';
-import { Cooldown } from '../../classes/Cooldown';
+import { Boss } from '../../classes/Boss';
 import { Player, PlayerListType } from '../../classes/Player';
-import { getPlayersByBoss } from '../../helpers/bossFilter';
 import BossAbilityListContainer from '../BossAbilityList/BossAbilityListContainer';
 import PlayerListContainer from '../PlayerList/PlayerListContainer';
 import { Aux } from '../winAux';
@@ -12,9 +10,11 @@ import { Aux } from '../winAux';
 export interface IEncounterProps {
   boss: Boss;
   addPlayers: ((player: Player[]) => void);
-  addPlayersToBoss: ((playerIds: string[], boss: BossType) => void);
+  addPlayersToBoss: ((playerIds: string[]) => void);
   deletePlayers: ((playerIds: string[]) => void);
-  deletePlayersFromBoss: ((playerIds: string[], boss: BossType) => void);
+  deletePlayersFromBoss: ((playerIds: string[]) => void);
+  handleCooldownPickerChange: ((cooldownId: string, bossAbilityId: string, timer: number) => void);
+  handleChangePhaseTimer: ((event: any, phaseId: number) => void);
   players: Player[];
 }
 
@@ -36,20 +36,10 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
     this.setState({ currentPhase: newPhase });
   }
 
-  public getPlayerCooldowns = () => {
-    const players = getPlayersByBoss(this.props.boss.id, this.props.players);
-    const cooldowns: Cooldown[] = [];
-    players.map(player => {
-      cooldowns.push(...player.cooldowns);
-    });
-    return cooldowns;
-  }
-
   public render() {
     const { currentPhase } = this.state;
-    const { addPlayers, addPlayersToBoss, boss, deletePlayers, deletePlayersFromBoss, handleCooldownPickerChange, players } = this.props;
-    const { abilities, phases } = boss;
-    const cooldowns = this.getPlayerCooldowns();
+    const { addPlayers, addPlayersToBoss, boss, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimer, handleCooldownPickerChange, players } = this.props;
+    const { abilities, cooldowns, phases } = boss;
     return (
       <Aux>
         <Grid item={true} xs={6} md={4}>
@@ -70,6 +60,7 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
             currentPhase={currentPhase}
             handleCooldownPickerChange={handleCooldownPickerChange}
             handleChangePhase={this.handleChangePhase}
+            handleChangePhaseTimer={handleChangePhaseTimer}
             phases={phases}
             players={players}
           />

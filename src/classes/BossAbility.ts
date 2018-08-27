@@ -1,31 +1,32 @@
 import { CooldownType } from '../enums/cooldownType';
-import { Cooldown } from './Cooldown';
+import { uuid } from '../helpers/createGuid';
 
 class BossAbility {
-  public id: number;
+  public id: string;
   public spellId: number;
   public label: string;
   public icon: string;
   public cooldownTypes: CooldownType[];
-  public cooldown: number;
-  public cooldowns: Cooldown[];
-  public phases: number[];
-  public firstCast?: number;
+  public timer: number;
 
-  constructor(id: number, spellId: number, label: string, icon: string,
-    cooldownTypes: CooldownType[], cooldown: number, cooldowns: Cooldown[],
-    phases: number[], firstCast?: number
-  ) {
-    this.id = id;
+  constructor(spellId: number, label: string, icon: string, cooldownTypes: CooldownType[], timer: number, id?: string) {
     this.spellId = spellId;
     this.label = label;
     this.icon = icon;
     this.cooldownTypes = cooldownTypes;    
-    this.cooldown = cooldown;
-    this.cooldowns = cooldowns;
-    this.phases = phases;
-    this.firstCast = firstCast;
+    this.timer = timer;
+    this.id = id || uuid();
   }
 }
 
-export { BossAbility };
+interface IBossAbility {
+  spellId: number;
+  label: string;
+  icon: string;
+  cooldownTypes: CooldownType[];
+  firstCast: number | null;
+  cooldown: number;
+  phases: number[];
+}
+
+export { BossAbility, IBossAbility };

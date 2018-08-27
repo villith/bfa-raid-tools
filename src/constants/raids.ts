@@ -1,6 +1,4 @@
-import { BossType } from '../classes/Boss';
-import { Cooldown } from '../classes/Cooldown';
-import { Player } from '../classes/Player';
+import { IBoss } from '../classes/Boss';
 import { BossUldir } from '../enums/bossUldir';
 import { CooldownType } from '../enums/cooldownType';
 import { Raid } from '../enums/raid';
@@ -9,38 +7,6 @@ interface IRaid {
   id: Raid;
   label: string;
   bosses: IBoss[];
-}
-
-interface IBoss {
-  id: BossType;
-  label: string;
-  title: string;
-  icon: string;
-  abilities: IBossAbility[];
-  phases: IBossPhase[];
-  roster?: Player[];
-  cooldowns?: Cooldown[];
-}
-
-interface IBossAbility {
-  id?: number;
-  spellId: number;
-  label: string;
-  icon: string;
-  cooldownTypes: CooldownType[];
-  firstCast: number | undefined;
-  cooldown: number;
-  phases: number[];
-  cooldowns?: Cooldown[];
-}
-
-interface IBossPhase {
-  id: number;
-  label: string;
-  estimatedStartTime: number;
-  startTime?: number;
-  duration?: number;
-  bossPercentage?: number;
 }
 
 const RAIDS: IRaid[] = [
@@ -75,7 +41,7 @@ const RAIDS: IRaid[] = [
             spellId: 272582,
             label: 'Sanguine Static',
             icon: 'sha_ability_mage_firestarter_nightmare',
-            cooldownTypes: [CooldownType.HEALING],
+            cooldownTypes: [CooldownType.HEALING, CooldownType.DEFENSIVE],
             firstCast: 20.5,
             cooldown: 61,
             phases: [0, 2]
@@ -93,11 +59,29 @@ const RAIDS: IRaid[] = [
             spellId: 271728,
             label: 'Retrieve Cudgel',
             icon: 'inv_gauntlets_86',
-            cooldownTypes: [CooldownType.MOVEMENT],
+            cooldownTypes: [CooldownType.MOVEMENT, CooldownType.IMMUNITY],
             firstCast: 53.5,
             cooldown: 59,
             phases: [0, 2]
           },
+          {
+            spellId: 275189,
+            label: 'Clogged Arteries',
+            icon: '',
+            cooldownTypes: [CooldownType.HEALING, CooldownType.MOVEMENT],
+            firstCast: 24,
+            cooldown: 0,
+            phases: [0, 2],
+          },
+          {
+            spellId: 275205,
+            label: 'Enlarged Heart',
+            icon: '',
+            cooldownTypes: [CooldownType.DEFENSIVE, CooldownType.EXTERNAL, CooldownType.HEALING],
+            firstCast: 25,
+            cooldown: 0,
+            phases: [0, 2],
+          }
         ],
         phases: [
           {
@@ -126,7 +110,26 @@ const RAIDS: IRaid[] = [
         title: '',
         icon: 'mother',
         abilities: [],
-        phases: []
+        phases: [
+          {
+            id: 0,
+            label: 'Phase One',
+            estimatedStartTime: 0,
+            startTime: 0
+          },
+          {
+            id: 1,
+            label: 'Powered Down',
+            estimatedStartTime: 120,
+            bossPercentage: 60,
+            duration: 88.8,
+          },
+          {
+            id: 2,
+            label: 'Phase Three',
+            estimatedStartTime: 208.8,
+          }
+        ]
       },
       {
         id: BossUldir.FETID_DEVOURER,
@@ -134,7 +137,26 @@ const RAIDS: IRaid[] = [
         title: '',
         icon: 'fetiddevourer',
         abilities: [],
-        phases: []
+        phases: [
+          {
+            id: 0,
+            label: 'Phase One',
+            estimatedStartTime: 0,
+            startTime: 0
+          },
+          {
+            id: 1,
+            label: 'Powered Down',
+            estimatedStartTime: 120,
+            bossPercentage: 60,
+            duration: 88.8,
+          },
+          {
+            id: 2,
+            label: 'Phase Three',
+            estimatedStartTime: 208.8,
+          }
+        ]
       },
       {
         id: BossUldir.ZEKVOZ,
@@ -142,7 +164,26 @@ const RAIDS: IRaid[] = [
         title: 'Herald of N\'zoth',
         icon: 'zekvoz',
         abilities: [],
-        phases: []
+        phases: [
+          {
+            id: 0,
+            label: 'Phase One',
+            estimatedStartTime: 0,
+            startTime: 0
+          },
+          {
+            id: 1,
+            label: 'Powered Down',
+            estimatedStartTime: 120,
+            bossPercentage: 60,
+            duration: 88.8,
+          },
+          {
+            id: 2,
+            label: 'Phase Three',
+            estimatedStartTime: 208.8,
+          }
+        ]
       },
       {
         id: BossUldir.VECTIS,
@@ -150,7 +191,26 @@ const RAIDS: IRaid[] = [
         title: '',
         icon: 'bloodofghuun',
         abilities: [],
-        phases: []
+        phases: [
+          {
+            id: 0,
+            label: 'Phase One',
+            estimatedStartTime: 0,
+            startTime: 0
+          },
+          {
+            id: 1,
+            label: 'Powered Down',
+            estimatedStartTime: 120,
+            bossPercentage: 60,
+            duration: 88.8,
+          },
+          {
+            id: 2,
+            label: 'Phase Three',
+            estimatedStartTime: 208.8,
+          }
+        ]
       },
       {
         id: BossUldir.ZUL,
@@ -158,7 +218,26 @@ const RAIDS: IRaid[] = [
         title: 'Reborn',
         icon: 'zul',
         abilities: [],
-        phases: []
+        phases: [
+          {
+            id: 0,
+            label: 'Phase One',
+            estimatedStartTime: 0,
+            startTime: 0
+          },
+          {
+            id: 1,
+            label: 'Powered Down',
+            estimatedStartTime: 120,
+            bossPercentage: 60,
+            duration: 88.8,
+          },
+          {
+            id: 2,
+            label: 'Phase Three',
+            estimatedStartTime: 208.8,
+          }
+        ]
       },
       {
         id: BossUldir.MYTHRAX,
@@ -166,7 +245,26 @@ const RAIDS: IRaid[] = [
         title: 'the Unraveler',
         icon: 'mythraxtheunraveler',
         abilities: [],
-        phases: []
+        phases: [
+          {
+            id: 0,
+            label: 'Phase One',
+            estimatedStartTime: 0,
+            startTime: 0
+          },
+          {
+            id: 1,
+            label: 'Powered Down',
+            estimatedStartTime: 120,
+            bossPercentage: 60,
+            duration: 88.8,
+          },
+          {
+            id: 2,
+            label: 'Phase Three',
+            estimatedStartTime: 208.8,
+          }
+        ]
       },
       {
         id: BossUldir.GHUUN,
@@ -174,7 +272,26 @@ const RAIDS: IRaid[] = [
         title: '',
         icon: 'ghuun',
         abilities: [],
-        phases: []
+        phases: [
+          {
+            id: 0,
+            label: 'Phase One',
+            estimatedStartTime: 0,
+            startTime: 0
+          },
+          {
+            id: 1,
+            label: 'Powered Down',
+            estimatedStartTime: 120,
+            bossPercentage: 60,
+            duration: 88.8,
+          },
+          {
+            id: 2,
+            label: 'Phase Three',
+            estimatedStartTime: 208.8,
+          }
+        ]
       },
     ]
   }

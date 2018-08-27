@@ -20,9 +20,9 @@ export type Order = 'asc' | 'desc';
 
 export interface IPlayerListContainerProps {
   addPlayers: ((player: Player[]) => void);
-  addPlayersToBoss: ((playerIds: string[], boss: BossType) => void);
+  addPlayersToBoss: ((playerIds: string[]) => void);
   deletePlayers: ((playerIds: string[]) => void);
-  deletePlayersFromBoss: ((playerIds: string[], boss: BossType) => void);
+  deletePlayersFromBoss: ((playerIds: string[]) => void);
   players: Player[];
   currentBoss: BossType;
   type: PlayerListType;
@@ -43,7 +43,6 @@ export interface IPlayerListContainerState {
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   root: {
-    marginTop: theme.spacing.unit * 3,
     width: '100%',
     transition: theme.transitions.create('flex', {
       easing: theme.transitions.easing.sharp,
@@ -92,16 +91,16 @@ class PlayerListContainer extends React.Component<WithStyles<any> & IPlayerListC
 
   public confirmAddPlayer = () => {
     const existingPlayer = getPlayerByPlayerName(this.state.playerName, this.props.players);
-    if (!existingPlayer) {
+    if (existingPlayer) {
+      this.props.addPlayersToBoss([existingPlayer.id]);
+    }
+    else {
       const newPlayer = new Player(
         this.state.playerName,
         this.state.playerClass,
         this.state.playerSpec,
       );
       this.props.addPlayers([newPlayer]);
-    }
-    else {
-      this.props.addPlayersToBoss([existingPlayer.id], this.props.currentBoss);
     }
     this.toggleAddPlayer();
   }
@@ -115,7 +114,7 @@ class PlayerListContainer extends React.Component<WithStyles<any> & IPlayerListC
   public deleteSelectedPlayers = () => {
     const selected = [ ...this.state.selected ];
     if (this.props.currentBoss !== 0) {
-      this.props.deletePlayersFromBoss(selected, this.props.currentBoss);
+      this.props.deletePlayersFromBoss(selected);
       this.setState({ selected: [] });
     }
     else {

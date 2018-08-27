@@ -5,7 +5,6 @@ import {
   Clear as ClearIcon,
   Delete as DeleteIcon,
   Done as DoneIcon,
-  FilterList as FilterListIcon,
   GroupAdd as GroupAddIcon,
 } from '@material-ui/icons';
 import * as React from 'react';
@@ -118,13 +117,7 @@ class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToo
                 <DeleteIcon />
               </Button>
             </Tooltip>
-          ) : (
-            <Tooltip title='Filter List'>
-              <Button variant='flat'>
-                <FilterListIcon />
-              </Button>
-            </Tooltip>
-          )}
+          ) : ( null )}
         </div>
       </Toolbar>
     );

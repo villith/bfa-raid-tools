@@ -1,4 +1,5 @@
 import * as firebase from 'firebase';
+import * as firebaseui from 'firebaseui';
 
 import { firebaseConfig }  from '../env/firebase-config';
 
@@ -15,5 +16,6 @@ firebase.initializeApp(config);
 
 const db = firebase.database();
 const auth = firebase.auth();
+const ui = new firebaseui.auth.AuthUI(auth);
 
-export { firebase, db, auth };
+export { firebase, db, auth, ui };

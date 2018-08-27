@@ -44,7 +44,7 @@ class Player {
         cooldown.WOWSpec,
         this.id,
         cooldown.altCooldownTime,
-        cooldown.charges,
+        cooldown.charges || 0,
       )
     ));
     return cooldowns;

@@ -8,13 +8,19 @@ import {
   WithStyles,
   withStyles,
 } from '@material-ui/core';
-import { Menu as MenuIcon } from '@material-ui/icons';
+import { AccountCircle as AccountCircleIcon, ImportExport as ImportExportIcon, Menu as MenuIcon } from '@material-ui/icons';
 import * as classNames from 'classnames';
 import * as React from 'react';
 
 export interface INavBarProps {
-  open: boolean;
+  sideMenuOpen: boolean;
+  importOpen: boolean;
+  exportOpen: boolean;
   toggleSideMenu: (() => void);
+  toggleImportStateDialog: (() => void);
+  toggleExportStateDialog: (() => void);
+  toggleAuthDialog: (() => void);
+  selectNewStrategy: ((id: string | null) => void);
 }
 
 export interface INavBarState {
@@ -57,27 +63,60 @@ class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarStat
     this.setState({ loggedIn: checked });
   };
 
+  public showStrategyList = () => {
+    this.props.selectNewStrategy(null);
+  }
+
   public render() {
-    const { classes, open, toggleSideMenu } = this.props;
+    const { classes, sideMenuOpen, toggleAuthDialog, toggleSideMenu, toggleImportStateDialog, toggleExportStateDialog } = this.props;
 
     return (
       <div className='root'>
         <AppBar
           position='absolute'
-          className={classNames(classes.appBar, open && classes.appBarShift)}
+          className={classNames(classes.appBar, sideMenuOpen && classes.appBarShift)}
         >
-          <Toolbar disableGutters={!open}>
+          <Toolbar disableGutters={!sideMenuOpen}>
             <IconButton 
               color='inherit'
               aria-label='Menu'
               onClick={toggleSideMenu}
-              className={classNames(classes.menuButton, open && classes.hide)}
+              className={classNames(classes.menuButton, sideMenuOpen && classes.hide)}
             >
               <MenuIcon />
             </IconButton>
             <Typography variant='title' color='inherit'>
               BFA Raid Tools
             </Typography>
+            <IconButton
+              color='inherit'
+              aria-label='Import'
+              onClick={toggleImportStateDialog}
+            >
+              <ImportExportIcon />
+            </IconButton>
+            <IconButton
+              color='inherit'
+              aria-label='Export'
+              onClick={toggleExportStateDialog}
+            >
+              <ImportExportIcon />
+            </IconButton>
+            <IconButton
+              color='inherit'
+              aria-label='Export'
+              onClick={toggleAuthDialog}
+            >
+              <AccountCircleIcon />
+            </IconButton>
+            <IconButton
+              color='inherit'
+              aria-label='test'
+              onClick={this.showStrategyList}
+            >
+              <AccountCircleIcon />
+            </IconButton>
+
             {/* {loggedIn && (
               <div>
                 <IconButton

@@ -1,7 +1,7 @@
-import { Grid, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 
-import { Boss, BossType, IBossMap } from '../../classes/Boss';
+import { Boss, IBossMap } from '../../classes/Boss';
 import { Player } from '../../classes/Player';
 import { BossUldir } from '../../enums/bossUldir';
 import Encounter from '../Encounter/Encounter';
@@ -11,9 +11,11 @@ export interface IMainContentProps {
   boss: Boss;
   bosses: IBossMap;
   addPlayers: ((players: Player[]) => void);
-  addPlayersToBoss: ((playerIds: string[], boss: BossType) => void);
+  addPlayersToBoss: ((playerIds: string[]) => void);
   deletePlayers: ((playerIds: string[]) => void);
-  deletePlayersFromBoss: ((playerIds: string[], boss: BossType) => void);
+  deletePlayersFromBoss: ((playerIds: string[]) => void);
+  handleCooldownPickerChange: ((cooldownId: string, bossAbilityId: string, timer: number) => void);
+  handleChangePhaseTimer: ((event: any, phaseId: number) => void);
   players: Player[];
 }
 
@@ -22,39 +24,34 @@ export interface IMainContentState {
 }
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.default,
-    padding: theme.spacing.unit * 3,
-    marginTop: theme.spacing.unit * 3
-  }
+  root: {}
 });
 
 class MainContent extends React.Component<WithStyles<any> & IMainContentProps, IMainContentState> {
   public render() {
-    const { boss, bosses, classes, addPlayers, addPlayersToBoss, deletePlayers, deletePlayersFromBoss, players } = this.props;
+    const { boss, bosses, addPlayers, addPlayersToBoss, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimer, handleCooldownPickerChange, players } = this.props;
     return (
-      <Grid container={true} spacing={16} className={classes.root}>
-        {boss.id === BossUldir.HOME ? (
-          <Home
-            addPlayers={addPlayers}
-            deletePlayers={deletePlayers}
-            addPlayersToBoss={addPlayersToBoss}
-            deletePlayersFromBoss={deletePlayersFromBoss}
-            players={players}
-            bosses={bosses}
-          />
-        ) : (
-          <Encounter
-            boss={boss}
-            addPlayers={addPlayers}
-            deletePlayers={deletePlayers}
-            addPlayersToBoss={addPlayersToBoss}
-            deletePlayersFromBoss={deletePlayersFromBoss}
-            players={players}
-          />
-        )}
-      </Grid>
+      boss.id === BossUldir.HOME ? (
+        <Home
+          addPlayers={addPlayers}
+          deletePlayers={deletePlayers}
+          addPlayersToBoss={addPlayersToBoss}
+          deletePlayersFromBoss={deletePlayersFromBoss}
+          players={players}
+          bosses={bosses}
+        />
+      ) : (
+        <Encounter
+          boss={boss}
+          addPlayers={addPlayers}
+          deletePlayers={deletePlayers}
+          addPlayersToBoss={addPlayersToBoss}
+          deletePlayersFromBoss={deletePlayersFromBoss}
+          handleCooldownPickerChange={handleCooldownPickerChange}
+          handleChangePhaseTimer={handleChangePhaseTimer}
+          players={players}
+        />
+      )
     );
   }
 }

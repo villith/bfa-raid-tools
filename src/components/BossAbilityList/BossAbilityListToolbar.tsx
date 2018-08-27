@@ -1,9 +1,9 @@
 import { Button, StyleRulesCallback, Theme, Toolbar, Tooltip, Typography, WithStyles, withStyles } from '@material-ui/core';
-import { FilterList as FilterListIcon } from '@material-ui/icons';
+import { Share as ShareIcon } from '@material-ui/icons';
 import * as React from 'react';
 
 export interface IBossAbilityListToolbarProps {
-  placeholder?: string;
+  toggleAngryAssignmentsDialog: (() => void);
 }
 
 export interface IBossAbilityListToolbarState {
@@ -26,7 +26,7 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class BossAbilityListToolbar extends React.Component<WithStyles<any> & IBossAbilityListToolbarProps, IBossAbilityListToolbarState> {
   public render() {
-    const { classes } = this.props;
+    const { classes, toggleAngryAssignmentsDialog } = this.props;
     return (
       <Toolbar>
         <div className={classes.title}>
@@ -37,8 +37,8 @@ class BossAbilityListToolbar extends React.Component<WithStyles<any> & IBossAbil
         <div className={classes.spacer} />
         <div className={classes.actions}>
           <Tooltip title='Filter List'>
-            <Button variant='flat'>
-              <FilterListIcon />
+            <Button variant='flat' onClick={toggleAngryAssignmentsDialog}>
+              <ShareIcon />
             </Button>
           </Tooltip>
         </div>

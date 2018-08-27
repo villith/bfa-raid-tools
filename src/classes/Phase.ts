@@ -1,21 +1,23 @@
+interface IPhase {
+  id: number;
+  label: string;
+  estimatedStartTime: number;
+  startTime?: number;
+  duration?: number;
+  bossPercentage?: number;
+}
+
 class Phase {
   public id: number;
   public label: string;
-  public estimatedStartTime: number;
-  public startTime?: number;
-  public duration?: number;
-  public bossPercentage?: number;
+  public timer: number;
 
-  constructor(id: number, label: string, estimatedStartTime: number,
-    startTime?: number, duration?: number, bossPercentage?: number
+  constructor(id: number, label: string, timer: number,
   ) {
     this.id = id;
     this.label = label;
-    this.estimatedStartTime = estimatedStartTime;  
-    this.startTime = startTime;
-    this.duration = duration;
-    this.bossPercentage = bossPercentage;
+    this.timer = timer;
   }
 }
 
-export { Phase };
+export { Phase, IPhase };

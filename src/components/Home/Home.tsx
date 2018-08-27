@@ -1,7 +1,7 @@
 import { Grid, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 
-import { BossType, IBossMap } from '../../classes/Boss';
+import { IBossMap } from '../../classes/Boss';
 import { Player, PlayerListType } from '../../classes/Player';
 import { BossUldir } from '../../enums/bossUldir';
 import PlayerListContainer from '../PlayerList/PlayerListContainer';
@@ -9,9 +9,9 @@ import { Aux } from '../winAux';
 
 export interface IHomeProps {
   addPlayers: ((player: Player[]) => void);
-  addPlayersToBoss: ((playerIds: string[], boss: BossType) => void);
+  addPlayersToBoss: ((playerIds: string[]) => void);
   deletePlayers: ((playerIds: string[]) => void);
-  deletePlayersFromBoss: ((playerIds: string[], boss: BossType) => void);
+  deletePlayersFromBoss: ((playerIds: string[]) => void);
   players: Player[];
   bosses: IBossMap;
 }

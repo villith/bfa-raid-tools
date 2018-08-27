@@ -6,9 +6,8 @@ import { Phase } from '../../classes/Phase';
 export interface IPhaseTabContainerProps {
   currentPhase: number;
   handleChangePhase: ((event: any, newPhase: number) => void);
-  handleChangePhaseTimer: ((event: any, phaseId: number) => void);
+  handleChangePhaseTimer: ((event: any, phaseId: number, timer: number) => void);
   phases: Phase[];
-  phaseTimers: { [index: number]: number }
 }
 
 export interface IPhaseTabContainerState {
@@ -23,8 +22,8 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 });
 
 class PhaseTabContainer extends React.Component<WithStyles<any> & IPhaseTabContainerProps, IPhaseTabContainerState> {
-  public handleChange = (phaseId: number) => (event: any) => {
-    this.props.handleChangePhaseTimer(event, phaseId);
+  public handleChange = (phaseId: number, timer: number) => (event: any) => {
+    this.props.handleChangePhaseTimer(event, phaseId, timer);
   }
 
   public render() {
@@ -32,7 +31,7 @@ class PhaseTabContainer extends React.Component<WithStyles<any> & IPhaseTabConta
     return (
       <div className={classes.root}>
         {phases.map((phase, index) => {
-          const time = phase.startTime || phase.estimatedStartTime;
+          const time = phase.timer;
           return (
             <TextField
               key={index}
@@ -41,7 +40,7 @@ class PhaseTabContainer extends React.Component<WithStyles<any> & IPhaseTabConta
               type='number'
               label='Start Time (s)'
               // tslint:disable-next-line:jsx-no-lambda
-              onChange={this.handleChange(phase.id)}
+              onChange={this.handleChange(phase.id, time)}
               defaultValue={time}
             />
           )
