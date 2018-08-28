@@ -1,21 +1,12 @@
 import * as firebase from 'firebase';
+import * as _ from 'lodash';
 
 import { BossAbility } from '../classes/BossAbility';
 import { Cooldown } from '../classes/Cooldown';
 import { Phase } from '../classes/Phase';
 import { Strategy } from '../classes/Strategy';
-import { IAppState, IPreferences } from '../components/App/App';
+import { IPreferences } from '../components/App/App';
 import { auth, db } from './firebase';
-
-const createUser = (id: string) => {
-  const ref = db.ref(`users/${id}`);
-  ref.push();
-};
-
-const updateState = (id: string, state: IAppState) => {
-  const ref = db.ref(`users/${id}`);
-  ref.push(state);
-};
 
 const getState = (id: string) => {
   const ref = db.ref(`users/${id}`);
@@ -26,13 +17,34 @@ const getState = (id: string) => {
   });
 };
 
-const saveUpdatedStrategy = (strategy: Strategy) => {
-  const { id, title, description, bosses, players, users } = strategy;
-  const newStrategy = new Strategy(id, title, description, bosses, players, users);
-  localStorage.setItem('currentStrategy', JSON.stringify(newStrategy));
-  const ref = db.ref(`strategies`);
-  console.log(newStrategy);
-  ref.child(id!).set(newStrategy);
+const saveUpdatedStrategy = (diffs: _.Dictionary<{}>) => {
+  console.log(diffs);
+  const keyArray: string[] = [];
+  const recursiveFunc = (value: any) => {
+    console.log(value);
+    if (_.isObject(value)) {
+      const keys = Object.keys(value);
+      if (keys.length > 0) {
+        keys.map(key => {
+          if (!_.isArray(value)) {
+            keyArray.push(key);
+          }
+          const val = value[key];
+          recursiveFunc(val);
+        });
+      }
+      else {
+        keyArray.pop();
+      }
+    }
+    else {
+      const path = keyArray.join('/');
+      keyArray.pop();
+      const ref = db.ref(`strategies/${path}`);
+      ref.set(value);
+    }
+  };
+  recursiveFunc(diffs);
 }
 
 const handleSignUp = (email: string, password: string) => {
@@ -114,7 +126,7 @@ const getUserStrategies = (uid: string) => {
 
 const getUserPreferences = (uid: string) => {
   const ref = db.ref(`users/${uid}`);
-  ref.child('preferences')
+  ref.child('preferences');
   return new Promise((resolve, reject) => {
     ref.once('value', (snapshot: any) => {
       const values = snapshot.val();
@@ -214,5 +226,5 @@ const updateUserPreferences = (userId: string, preferences: IPreferences) => {
 //   this.setState({ authData: newAuthData });
 // }
 
-export { createUser, updateState, getState, saveUpdatedStrategy, handleSignIn, handleSignUp,
+export { getState, saveUpdatedStrategy, handleSignIn, handleSignUp,
   getUserPreferences, getUserStrategies, saveUser, updateUserPreferences };

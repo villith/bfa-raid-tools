@@ -28,19 +28,6 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 });
 
 class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPlayerListState> {
-  public getSorting = (order: Order, orderBy: string) => {
-    return order === 'desc'
-      ? (a: Player, b: Player) => (
-        b[orderBy] === a[orderBy]
-        ? a.id < b.id ? -1 : 1
-        : b[orderBy] < a[orderBy] ? -1 : 1
-      ) : (a: Player, b: Player) => (
-        a[orderBy] === b[orderBy]
-        ? a.id < b.id ? -1 : 1
-        : a[orderBy] < b[orderBy] ? -1 : 1
-      );
-  }
-
   public render() {
     const { classes, handleRequestSort, handleSelectAllClick, handleClick, order, orderBy, players, selected } = this.props;
     return (

@@ -71,38 +71,25 @@ class BossAbilityListRow extends React.Component<WithStyles<any> & IBossAbilityL
     const newCooldowns: Cooldown[] = [];
     const cooldowns = [ ...this.props.cooldowns ];
     cooldowns.map(cooldown => {
+      console.log(`[${cooldown.name}]`);
+      const { timers } = cooldown;
+      let isOnCooldown = timers.length > 0 ? true : false;
       if (this.props.cooldownTypes.indexOf(cooldown.cooldownType) !== -1) {
-        const { timers } = cooldown;
-        let isOnCooldown = timers.length > 0 ? true : false;
-        if (cooldown.hasOwnProperty('charges')) {
-          if (cooldown.charges! < 1) {
-            isOnCooldown = true;
+        let usedCharges = 0;
+        console.log(timers);
+        timers.map(time => {
+          console.log(time, ability.timer);
+          const diff = Math.abs(time - ability.timer);
+          console.log(`Time since use: ${diff}`);
+          if (diff < cooldown.cooldownTime) {
+            console.log(`Used within cooldown time, adding 1 to use count`);
+            usedCharges += 1;
           }
-          else {
-            let onCooldownCount = 0;
-            timers.map(time => {
-              const diff = Math.abs(time - ability.timer);
-              if (diff < cooldown.cooldownTime) {
-                console.log('')
-                onCooldownCount += 1;
-              }
-            });
-            if (onCooldownCount < cooldown.charges!) {
-              isOnCooldown = false;
-            }
-          }
-        }
-        else {
-          let onCooldownCount = 0;
-          timers.map(time => {
-            const diff = Math.abs(time - ability.timer);
-            if (diff < cooldown.cooldownTime) {
-              onCooldownCount += 1;
-            }
-          });
-          if (onCooldownCount === 0) {
-            isOnCooldown = false;
-          }
+        });
+        console.log(cooldown.charges, usedCharges);
+        if (cooldown.charges > usedCharges) {
+          console.log(`Number of charges left is greater than number of charges used`);
+          isOnCooldown = false;
         }
         if (isOnCooldown === false) {
           newCooldowns.push(cooldown);

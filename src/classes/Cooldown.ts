@@ -16,7 +16,7 @@ class Cooldown {
   public cooldownType: CooldownType;
   public cooldownTime: number;
   public altCooldownTime: number | null;
-  public charges: number | null;
+  public charges: number;
   public cdClass: WOWClass;
   public cdSpec: WOWSpec;
   public owner: string;
@@ -39,7 +39,7 @@ class Cooldown {
    */
   constructor(spellId: number, name: string, icon: string, cooldownType: CooldownType,
     cooldownTime: number, cdClass: WOWClass, cdSpec: WOWSpec, owner: string,
-    altCooldownTime: number | null, charges: number | null)
+    altCooldownTime: number | null, charges: number)
   {
     this.spellId = spellId;
     this.name = name;

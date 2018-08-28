@@ -1,6 +1,7 @@
 import './App.css';
 
 import { CircularProgress, Grid, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
+import * as _ from 'lodash';
 import * as React from 'react';
 
 import { buildBossAbilityList } from '../../bosses';
@@ -18,7 +19,7 @@ import {
   handleSignUp,
   saveUpdatedStrategy,
   saveUser,
-  updateUserPreferences
+  updateUserPreferences,
 } from '../../firebase/db';
 import { auth } from '../../firebase/firebase';
 import { uuid } from '../../helpers/createGuid';
@@ -349,8 +350,17 @@ class App extends React.Component<WithStyles<any>, IAppState> {
     const { id } = strategy;
     if (id) {
       const oldStrategyIndex = findById(id, strategies);
+      const oldStrategy = strategies[oldStrategyIndex];
+      const deepDiff = (a: Strategy, b: Strategy) => {
+        return _.transform(a, (result: any, value: any, key: any) => {
+          if (!_.isEqual(value, b[key])) {
+            result[key] = (_.isObject(value) && _.isObject(b[key])) ? deepDiff(value, b[key]) : value;
+          }
+        });
+      }
+      const diffs = deepDiff(strategy, oldStrategy);
       strategies[oldStrategyIndex] = strategy;
-      this.setState({ strategies }, () => saveUpdatedStrategy(strategy));
+      this.setState({ strategies }, () => saveUpdatedStrategy(diffs));
     }
     else {
       console.log('Cannot update null strategy');

@@ -12,7 +12,6 @@ const boss = bosses[findById(bossId, bosses)];
 
 enum SpellId {
   PLASMA_DISCHARGE = 271224,
-  SANGUINE_STATIC = 272582,
   CUDGEL_OF_GORE = 271296,
   RETRIEVE_CUDGEL = 271728,
   ENLARGED_HEART = 275205,
@@ -25,15 +24,6 @@ const { abilities } = boss;
 
 const buildBossAbility = (id: SpellId) => {
   const bossAbility = boss.abilities[findBySpellId(id, abilities)];
-  // const bossAbility = new BossAbility(
-  //   ba.spellId,
-  //   ba.label,
-  //   ba.icon,
-  //   ba.cooldownTypes,
-  //   ba.cooldown,
-  //   ba.phases,
-  //   ba.firstCast,
-  // );
   bossAbilities[bossAbility.spellId] = bossAbility;  
 };
 
@@ -41,7 +31,6 @@ const TalocEncounter = (phases: Phase[], existingAbilities: BossAbility[]) => {
   const bossAbilityList: BossAbility[] = [];
 
   const plasmaDischarge = bossAbilities[SpellId.PLASMA_DISCHARGE];
-  const sanguineStatic = bossAbilities[SpellId.SANGUINE_STATIC];
   const cudgelOfGore = bossAbilities[SpellId.CUDGEL_OF_GORE];
   const retrieveCudgel = bossAbilities[SpellId.RETRIEVE_CUDGEL];
   const enlargedHeart = bossAbilities[SpellId.ENLARGED_HEART];
@@ -79,9 +68,6 @@ const TalocEncounter = (phases: Phase[], existingAbilities: BossAbility[]) => {
     bossAbilityList.push(createNewBossAbility(plasmaDischarge, plasmaDischarge.firstCast!));
     pOneAC[plasmaDischarge.spellId] += 1;
 
-    bossAbilityList.push(createNewBossAbility(sanguineStatic, sanguineStatic.firstCast!));
-    pOneAC[sanguineStatic.spellId] += 1;
-
     bossAbilityList.push(createNewBossAbility(cudgelOfGore, cudgelOfGore.firstCast!));
     pOneAC[cudgelOfGore.spellId] += 1;
 
@@ -118,9 +104,6 @@ const TalocEncounter = (phases: Phase[], existingAbilities: BossAbility[]) => {
 
     bossAbilityList.push(createNewBossAbility(plasmaDischarge, plasmaDischarge.firstCast! + pThreeTimer));
     pOneAC[plasmaDischarge.spellId] += 1;
-
-    bossAbilityList.push(createNewBossAbility(sanguineStatic, sanguineStatic.firstCast! + pThreeTimer));
-    pOneAC[sanguineStatic.spellId] += 1;
 
     bossAbilityList.push(createNewBossAbility(cudgelOfGore, cudgelOfGore.firstCast! + pThreeTimer));
     pOneAC[cudgelOfGore.spellId] += 1;

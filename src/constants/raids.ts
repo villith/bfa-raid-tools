@@ -38,15 +38,6 @@ const RAIDS: IRaid[] = [
             phases: [0, 2]
           },
           {
-            spellId: 272582,
-            label: 'Sanguine Static',
-            icon: 'sha_ability_mage_firestarter_nightmare',
-            cooldownTypes: [CooldownType.HEALING, CooldownType.DEFENSIVE],
-            firstCast: 20.5,
-            cooldown: 61,
-            phases: [0, 2]
-          },
-          {
             spellId: 271296,
             label: 'Cudgel of Gore',
             icon: 'inv_mace_2h_capturedtitanconstruct_d_01',
@@ -59,15 +50,15 @@ const RAIDS: IRaid[] = [
             spellId: 271728,
             label: 'Retrieve Cudgel',
             icon: 'inv_gauntlets_86',
-            cooldownTypes: [CooldownType.MOVEMENT, CooldownType.IMMUNITY],
+            cooldownTypes: [CooldownType.MOVEMENT],
             firstCast: 53.5,
             cooldown: 59,
             phases: [0, 2]
           },
           {
             spellId: 275189,
-            label: 'Clogged Arteries',
-            icon: '',
+            label: 'Hardened Arteries',
+            icon: 'ability_rogue_sanguinaryvein',
             cooldownTypes: [CooldownType.HEALING, CooldownType.MOVEMENT],
             firstCast: 24,
             cooldown: 0,
@@ -76,7 +67,7 @@ const RAIDS: IRaid[] = [
           {
             spellId: 275205,
             label: 'Enlarged Heart',
-            icon: '',
+            icon: 'inv_ragnaros_heart',
             cooldownTypes: [CooldownType.DEFENSIVE, CooldownType.EXTERNAL, CooldownType.HEALING],
             firstCast: 25,
             cooldown: 0,
