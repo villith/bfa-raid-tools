@@ -47,6 +47,7 @@ const nullStrategy: Strategy = {
 export interface IAppState {
   user: firebase.User | null;
   currentStrategy: Strategy;
+  authCredential: firebase.auth.AuthCredential | null;
   authOpen: boolean;
   currentBoss: BossType;
   currentRaid: Raid;
@@ -86,6 +87,7 @@ class App extends React.Component<WithStyles<any>, IAppState> {
   public state = {
     user: {} as firebase.User,
     currentStrategy: nullStrategy,
+    authCredential: null,
     authOpen: false,
     currentBoss: BossUldir.HOME,
     currentRaid: Raid.ULDIR,
@@ -124,6 +126,11 @@ class App extends React.Component<WithStyles<any>, IAppState> {
             Promise.all(promiseArray).then(() => {
               this.setState({ loading: false });
             });
+          });
+        }
+        else {
+          auth.signInAnonymously().then(resp => {
+            this.setState({ authCredential: resp.credential });
           });
         }
       });
@@ -378,7 +385,7 @@ class App extends React.Component<WithStyles<any>, IAppState> {
   }
 
   public render() {
-    const { authOpen, currentBoss, sideMenuOpen, exportOpen, importOpen, currentStrategy, preferences, strategies, user, loading } = this.state;
+    const { authCredential, authOpen, currentBoss, sideMenuOpen, exportOpen, importOpen, currentStrategy, preferences, strategies, user, loading } = this.state;
     const { bosses, players } = currentStrategy;
     const { classes } = this.props;
     const boss = bosses[currentBoss];
@@ -415,6 +422,7 @@ class App extends React.Component<WithStyles<any>, IAppState> {
         <Authentication
           open={authOpen}
           user={user}
+          authCredential={authCredential}
           handleSignIn={handleSignIn}
           handleSignUp={handleSignUp}
           closeDialog={this.closeAuthDialog}

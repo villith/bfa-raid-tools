@@ -19,9 +19,7 @@ const getState = (id: string) => {
 
 const saveUpdatedStrategy = (diffs: _.Dictionary<{}>) => {
   console.log(diffs);
-  const keyArray: string[] = [];
-  const recursiveFunc = (value: any) => {
-    console.log(value);
+  const recursiveFunc = (value: any, keyArray: string[]) => {
     if (_.isObject(value)) {
       const keys = Object.keys(value);
       if (keys.length > 0) {
@@ -30,7 +28,7 @@ const saveUpdatedStrategy = (diffs: _.Dictionary<{}>) => {
             keyArray.push(key);
           }
           const val = value[key];
-          recursiveFunc(val);
+          recursiveFunc(val, keyArray);
         });
       }
       else {
@@ -44,12 +42,15 @@ const saveUpdatedStrategy = (diffs: _.Dictionary<{}>) => {
       ref.set(value);
     }
   };
-  recursiveFunc(diffs);
+  recursiveFunc(diffs, []);
 }
 
-const handleSignUp = (email: string, password: string) => {
+const handleSignUp = (email: string, password: string, credential?: firebase.auth.AuthCredential) => {
   auth.createUserWithEmailAndPassword(email, password)
     .then(resp => {
+      if (credential) {
+        auth.currentUser!.linkAndRetrieveDataWithCredential(credential);
+      }
       console.log(resp);
     })
     .catch(err => {
