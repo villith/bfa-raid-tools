@@ -4,6 +4,7 @@ import {
   DialogActions,
   DialogContent,
   FormControl,
+  FormHelperText,
   Input,
   InputLabel,
   StyleRulesCallback,
@@ -184,7 +185,9 @@ class Authentication extends React.Component<WithStyles<any> & IAuthenticationPr
                 type={'email'}
                 autoComplete={'email'}
                 onChange={this.handleEmailChange}
+                error={true}
               />
+              <FormHelperText id='inputEmailError'>Error Message</FormHelperText>
             </FormControl>
             {this.state.active !== 'resetPassword' &&
               <FormControl fullWidth={true} className={classes.formControl}>
@@ -197,6 +200,7 @@ class Authentication extends React.Component<WithStyles<any> & IAuthenticationPr
                   autoComplete={'current-password'}
                   onChange={this.handlePasswordChange}
                 />
+                <FormHelperText id='inputPasswordError'>Error Message</FormHelperText>
               </FormControl>
             }
           </form>

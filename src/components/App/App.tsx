@@ -13,9 +13,11 @@ import { BossUldir } from '../../enums/bossUldir';
 import { PermissionRole } from '../../enums/permissionRole';
 import { Raid } from '../../enums/raid';
 import {
+  getStrategyById,
   getUserPreferences,
   getUserStrategies,
   handleSignIn,
+  handleSignOut,
   handleSignUp,
   saveUpdatedStrategy,
   saveUser,
@@ -102,8 +104,9 @@ class App extends React.Component<WithStyles<any>, IAppState> {
 
   public componentDidMount() {
     auth.onAuthStateChanged(user => {
+      console.log(`[onAuthStateChanged]`);
       this.setState({ user }, () => {
-        if (user) { 
+        if (user) {
           saveUser(user, () => {
             const promiseArray = [] as Array<Promise<any>>;
             const strategiesPromise = getUserStrategies(user.uid).then((result: Strategy[]) => {
@@ -125,6 +128,9 @@ class App extends React.Component<WithStyles<any>, IAppState> {
               this.setState({ loading: false });
             });
           });
+        }
+        else {
+          auth.signInAnonymously();
         }
       });
     });
@@ -349,21 +355,26 @@ class App extends React.Component<WithStyles<any>, IAppState> {
     const strategies = dc(this.state.strategies);
     const { id } = strategy;
     if (id) {
-      const oldStrategyIndex = findById(id, strategies);
-      const oldStrategy = strategies[oldStrategyIndex];
-      const deepDiff = (a: Strategy, b: Strategy) => {
-        return _.transform(a, (result: any, value: any, key: any) => {
-          if (!_.isEqual(value, b[key])) {
-            result[key] = (_.isObject(value) && _.isObject(b[key])) ? deepDiff(value, b[key]) : value;
-          }
-        });
-      }
-      const diffs = deepDiff(strategy, oldStrategy);
-      strategies[oldStrategyIndex] = strategy;
-      this.setState({ strategies }, () => saveUpdatedStrategy(diffs));
+      const strategyExists = getStrategyById(id);
+      strategyExists.then(() => {
+        const oldStrategyIndex = findById(id, strategies);
+        const oldStrategy = strategies[oldStrategyIndex];
+        const diffs = deepDiff(strategy, oldStrategy);
+        strategies[oldStrategyIndex] = strategy;
+        this.setState({ strategies }, () => saveUpdatedStrategy(diffs));
+      }, (reason: string) => {
+        console.log(reason);
+      });
     }
     else {
       console.log('Cannot update null strategy');
+    }
+    const deepDiff = (a: Strategy, b: Strategy) => {
+      return _.transform(a, (result: any, value: any, key: any) => {
+        if (!_.isEqual(value, b[key])) {
+          result[key] = (_.isObject(value) && _.isObject(b[key])) ? deepDiff(value, b[key]) : value;
+        }
+      });
     }
   }
 
@@ -390,9 +401,11 @@ class App extends React.Component<WithStyles<any>, IAppState> {
           toggleExportStateDialog={this.toggleExportStateDialog}
           toggleAuthDialog={this.toggleAuthDialog}
           selectNewStrategy={this.handleSelectStrategy}
+          handleSignOut={handleSignOut}
           sideMenuOpen={sideMenuOpen}
           importOpen={importOpen}
           exportOpen={exportOpen}
+          user={user}
         />
         <SideMenu
           bosses={bosses}

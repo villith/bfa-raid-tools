@@ -1,35 +1,53 @@
 import {
   AppBar,
+  Avatar,
+  Button,
   IconButton,
   StyleRulesCallback,
   Theme,
   Toolbar,
+  Tooltip,
   Typography,
   WithStyles,
   withStyles,
 } from '@material-ui/core';
-import { AccountCircle as AccountCircleIcon, ImportExport as ImportExportIcon, Menu as MenuIcon } from '@material-ui/icons';
+import {
+  Apps as AppIcon,
+  Face as FaceIcon,
+  Menu as MenuIcon,
+  SaveAlt as SaveAltIcon,
+  Share as ShareIcon,
+} from '@material-ui/icons';
 import * as classNames from 'classnames';
 import * as React from 'react';
+
+import { Aux } from '../winAux';
 
 export interface INavBarProps {
   sideMenuOpen: boolean;
   importOpen: boolean;
   exportOpen: boolean;
+  handleSignOut: (() => void);
   toggleSideMenu: (() => void);
   toggleImportStateDialog: (() => void);
   toggleExportStateDialog: (() => void);
   toggleAuthDialog: (() => void);
   selectNewStrategy: ((id: string | null) => void);
+  user: firebase.User | null;
 }
 
 export interface INavBarState {
+  anchorEl: HTMLElement | undefined;
   loggedIn: boolean;
 }
 
 const drawerWidth = 280;
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
+  action: {
+    marginLeft: theme.spacing.unit / 4,
+    marginRight: theme.spacing.unit / 4,
+  },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
     transition: theme.transitions.create(['width', 'margin'], {
@@ -45,6 +63,20 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
       duration: theme.transitions.duration.leavingScreen,
     }),
   },
+  avatar: {
+    backgroundColor: theme.palette.primary.main,
+  },
+  avatarIcon: {
+    width: 48,
+    height: 48
+  },
+  divider: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+  },
+  flex: {
+    flexGrow: 1
+  },
   menuButton: {
     marginLeft: 12,
     marginRight: 36,
@@ -52,10 +84,16 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   hide: {
     display: 'none',
   },
-  root: {},
+  outlined: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
+    color: 'white',
+    borderColor: 'white'
+  }
 });
 class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarState> {
   public state = {
+    anchorEl: undefined,
     loggedIn: false,
   };
 
@@ -67,17 +105,25 @@ class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarStat
     this.props.selectNewStrategy(null);
   }
 
+  public handleClick = (event: any) => {
+    this.setState({ anchorEl: event.currentTarget });
+  }
+
+  public handleClose = () => {
+    this.setState({ anchorEl: undefined });
+  }
+
   public render() {
-    const { classes, sideMenuOpen, toggleAuthDialog, toggleSideMenu, toggleImportStateDialog, toggleExportStateDialog } = this.props;
+    const { classes, handleSignOut, sideMenuOpen, toggleAuthDialog, toggleSideMenu, toggleImportStateDialog, toggleExportStateDialog, user } = this.props;
 
     return (
-      <div className='root'>
+      <div>
         <AppBar
           position='absolute'
           className={classNames(classes.appBar, sideMenuOpen && classes.appBarShift)}
         >
           <Toolbar disableGutters={!sideMenuOpen}>
-            <IconButton 
+            <IconButton
               color='inherit'
               aria-label='Menu'
               onClick={toggleSideMenu}
@@ -85,38 +131,63 @@ class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarStat
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant='title' color='inherit'>
+            <Typography variant='title' color='inherit' className={classes.flex}>
               BFA Raid Tools
             </Typography>
-            <IconButton
-              color='inherit'
-              aria-label='Import'
-              onClick={toggleImportStateDialog}
-            >
-              <ImportExportIcon />
-            </IconButton>
-            <IconButton
-              color='inherit'
-              aria-label='Export'
-              onClick={toggleExportStateDialog}
-            >
-              <ImportExportIcon />
-            </IconButton>
-            <IconButton
-              color='inherit'
-              aria-label='Export'
-              onClick={toggleAuthDialog}
-            >
-              <AccountCircleIcon />
-            </IconButton>
-            <IconButton
-              color='inherit'
-              aria-label='test'
-              onClick={this.showStrategyList}
-            >
-              <AccountCircleIcon />
-            </IconButton>
-
+            <div className={classes.action}>
+              <Tooltip title='Show Strategy List'>
+                <IconButton
+                  color='inherit'
+                  aria-label='test'
+                  onClick={this.showStrategyList}
+                >
+                  <AppIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
+            <div className={classes.action}>
+              <Tooltip title='Import'>
+                <IconButton
+                  color='inherit'
+                  aria-label='Import'
+                  onClick={toggleImportStateDialog}
+                >
+                  <SaveAltIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
+            <div className={classes.action}>
+              <Tooltip title='Export'>
+                <IconButton
+                  color='inherit'
+                  aria-label='Export'
+                  onClick={toggleExportStateDialog}                  
+                >
+                  <ShareIcon />
+                </IconButton>
+              </Tooltip>
+            </div>
+            <div className={classes.divider}>|</div>
+            {!user || user && user.isAnonymous && (
+              <Aux>
+                <Button variant='outlined' className={classes.outlined} onClick={toggleAuthDialog}>Log In</Button>
+                <Button variant='outlined' className={classes.outlined} onClick={toggleAuthDialog}>Sign Up</Button>
+              </Aux>
+            )}
+            {user && !user.isAnonymous &&
+              <Aux>
+                <Avatar className={classNames(classes.avatar, classes.outlined)}>
+                  <FaceIcon className={classes.avatarIcon} />
+                </Avatar>
+                <Button 
+                  variant='outlined'
+                  className={classes.outlined}
+                  onClick={handleSignOut}
+                >
+                  Sign Out
+                </Button>
+              </Aux>
+            }
             {/* {loggedIn && (
               <div>
                 <IconButton

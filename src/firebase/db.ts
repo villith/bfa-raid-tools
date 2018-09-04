@@ -21,31 +21,40 @@ const saveUpdatedStrategy = (diffs: _.Dictionary<{}>) => {
   console.log(diffs);
   const keyArray: string[] = [];
   const recursiveFunc = (value: any) => {
-    console.log(value);
-    if (_.isObject(value)) {
-      const keys = Object.keys(value);
+    const isObject = _.isObject(value);
+    const isArray = _.isArray(value);
+    const keys = Object.keys(value);
+    if (isArray) {
+      console.log('[isArray]');
       if (keys.length > 0) {
-        keys.map(key => {
-          if (!_.isArray(value)) {
-            keyArray.push(key);
-          }
-          const val = value[key];
-          recursiveFunc(val);
+        (value as any[]).map((v, index) => {
+          keyArray.push(keys[index]);
+          const path = keyArray.join('/');
+          keyArray.pop();
+          const ref = db.ref(`strategies/${path}`);
+          console.log(`[ARRAY]: ${path}: ${value}`);
+          ref.set(value);
         });
       }
-      else {
-        keyArray.pop();
-      }
+    }
+    else if (isObject) {
+      console.log('[isObject]');
+      keys.map(key => {
+        const val = value[key];
+        recursiveFunc(val);
+      });
     }
     else {
+      console.log('[isKV]');
       const path = keyArray.join('/');
       keyArray.pop();
       const ref = db.ref(`strategies/${path}`);
+      console.log(`[OBJECT]: ${path}: ${value}`);
       ref.set(value);
     }
   };
   recursiveFunc(diffs);
-}
+};
 
 const handleSignUp = (email: string, password: string) => {
   auth.createUserWithEmailAndPassword(email, password)
@@ -59,6 +68,16 @@ const handleSignUp = (email: string, password: string) => {
 
 const handleSignIn = (email: string, password: string) => {
   auth.signInWithEmailAndPassword(email, password)
+    .then(resp => {
+      console.log(resp);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+}
+
+const handleSignOut = () => {
+  auth.signOut()
     .then(resp => {
       console.log(resp);
     })
@@ -123,6 +142,22 @@ const getUserStrategies = (uid: string) => {
     });
   });
 }
+
+const getStrategyById = (sid: string) => {
+  const ref = db.ref(`strategies`) ;
+  ref.orderByChild(`id`).equalTo(sid);
+  return new Promise((resolve, reject) => {
+    ref.once('value', (snapshot: any) => {
+      const values = snapshot.val();
+      if (values) {
+        resolve(values);
+      }
+      else {
+        reject(`Could not find strategy with id: ${sid}`);
+      }
+    });
+  });
+};
 
 const getUserPreferences = (uid: string) => {
   const ref = db.ref(`users/${uid}`);
@@ -226,5 +261,5 @@ const updateUserPreferences = (userId: string, preferences: IPreferences) => {
 //   this.setState({ authData: newAuthData });
 // }
 
-export { getState, saveUpdatedStrategy, handleSignIn, handleSignUp,
-  getUserPreferences, getUserStrategies, saveUser, updateUserPreferences };
+export { getState, saveUpdatedStrategy, handleSignIn, handleSignUp, handleSignOut,
+  getUserPreferences, getUserStrategies, getStrategyById, saveUser, updateUserPreferences };
