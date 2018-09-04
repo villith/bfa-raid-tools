@@ -31,10 +31,11 @@ interface IDialogText {
   linkText: string;
 }
 export interface IAuthenticationProps {
+  authCredential: firebase.auth.AuthCredential | null;
   open: boolean;
   closeDialog: (() => void);
   handleSignIn: ((email: string, password: string) => void);
-  handleSignUp: ((email: string, password: string) => void);
+  handleSignUp: ((email: string, password: string, credential?: firebase.auth.AuthCredential) => void);
   user: firebase.User | null;
 }
 
@@ -127,7 +128,14 @@ class Authentication extends React.Component<WithStyles<any> & IAuthenticationPr
   public submitForm = () => {
     const { active } = this.state;
     if (active === 'signIn') { this.props.handleSignIn(this.state.email, this.state.password) }
-    if (active === 'signUp') { this.props.handleSignUp(this.state.email, this.state.password) }
+    if (active === 'signUp') {
+      if (this.props.authCredential) {
+        this.props.handleSignUp(this.state.email, this.state.password, this.props.authCredential)
+      }
+      else {
+        this.props.handleSignUp(this.state.email, this.state.password);
+      }
+    }
     if (active === 'resetPassword') { this.sendPasswordReset() }
   }
 
