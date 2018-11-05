@@ -14,8 +14,8 @@ import * as React from 'react';
 
 export interface IExportStateProps {
   open: boolean;
-  exportState: ((exportString: string) => void);
-  closeDialog: (() => void);
+  exportState: (exportString: string) => void;
+  closeDialog: () => void;
 }
 
 export interface IExportStateState {

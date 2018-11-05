@@ -22,9 +22,9 @@ export interface IAddPlayerProps {
   playerSpec: WOWSpec;
   playerName: string;
   players: Player[];
-  handleNameChange: ((event: any) => void);
-  handleClassChange: ((event: any) => void);
-  handleSpecChange: ((event: any) => void);
+  handleNameChange: (event: any) => void;
+  handleClassChange: (event: any) => void;
+  handleSpecChange: (event: any) => void;
 }
 
 export interface IAddPlayerState {

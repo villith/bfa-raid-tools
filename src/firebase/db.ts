@@ -1,5 +1,4 @@
 import * as firebase from 'firebase';
-import * as _ from 'lodash';
 
 import { BossAbility } from '../classes/BossAbility';
 import { Cooldown } from '../classes/Cooldown';
@@ -17,43 +16,48 @@ const getState = (id: string) => {
   });
 };
 
-const saveUpdatedStrategy = (diffs: _.Dictionary<{}>) => {
-  console.log(diffs);
-  const keyArray: string[] = [];
-  const recursiveFunc = (value: any) => {
-    const isObject = _.isObject(value);
-    const isArray = _.isArray(value);
-    const keys = Object.keys(value);
-    if (isArray) {
-      console.log('[isArray]');
-      if (keys.length > 0) {
-        (value as any[]).map((v, index) => {
-          keyArray.push(keys[index]);
-          const path = keyArray.join('/');
-          keyArray.pop();
-          const ref = db.ref(`strategies/${path}`);
-          console.log(`[ARRAY]: ${path}: ${value}`);
-          ref.set(value);
-        });
-      }
-    }
-    else if (isObject) {
-      console.log('[isObject]');
-      keys.map(key => {
-        const val = value[key];
-        recursiveFunc(val);
-      });
-    }
-    else {
-      console.log('[isKV]');
-      const path = keyArray.join('/');
-      keyArray.pop();
-      const ref = db.ref(`strategies/${path}`);
-      console.log(`[OBJECT]: ${path}: ${value}`);
-      ref.set(value);
-    }
-  };
-  recursiveFunc(diffs);
+// const saveUpdatedStrategy = (diffs: _.Dictionary<{}>) => {
+//   console.log(diffs);
+//   const keyArray: string[] = [];
+//   const recursiveFunc = (value: any) => {
+//     const isObject = _.isObject(value);
+//     const isArray = _.isArray(value);
+//     const keys = Object.keys(value);
+//     if (isArray) {
+//       console.log('[isArray]');
+//       if (keys.length > 0) {
+//         (value as any[]).map((v, index) => {
+//           keyArray.push(keys[index]);
+//           const path = keyArray.join('/');
+//           keyArray.pop();
+//           const ref = db.ref(`strategies/${path}`);
+//           console.log(`[ARRAY]: ${path}: ${value}`);
+//           ref.set(value);
+//         });
+//       }
+//     }
+//     else if (isObject) {
+//       console.log('[isObject]');
+//       keys.map(key => {
+//         const val = value[key];
+//         recursiveFunc(val);
+//       });
+//     }
+//     else {
+//       console.log('[isKV]');
+//       const path = keyArray.join('/');
+//       keyArray.pop();
+//       const ref = db.ref(`strategies/${path}`);
+//       console.log(`[OBJECT]: ${path}: ${value}`);
+//       ref.set(value);
+//     }
+//   };
+//   recursiveFunc(diffs);
+// };
+
+const saveUpdatedStrategy = (strategy: Strategy) => {
+  const ref = db.ref(`strategies/${strategy.id}`);
+  ref.set(strategy);
 };
 
 const handleSignUp = (email: string, password: string) => {
@@ -126,6 +130,8 @@ const getUserStrategies = (uid: string) => {
           });
           Object.keys(strategy.players).map(playerKey => {
             const player = strategy.players[parseInt(playerKey, 10)];
+            if (!player.cooldowns) { player.cooldowns = [] as Cooldown[]; }
+            console.log(player);
             player.cooldowns.map(cooldown => {
               if (!cooldown.bossAbilities) { cooldown.bossAbilities = [] as string[] }
               if (!cooldown.timers) { cooldown.timers = [] as number[] }

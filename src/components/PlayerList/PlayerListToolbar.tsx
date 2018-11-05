@@ -6,6 +6,7 @@ import {
   Delete as DeleteIcon,
   Done as DoneIcon,
   GroupAdd as GroupAddIcon,
+  Mood as MoodIcon,
 } from '@material-ui/icons';
 import * as React from 'react';
 
@@ -14,10 +15,11 @@ import { Aux } from '../winAux';
 
 export interface IPlayerListToolbarProps {
   addPlayerVisible: boolean;
-  confirmAddPlayer: (() => void);
-  deletePlayers: (() => void)
-  toggleAddPlayer: (() => void);
-  toggleImportPlayers: (() => void);
+  buildTestPlayerList?: () => void;
+  confirmAddPlayer: () => void;
+  deletePlayers: () => void;
+  toggleAddPlayer: () => void;
+  toggleImportPlayers: () => void;
   numSelected: number;
   type: PlayerListType;
 }
@@ -66,7 +68,7 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToolbarProps, IPlayerListToolbarState> {
   public render() {
-    const { addPlayerVisible, classes, confirmAddPlayer, deletePlayers, numSelected, toggleAddPlayer, toggleImportPlayers, type } = this.props;
+    const { addPlayerVisible, buildTestPlayerList, classes, confirmAddPlayer, deletePlayers, numSelected, toggleAddPlayer, toggleImportPlayers, type } = this.props;
     return (
       <Toolbar>
         <div className={classes.title}>
@@ -97,6 +99,13 @@ class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToo
             </Aux>
           ) : (
             <Aux>
+              {type === PlayerListType.ALL && 
+                <Tooltip title='Add Test Players'>
+                  <Button variant='flat' color='primary' onClick={buildTestPlayerList}>
+                    <MoodIcon />
+                  </Button>
+                </Tooltip>
+              }
               {type === PlayerListType.BOSS_ROSTER &&
                 <Tooltip title='Import Players'>
                   <Button variant='flat' color='primary' onClick={toggleImportPlayers}>

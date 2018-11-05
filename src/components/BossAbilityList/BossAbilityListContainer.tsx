@@ -14,9 +14,9 @@ export interface IBossAbilityListContainerProps {
   bossAbilities: BossAbility[];
   cooldowns: Cooldown[];
   currentPhase: number;
-  handleChangePhase: ((event: any, newPhase: number) => void);
-  handleChangePhaseTimer: ((event: any, phaseId: number) => void);
-  handleCooldownPickerChange: ((cooldownId: string, bossAbilityId: string, timer: number) => void);
+  handleChangePhase: (event: any, newPhase: number) => void;
+  handleChangePhaseTimer: (event: any, phaseId: number) => void;
+  handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
   phases: Phase[];
   players: Player[];
 }

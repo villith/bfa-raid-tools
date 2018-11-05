@@ -24,18 +24,18 @@ import { Aux } from '../winAux';
 // tslint:disable-next-line:no-var-requires
 const reactFirebaseui = require('react-firebaseui');
 
-
 interface IDialogText {
   submitText: string;
   toggleText: string;
   linkText: string;
 }
+
 export interface IAuthenticationProps {
   authCredential: firebase.auth.AuthCredential | null;
   open: boolean;
-  closeDialog: (() => void);
-  handleSignIn: ((email: string, password: string) => void);
-  handleSignUp: ((email: string, password: string, credential?: firebase.auth.AuthCredential) => void);
+  closeDialog: () => void;
+  handleSignIn: (email: string, password: string) => void;
+  handleSignUp: (email: string, password: string, credential?: firebase.auth.AuthCredential) => void;
   user: firebase.User | null;
 }
 

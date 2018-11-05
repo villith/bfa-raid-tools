@@ -13,7 +13,6 @@ import { BossUldir } from '../../enums/bossUldir';
 import { PermissionRole } from '../../enums/permissionRole';
 import { Raid } from '../../enums/raid';
 import {
-  getStrategyById,
   getUserPreferences,
   getUserStrategies,
   handleSignIn,
@@ -49,6 +48,7 @@ const nullStrategy: Strategy = {
 export interface IAppState {
   user: firebase.User | null;
   currentStrategy: Strategy;
+  authCredential: firebase.auth.AuthCredential | null;
   authOpen: boolean;
   currentBoss: BossType;
   currentRaid: Raid;
@@ -88,6 +88,7 @@ class App extends React.Component<WithStyles<any>, IAppState> {
   public state = {
     user: {} as firebase.User,
     currentStrategy: nullStrategy,
+    authCredential: null,
     authOpen: false,
     currentBoss: BossUldir.HOME,
     currentRaid: Raid.ULDIR,
@@ -104,9 +105,8 @@ class App extends React.Component<WithStyles<any>, IAppState> {
 
   public componentDidMount() {
     auth.onAuthStateChanged(user => {
-      console.log(`[onAuthStateChanged]`);
       this.setState({ user }, () => {
-        if (user) {
+        if (user) { 
           saveUser(user, () => {
             const promiseArray = [] as Array<Promise<any>>;
             const strategiesPromise = getUserStrategies(user.uid).then((result: Strategy[]) => {
@@ -130,7 +130,9 @@ class App extends React.Component<WithStyles<any>, IAppState> {
           });
         }
         else {
-          auth.signInAnonymously();
+          auth.signInAnonymously().then(resp => {
+            this.setState({ authCredential: resp.credential });
+          });
         }
       });
     });
@@ -351,30 +353,40 @@ class App extends React.Component<WithStyles<any>, IAppState> {
     this.setState({ authOpen: false });
   }
 
+  public buildUpdateStrategyPath = (strategy: Strategy) => {
+    const strategies = dc(this.state.strategies);
+    const { id } = strategy;
+    if (id) {
+      const oldStrategyIndex = findById(id, strategies);
+      const oldStrategy = strategies[oldStrategyIndex];
+      const deepDiff = (a: Strategy, b: Strategy) => {
+        return _.transform(a, (result: any, value: any, key: any) => {
+          if (!_.isEqual(value, b[key])) {
+            result[key] = (_.isObject(value) && _.isObject(b[key])) ? deepDiff(value, b[key]) : value;
+          }
+        });
+      }
+      const diffs = deepDiff(strategy, oldStrategy);;
+      strategies[oldStrategyIndex] = strategy;
+      this.setState({ strategies });
+      return diffs;
+    }
+    else {
+      console.log('Cannot update null strategy');
+      return;
+    }
+  }
+
   public handleUpdateStrategy = (strategy: Strategy) => {
     const strategies = dc(this.state.strategies);
     const { id } = strategy;
     if (id) {
-      const strategyExists = getStrategyById(id);
-      strategyExists.then(() => {
-        const oldStrategyIndex = findById(id, strategies);
-        const oldStrategy = strategies[oldStrategyIndex];
-        const diffs = deepDiff(strategy, oldStrategy);
-        strategies[oldStrategyIndex] = strategy;
-        this.setState({ strategies }, () => saveUpdatedStrategy(diffs));
-      }, (reason: string) => {
-        console.log(reason);
-      });
+      const oldStrategyIndex = findById(id, strategies);
+      strategies[oldStrategyIndex] = strategy;
+      this.setState({ strategies }, () => saveUpdatedStrategy(strategy));
     }
     else {
       console.log('Cannot update null strategy');
-    }
-    const deepDiff = (a: Strategy, b: Strategy) => {
-      return _.transform(a, (result: any, value: any, key: any) => {
-        if (!_.isEqual(value, b[key])) {
-          result[key] = (_.isObject(value) && _.isObject(b[key])) ? deepDiff(value, b[key]) : value;
-        }
-      });
     }
   }
 
@@ -389,7 +401,7 @@ class App extends React.Component<WithStyles<any>, IAppState> {
   }
 
   public render() {
-    const { authOpen, currentBoss, sideMenuOpen, exportOpen, importOpen, currentStrategy, preferences, strategies, user, loading } = this.state;
+    const { authCredential, authOpen, currentBoss, sideMenuOpen, exportOpen, importOpen, currentStrategy, preferences, strategies, user, loading } = this.state;
     const { bosses, players } = currentStrategy;
     const { classes } = this.props;
     const boss = bosses[currentBoss];
@@ -428,6 +440,7 @@ class App extends React.Component<WithStyles<any>, IAppState> {
         <Authentication
           open={authOpen}
           user={user}
+          authCredential={authCredential}
           handleSignIn={handleSignIn}
           handleSignUp={handleSignUp}
           closeDialog={this.closeAuthDialog}
@@ -454,6 +467,7 @@ class App extends React.Component<WithStyles<any>, IAppState> {
                 deletePlayersFromBoss={this.handleDeletePlayersFromBoss}
                 handleCooldownPickerChange={this.handleCooldownPickerChange}
                 handleChangePhaseTimer={this.handleChangePhaseTimer}
+                buildTestPlayerList={this.buildTestPlayerList}
               />
             )}
           </Grid>

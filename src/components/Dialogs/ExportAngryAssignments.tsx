@@ -14,8 +14,8 @@ import * as React from 'react';
 
 export interface IExportAngryAssignmentsProps {
   open: boolean;
-  closeDialog: (() => void);
-  exportAngryAssignments: ((angryAssignmentsString: string) => void);
+  closeDialog: () => void;
+  exportAngryAssignments: (angryAssignmentsString: string) => void;
 }
 
 export interface IExportAngryAssignmentsState {

@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@devexpress/dx-core": "^1.8.0",
+    "@devexpress/dx-react-core": "^1.8.0",
+    "@devexpress/dx-react-grid": "^1.8.0",
+    "@devexpress/dx-react-grid-material-ui": "^1.8.0",
     "@fortawesome/fontawesome": "^1.1.8",
     "@fortawesome/fontawesome-free-brands": "^5.0.13",
     "@fortawesome/fontawesome-free-solid": "^5.0.13",

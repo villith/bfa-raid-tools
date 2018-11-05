@@ -8,10 +8,10 @@ import PlayerListBody from '../PlayerList/PlayerListBody';
 
 export interface IImportPlayersProps {
   open: boolean;
-  closeDialog: (() => void);
+  closeDialog: () => void;
   players: Player[];
   currentBoss: BossType;
-  addPlayersToBoss: ((playerIds: string[], boss: BossType) => void);
+  addPlayersToBoss: (playerIds: string[], boss: BossType) => void;
 }
 
 export interface IImportPlayersState {

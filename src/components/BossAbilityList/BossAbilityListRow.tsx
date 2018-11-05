@@ -29,7 +29,7 @@ export interface IBossAbilityListRowProps {
   bossAbilities: BossAbility[];
   cooldowns: Cooldown[];
   cooldownTypes: CooldownType[];
-  handleCooldownPickerChange: ((cooldownId: string, bossAbilityId: string, timer: number) => void);
+  handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
   icon: string;
   id: string;
   label: string;
@@ -71,7 +71,7 @@ class BossAbilityListRow extends React.Component<WithStyles<any> & IBossAbilityL
     const newCooldowns: Cooldown[] = [];
     const cooldowns = [ ...this.props.cooldowns ];
     cooldowns.map(cooldown => {
-      console.log(`[${cooldown.name}]`);
+      console.log(`[${cooldown.label}]`);
       const { timers } = cooldown;
       let isOnCooldown = timers.length > 0 ? true : false;
       if (this.props.cooldownTypes.indexOf(cooldown.cooldownType) !== -1) {
@@ -109,18 +109,16 @@ class BossAbilityListRow extends React.Component<WithStyles<any> & IBossAbilityL
         className={this.state.addCooldownVisible ? classes.highlighted : ''}   
         key={id}
       >
-        <Grid className={classes.root} container={true} alignItems='center'>
+        <Grid className={classes.root} container={true}>
           <Aux className={this.state.addCooldownVisible ? classes.highlighted : ''}>
-            <Grid item={true} xs={2}>
+            <Grid item={true} xs={true} alignItems='center' style={{ position: 'relative', justifyContent: 'flex-start' }}>
               <a href={wowheadTooltip} rel="dd=16" target='_blank'><img src={iconURL} alt={iconURLAlt} /></a>
-            </Grid>
-            <Grid item={true} xs={6}>
               <Typography>{label}</Typography>
             </Grid>
-            <Grid item={true} xs={2}>
+            <Grid item={true} xs={true} alignItems='flex-end'>
               <Typography>{secondsToMinutes(timer)}</Typography>
             </Grid>
-            <Grid item={true} xs={2}>
+            <Grid item={true} xs={true} alignItems='center'>
               <Button variant='flat' color='primary' onClick={this.toggleAddCooldown}>
                   <AddIcon />
               </Button>
@@ -149,9 +147,10 @@ class BossAbilityListRow extends React.Component<WithStyles<any> & IBossAbilityL
                   return (
                     <ListItem
                       className={classes.cooldownRow}
-                      key={index}>
+                      key={index}
+                    >
                       <a href={wowheadCooldownTooltip} target='_blank'> <img src={cooldownIconURL}/></a>
-                      <Typography style={{ color: classInfo.classColor }}>{cooldown.name} - {playerName}</Typography>
+                      <Typography style={{ color: classInfo.classColor }}>{cooldown.label} - {playerName}</Typography>
                     </ListItem>
                   )
                 })

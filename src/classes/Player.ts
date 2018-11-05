@@ -36,7 +36,7 @@ class Player {
     specInfo!.cooldowns.map(cooldown => cooldowns.push(
       new Cooldown(
         cooldown.spellId,
-        cooldown.name,
+        cooldown.label,
         cooldown.icon,
         cooldown.cooldownType,
         cooldown.cooldownTime,

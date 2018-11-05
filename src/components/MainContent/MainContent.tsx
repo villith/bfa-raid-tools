@@ -16,6 +16,7 @@ export interface IMainContentProps {
   deletePlayersFromBoss: ((playerIds: string[]) => void);
   handleCooldownPickerChange: ((cooldownId: string, bossAbilityId: string, timer: number) => void);
   handleChangePhaseTimer: ((event: any, phaseId: number) => void);
+  buildTestPlayerList: () => void;
   players: Player[];
 }
 
@@ -29,7 +30,7 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class MainContent extends React.Component<WithStyles<any> & IMainContentProps, IMainContentState> {
   public render() {
-    const { boss, bosses, addPlayers, addPlayersToBoss, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimer, handleCooldownPickerChange, players } = this.props;
+    const { boss, bosses, buildTestPlayerList, addPlayers, addPlayersToBoss, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimer, handleCooldownPickerChange, players } = this.props;
     return (
       boss.id === BossUldir.HOME ? (
         <Home
@@ -39,6 +40,7 @@ class MainContent extends React.Component<WithStyles<any> & IMainContentProps, I
           deletePlayersFromBoss={deletePlayersFromBoss}
           players={players}
           bosses={bosses}
+          buildTestPlayerList={buildTestPlayerList}
         />
       ) : (
         <Encounter

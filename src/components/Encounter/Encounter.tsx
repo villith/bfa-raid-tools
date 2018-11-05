@@ -9,12 +9,12 @@ import { Aux } from '../winAux';
 
 export interface IEncounterProps {
   boss: Boss;
-  addPlayers: ((player: Player[]) => void);
-  addPlayersToBoss: ((playerIds: string[]) => void);
-  deletePlayers: ((playerIds: string[]) => void);
-  deletePlayersFromBoss: ((playerIds: string[]) => void);
-  handleCooldownPickerChange: ((cooldownId: string, bossAbilityId: string, timer: number) => void);
-  handleChangePhaseTimer: ((event: any, phaseId: number) => void);
+  addPlayers: (player: Player[]) => void;
+  addPlayersToBoss: (playerIds: string[]) => void;
+  deletePlayers: (playerIds: string[]) => void;
+  deletePlayersFromBoss: (playerIds: string[]) => void;
+  handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
+  handleChangePhaseTimer: (event: any, phaseId: number) => void;
   players: Player[];
 }
 
@@ -53,7 +53,7 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
             type={PlayerListType.BOSS_ROSTER}
           />
         </Grid>
-        <Grid item={true} xs={6} md={8}> 
+        <Grid item={true} xs={6} md={6}> 
           <BossAbilityListContainer
             bossAbilities={abilities}
             cooldowns={cooldowns}

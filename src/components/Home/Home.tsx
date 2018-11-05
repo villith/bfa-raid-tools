@@ -8,10 +8,11 @@ import PlayerListContainer from '../PlayerList/PlayerListContainer';
 import { Aux } from '../winAux';
 
 export interface IHomeProps {
-  addPlayers: ((player: Player[]) => void);
-  addPlayersToBoss: ((playerIds: string[]) => void);
-  deletePlayers: ((playerIds: string[]) => void);
-  deletePlayersFromBoss: ((playerIds: string[]) => void);
+  addPlayers: (player: Player[]) => void;
+  addPlayersToBoss: (playerIds: string[]) => void;
+  deletePlayers: (playerIds: string[]) => void;
+  deletePlayersFromBoss: (playerIds: string[]) => void;
+  buildTestPlayerList: () => void;
   players: Player[];
   bosses: IBossMap;
 }
@@ -26,7 +27,7 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class Home extends React.Component<WithStyles<any> & IHomeProps, IHomeState> {
   public render() {
-    const { addPlayers, addPlayersToBoss, deletePlayers, deletePlayersFromBoss, players } = this.props;
+    const { addPlayers, addPlayersToBoss, buildTestPlayerList, deletePlayers, deletePlayersFromBoss, players } = this.props;
     return (
       <Aux>
         <Grid item={true} xs={6} md={4}>
@@ -37,6 +38,7 @@ class Home extends React.Component<WithStyles<any> & IHomeProps, IHomeState> {
             deletePlayersFromBoss={deletePlayersFromBoss}
             players={players}
             currentBoss={BossUldir.HOME}
+            buildTestPlayerList={buildTestPlayerList}
             type={PlayerListType.ALL}
           />
         </Grid>

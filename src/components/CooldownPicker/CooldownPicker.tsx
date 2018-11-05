@@ -10,9 +10,9 @@ import { getPlayerById } from '../../helpers/getPlayer';
 export interface ICooldownPickerProps {
   bossAbilityId: string;
   cooldowns: Cooldown[];
-  handleChange: ((cooldownId: string, bossAbilityId: string, timer: number) => void);
+  handleChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
   players: Player[];
-  toggleVisible: (() => void);
+  toggleVisible: () => void;
   timer: number;
 }
 
@@ -62,7 +62,7 @@ class CooldownPicker extends React.Component<WithStyles<any> & ICooldownPickerPr
           const classInfo = getClassInfo(playerClass);
           return (
             <option key={index} style={{ color: classInfo.classColor }} value={cooldown.id}>
-              {cooldown.name} - {playerName}
+              {cooldown.label} - {playerName}
             </option>
           )
         })}

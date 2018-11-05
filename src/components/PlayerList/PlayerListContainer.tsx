@@ -19,10 +19,11 @@ import PlayerListToolbar from './PlayerListToolbar';
 export type Order = 'asc' | 'desc';
 
 export interface IPlayerListContainerProps {
-  addPlayers: ((player: Player[]) => void);
-  addPlayersToBoss: ((playerIds: string[]) => void);
-  deletePlayers: ((playerIds: string[]) => void);
-  deletePlayersFromBoss: ((playerIds: string[]) => void);
+  addPlayers: (player: Player[]) => void;
+  addPlayersToBoss: (playerIds: string[]) => void;
+  deletePlayers: (playerIds: string[]) => void;
+  deletePlayersFromBoss: (playerIds: string[]) => void;
+  buildTestPlayerList?: () => void;
   players: Player[];
   currentBoss: BossType;
   type: PlayerListType;
@@ -173,12 +174,13 @@ class PlayerListContainer extends React.Component<WithStyles<any> & IPlayerListC
   
   public render() {
     const { addPlayerVisible, importPlayersVisible, order, orderBy, selected } = this.state;
-    const { classes, currentBoss, addPlayersToBoss, players, type } = this.props;
+    const { buildTestPlayerList, classes, currentBoss, addPlayersToBoss, players, type } = this.props;
     const playerList = getPlayersByBoss(currentBoss, players);
     return (
       <Paper className={classes.root}>
         <PlayerListToolbar
           addPlayerVisible={addPlayerVisible}
+          buildTestPlayerList={buildTestPlayerList}
           confirmAddPlayer={this.confirmAddPlayer}
           deletePlayers={this.deleteSelectedPlayers}
           toggleAddPlayer={this.toggleAddPlayer}

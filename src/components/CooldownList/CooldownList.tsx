@@ -19,7 +19,7 @@ class CooldownList extends React.Component<WithStyles<any> & ICooldownListProps>
     const { classes, cooldowns } = this.props;
     return (
       <Paper className={classes.root}>
-        {cooldowns.map(cooldown => cooldown.name)}
+        {cooldowns.map(cooldown => cooldown.label)}
       </Paper>
     );
   }

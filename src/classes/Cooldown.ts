@@ -11,7 +11,7 @@ import { uuid } from '../helpers/createGuid';
 class Cooldown {
   public id: string = uuid();
   public spellId: number;
-  public name: string;
+  public label: string;
   public icon: string;
   public cooldownType: CooldownType;
   public cooldownTime: number;
@@ -37,12 +37,12 @@ class Cooldown {
    * @param {number} [charges]
    * @memberof Cooldown
    */
-  constructor(spellId: number, name: string, icon: string, cooldownType: CooldownType,
+  constructor(spellId: number, label: string, icon: string, cooldownType: CooldownType,
     cooldownTime: number, cdClass: WOWClass, cdSpec: WOWSpec, owner: string,
     altCooldownTime: number | null, charges: number)
   {
     this.spellId = spellId;
-    this.name = name;
+    this.label = label;
     this.icon = icon;
     this.cooldownType = cooldownType;
     this.cooldownTime = cooldownTime;

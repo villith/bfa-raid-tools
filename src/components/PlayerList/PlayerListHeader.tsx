@@ -14,8 +14,7 @@ export interface IPlayerListHeaderProps {
 const columnData = [
   { id: 'playerClass', numeric: false, disablePadding: true, label: 'Class' },
   { id: 'playerSpec', numeric: false, disablePadding: true, label: 'Spec' },
-  { id: 'playerName', numeric: false, disablePadding: false, label: 'Player Name' },
-  
+  { id: 'playerName', numeric: false, disablePadding: false, label: 'Player Name' },  
 ];
 
 export default class PlayerListHeader extends React.Component<IPlayerListHeaderProps, any> {

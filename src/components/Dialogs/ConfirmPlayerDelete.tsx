@@ -24,9 +24,9 @@ import { getBossInfo } from '../../helpers/getRaidInfo';
 export interface IConfirmPlayerDeleteProps {
   open: boolean;
   players: Player[];
-  deletePlayers: (() => void);
+  deletePlayers: () => void;
   selected: string[];
-  closeDialog: (() => void);
+  closeDialog: () => void;
 }
 
 export interface IConfirmPlayerDeleteState {
