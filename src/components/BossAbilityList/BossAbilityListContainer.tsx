@@ -48,11 +48,15 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
   }
   
   public render() {
+    const { angryAssignmentsExportOpen } = this.state;
     const { bossAbilities, classes, cooldowns, currentPhase, handleChangePhase, handleChangePhaseTimer, handleCooldownPickerChange, phases, players } = this.props;
     return (
       <Paper className={classes.root}>
         <ExportAngryAssignments
-          open={this.state.angryAssignmentsExportOpen}
+          open={angryAssignmentsExportOpen}
+          bossAbilities={bossAbilities}
+          cooldowns={cooldowns}
+          players={players}
           closeDialog={this.closeAngryAssignmentsDialog}
           exportAngryAssignments={this.handleExportAngryAssignments}
         />

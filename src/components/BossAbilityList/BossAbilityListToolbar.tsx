@@ -3,7 +3,7 @@ import { Share as ShareIcon } from '@material-ui/icons';
 import * as React from 'react';
 
 export interface IBossAbilityListToolbarProps {
-  toggleAngryAssignmentsDialog: (() => void);
+  toggleAngryAssignmentsDialog: () => void;
 }
 
 export interface IBossAbilityListToolbarState {

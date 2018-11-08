@@ -12,7 +12,7 @@ export interface ICooldownPickerProps {
   cooldowns: Cooldown[];
   handleChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
   players: Player[];
-  toggleVisible: () => void;
+  toggleVisible: (id: string) => void;
   timer: number;
 }
 
@@ -42,7 +42,7 @@ class CooldownPicker extends React.Component<WithStyles<any> & ICooldownPickerPr
     const cooldownId = event.target.value;
     this.setState({ selectedCooldown: cooldownId }, () => {
       this.props.handleChange(cooldownId, this.props.bossAbilityId, this.props.timer);
-      this.props.toggleVisible();
+      this.props.toggleVisible(this.props.bossAbilityId);
     });    
   }
 
