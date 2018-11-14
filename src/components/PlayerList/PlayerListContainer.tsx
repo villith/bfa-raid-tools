@@ -27,6 +27,8 @@ export interface IPlayerListContainerProps {
   players: Player[];
   currentBoss: BossType;
   type: PlayerListType;
+  focusedPlayerId: string;
+  changeFocusedPlayerId: (id: string) => void;
 }
 
 export interface IPlayerListContainerState {
@@ -154,7 +156,7 @@ class PlayerListContainer extends React.Component<WithStyles<any> & IPlayerListC
     this.setState({ selected: [] });
   }
 
-  public handleClick = (event: any, id: string) => {
+  public handleClick = (id: string) => {
     const selected = [ ...this.state.selected ];
     const selectedIndex = selected.indexOf(id);
 
@@ -174,7 +176,7 @@ class PlayerListContainer extends React.Component<WithStyles<any> & IPlayerListC
   
   public render() {
     const { addPlayerVisible, importPlayersVisible, order, orderBy, selected } = this.state;
-    const { buildTestPlayerList, classes, currentBoss, addPlayersToBoss, players, type } = this.props;
+    const { buildTestPlayerList, classes, currentBoss, focusedPlayerId, changeFocusedPlayerId, addPlayersToBoss, players, type } = this.props;
     const playerList = getPlayersByBoss(currentBoss, players);
     return (
       <Paper className={classes.root}>
@@ -217,6 +219,8 @@ class PlayerListContainer extends React.Component<WithStyles<any> & IPlayerListC
           handleRequestSort={this.handleRequestSort}
           handleClick={this.handleClick}
           players={playerList}
+          focusedPlayerId={focusedPlayerId}
+          changeFocusedPlayerId={changeFocusedPlayerId}
         />
         <ConfirmPlayerDelete
           open={this.state.confirmPlayerDeleteVisible}

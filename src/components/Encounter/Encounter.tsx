@@ -16,6 +16,8 @@ export interface IEncounterProps {
   handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
   handleChangePhaseTimer: (event: any, phaseId: number) => void;
   players: Player[];
+  focusedPlayerId: string;
+  changeFocusedPlayerId: (id: string) => void;
 }
 
 export interface IEncounterState {
@@ -38,7 +40,7 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
 
   public render() {
     const { currentPhase } = this.state;
-    const { addPlayers, addPlayersToBoss, boss, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimer, handleCooldownPickerChange, players } = this.props;
+    const { addPlayers, addPlayersToBoss, boss, changeFocusedPlayerId, focusedPlayerId, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimer, handleCooldownPickerChange, players } = this.props;
     const { abilities, cooldowns, phases } = boss;
     return (
       <Aux>
@@ -48,12 +50,14 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
             addPlayersToBoss={addPlayersToBoss}
             deletePlayers={deletePlayers}
             deletePlayersFromBoss={deletePlayersFromBoss}
+            focusedPlayerId={focusedPlayerId}
+            changeFocusedPlayerId={changeFocusedPlayerId}
             players={players}
             currentBoss={boss.id}
             type={PlayerListType.BOSS_ROSTER}
           />
         </Grid>
-        <Grid item={true} xs={6} md={6}> 
+        <Grid item={true} xs={6} md={8}> 
           <BossAbilityListContainer
             bossAbilities={abilities}
             cooldowns={cooldowns}
@@ -61,6 +65,7 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
             handleCooldownPickerChange={handleCooldownPickerChange}
             handleChangePhase={this.handleChangePhase}
             handleChangePhaseTimer={handleChangePhaseTimer}
+            focusedPlayerId={focusedPlayerId}
             phases={phases}
             players={players}
           />

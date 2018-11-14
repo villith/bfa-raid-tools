@@ -9,9 +9,11 @@ export interface IPlayerListBodyProps {
   selected: string[];
   order?: Order;
   orderBy?: string;
-  handleClick: ((event: any, id: string) => void);
+  handleClick: (id: string) => void;
   players: Player[];
   sortable: boolean;
+  focusedPlayerId?: string;
+  changeFocusedPlayerId?: (id: string) => void;
 }
 
 export interface IPlayerListBodyState {
@@ -37,21 +39,24 @@ class PlayerListBody extends React.Component<WithStyles<any> & IPlayerListBodyPr
   }
 
   public render() {
-    const { handleClick, players, selected, order, orderBy, sortable } = this.props;
+    const { focusedPlayerId, changeFocusedPlayerId, handleClick, players, selected, order, orderBy, sortable } = this.props;
     const playerList = sortable ? players.sort(this.getSorting(order!, orderBy!)) : players;
     return (
       <TableBody>
         {playerList.map(player => {
             const { id, playerName, playerClass, playerSpec } = player;
             const isSelected = selected.indexOf(id) !== -1;
+            const isFocused = focusedPlayerId === id;
             return <PlayerListRow
               isSelected={isSelected}
+              isFocused={isFocused}
               key={id}
               playerClass={playerClass}  // class reserved
               playerSpec={playerSpec}
               playerName={playerName}
               playerId={id}
               handleClick={handleClick}
+              changeFocusedPlayerId={changeFocusedPlayerId}
             />
         })}
       </TableBody>

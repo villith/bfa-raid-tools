@@ -19,6 +19,7 @@ export interface IBossAbilityListContainerProps {
   handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
   phases: Phase[];
   players: Player[];
+  focusedPlayerId: string;
 }
 
 export interface IBossAbilityListContainerState {
@@ -50,6 +51,13 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
   public render() {
     const { angryAssignmentsExportOpen } = this.state;
     const { bossAbilities, classes, cooldowns, currentPhase, handleChangePhase, handleChangePhaseTimer, handleCooldownPickerChange, phases, players } = this.props;
+    const phaseStartTime = phases[phases.findIndex(p => p.id === currentPhase)].timer || 0;
+    const phaseEndTime = currentPhase + 1 < phases.length
+      ? phases[phases.findIndex(p => p.id === currentPhase + 1)].timer
+      : 9999;
+    const filteredBossAbilities = bossAbilities
+      .filter(ba => ba.timer >= phaseStartTime && ba.timer < phaseEndTime)
+      .sort((a, b) => a.timer - b.timer);
     return (
       <Paper className={classes.root}>
         <ExportAngryAssignments
@@ -70,7 +78,7 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
           phases={phases}
         />
         <BossAbilityList
-          bossAbilities={bossAbilities}
+          bossAbilities={filteredBossAbilities}
           cooldowns={cooldowns}
           currentPhase={currentPhase}
           handleCooldownPickerChange={handleCooldownPickerChange}

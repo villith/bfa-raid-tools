@@ -15,6 +15,8 @@ export interface IHomeProps {
   buildTestPlayerList: () => void;
   players: Player[];
   bosses: IBossMap;
+  focusedPlayerId: string;
+  changeFocusedPlayerId: (id: string) => void;
 }
 
 export interface IHomeState {
@@ -27,7 +29,7 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class Home extends React.Component<WithStyles<any> & IHomeProps, IHomeState> {
   public render() {
-    const { addPlayers, addPlayersToBoss, buildTestPlayerList, deletePlayers, deletePlayersFromBoss, players } = this.props;
+    const { addPlayers, addPlayersToBoss, buildTestPlayerList, deletePlayers, deletePlayersFromBoss, focusedPlayerId, changeFocusedPlayerId, players } = this.props;
     return (
       <Aux>
         <Grid item={true} xs={6} md={4}>
@@ -40,6 +42,8 @@ class Home extends React.Component<WithStyles<any> & IHomeProps, IHomeState> {
             currentBoss={BossUldir.HOME}
             buildTestPlayerList={buildTestPlayerList}
             type={PlayerListType.ALL}
+            focusedPlayerId={focusedPlayerId}
+            changeFocusedPlayerId={changeFocusedPlayerId}
           />
         </Grid>
         <Grid item={true} xs={6} md={8} />

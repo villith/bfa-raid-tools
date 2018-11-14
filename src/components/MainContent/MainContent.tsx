@@ -21,7 +21,7 @@ export interface IMainContentProps {
 }
 
 export interface IMainContentState {
-  placeholder?: string;
+  focusedPlayerId: string;
 }
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
@@ -29,7 +29,27 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 });
 
 class MainContent extends React.Component<WithStyles<any> & IMainContentProps, IMainContentState> {
+  public state = {
+    focusedPlayerId: ''
+  }
+  
+  public changeFocusedPlayerId = (id: string) => {
+    const { focusedPlayerId } = this.state;
+    if (id) {
+      if (id === focusedPlayerId) {
+        this.setState({ focusedPlayerId: '' });
+      }
+      else {
+        this.setState({ focusedPlayerId: id });
+      }
+    }
+    else {
+      this.setState({ focusedPlayerId: '' });
+    }
+  }
+
   public render() {
+    const { focusedPlayerId } = this.state;
     const { boss, bosses, buildTestPlayerList, addPlayers, addPlayersToBoss, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimer, handleCooldownPickerChange, players } = this.props;
     return (
       boss.id === BossUldir.HOME ? (
@@ -40,6 +60,8 @@ class MainContent extends React.Component<WithStyles<any> & IMainContentProps, I
           deletePlayersFromBoss={deletePlayersFromBoss}
           players={players}
           bosses={bosses}
+          focusedPlayerId={focusedPlayerId}
+          changeFocusedPlayerId={this.changeFocusedPlayerId}
           buildTestPlayerList={buildTestPlayerList}
         />
       ) : (
@@ -52,6 +74,8 @@ class MainContent extends React.Component<WithStyles<any> & IMainContentProps, I
           handleCooldownPickerChange={handleCooldownPickerChange}
           handleChangePhaseTimer={handleChangePhaseTimer}
           players={players}
+          focusedPlayerId={focusedPlayerId}
+          changeFocusedPlayerId={this.changeFocusedPlayerId}
         />
       )
     );

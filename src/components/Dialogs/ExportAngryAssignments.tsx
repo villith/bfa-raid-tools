@@ -28,40 +28,41 @@ export interface IExportAngryAssignmentsProps {
 
 export interface IExportAngryAssignmentsState {
   angryAssignmentsString: string;
-  exportButtonText: string;
-  exportButtonStatus: ExportButtonStatus;
+  exportButton: IExportButton;
 }
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   root: {}
 });
 
-interface IExportButtonStates {
-  [key in ExportButtonStatus]: {
-
-  }
-}
 const exportButtonStates = {
-
-}
-
-enum ExportButtonStatus {
-  'default',
-  'copied',
-  'error'
+  default: {
+    text: 'COPY TO CLIPBOARD',
+    classNames: '',
+    color: 'primary'
+  },
+  copied: {
+    text: 'COPIED',
+    classNames: '',
+    color: 'green'
+  },
+  error: {
+    text: 'COPY TO CLIPBOARD',
+    classNames: '',
+    color: 'red'
+  },
 };
 
-enum ExportButtonText {
-  'COPY TO CLIPBOARD',
-  'COPIED',
-  'ERROR'
+interface IExportButton {
+  text: string;
+  classNames: string;
+  color: string;
 }
 
 class ExportAngryAssignments extends React.Component<WithStyles<any> & IExportAngryAssignmentsProps, IExportAngryAssignmentsState> {
   public state = {
     angryAssignmentsString: '',
-    exportButtonText: 'COPY TO CLIPBOARD',
-    exportButtonStatus: ExportButtonStatus.default,
+    exportButton: exportButtonStates.default,
   }
 
   public componentDidMount() {

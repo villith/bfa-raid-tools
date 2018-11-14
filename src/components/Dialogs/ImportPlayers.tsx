@@ -30,7 +30,7 @@ class ImportPlayers extends React.Component<WithStyles<any> & IImportPlayersProp
     selected: [] as string[],
   }
 
-  public handleClick = (event: any, id: string) => {
+  public handleClick = (id: string) => {
     const selected = [ ...this.state.selected ];
     const selectedIndex = selected.indexOf(id);
 

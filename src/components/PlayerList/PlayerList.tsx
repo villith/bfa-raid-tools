@@ -10,10 +10,12 @@ export interface IPlayerListProps {
   selected: string[];
   order: Order;
   orderBy: string;
-  handleSelectAllClick: ((event: any, checked: boolean) => void);
-  handleRequestSort: ((event: any, property: any) => void);
-  handleClick: ((event: any, id: string) => void);
+  handleSelectAllClick: (event: any, checked: boolean) => void;
+  handleRequestSort: (event: any, property: any) => void;
+  handleClick: (id: string) => void;
   players: Player[];
+  focusedPlayerId: string;
+  changeFocusedPlayerId: (id: string) => void;
 }
 
 export interface IPlayerListState {
@@ -29,7 +31,7 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPlayerListState> {
   public render() {
-    const { classes, handleRequestSort, handleSelectAllClick, handleClick, order, orderBy, players, selected } = this.props;
+    const { classes, focusedPlayerId, changeFocusedPlayerId, handleRequestSort, handleSelectAllClick, handleClick, order, orderBy, players, selected } = this.props;
     return (
       <div className={classes.tableWrapper}>
         <Table style={{ tableLayout: 'auto' }}>
@@ -48,6 +50,8 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
             orderBy={orderBy}
             selected={selected}
             sortable={true}
+            focusedPlayerId={focusedPlayerId}
+            changeFocusedPlayerId={changeFocusedPlayerId}
           />
         </Table>
       </div>
