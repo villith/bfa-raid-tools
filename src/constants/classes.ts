@@ -920,262 +920,356 @@ const CLASSES: IWOWClass[] = [
       }
     ]
   },
-  // #region UNUSED
-  // {
-  //   label: 'Monk',
-  //   specs: {
-  //     BREWMASTER: {
-  //       id: 0,
-  //       label: 'Brewmaster',
-  //       icon: 'spell_monk_brewmaster_spec',
-  //       isMelee: true,
-  //       role: Role.TANK,
-  //       cooldowns: [
-  //         {
-  //           id: 119381,
-  //           label: 'Leg Sweep',
-  //           icon: 'ability_monk_legsweep',
-  //           cooldownType: CooldownType.CROWD_CONTROL,
-  //           cooldownTime: 45
-  //         },
-  //         {
-  //           id: 235169,
-  //           label: "Archimonde's Hatred Reborn",
-  //           icon: 'spell_nature_elementalshields',
-  //           cooldownType: CooldownType.DEFENSIVE,
-  //           cooldownTime: 85,
-  //           charges: 0
-  //         }
-  //       ]
-  //     },
-  //     MISTWEAVER: {
-  //       id: 1,
-  //       label: 'Mistweaver',
-  //       icon: 'spell_monk_mistweaver_spec',
-  //       isMelee: false,
-  //       role: Role.HEALER,
-  //       cooldowns: [
-  //         {
-  //           id: 119381,
-  //           label: 'Leg Sweep',
-  //           icon: 'ability_monk_legsweep',
-  //           cooldownType: CooldownType.CROWD_CONTROL,
-  //           cooldownTime: 45
-  //         },
-  //         {
-  //           id: 116844,
-  //           label: 'Ring of Peace',
-  //           icon: 'spell_monk_ringofpeace',
-  //           cooldownType: CooldownType.CROWD_CONTROL,
-  //           cooldownTime: 45
-  //         },
-  //         {
-  //           id: 198664,
-  //           label: 'Invoke Chi-Ji, the Red Crane',
-  //           icon: 'inv_pet_cranegod',
-  //           cooldownType: CooldownType.HEALING,
-  //           cooldownTime: 180
-  //         },
-  //         {
-  //           id: 116849,
-  //           label: 'Life Cocoon',
-  //           icon: 'ability_monk_chicocoon',
-  //           cooldownType: CooldownType.HEALING,
-  //           cooldownTime: 180
-  //         },
-  //         {
-  //           id: 115310,
-  //           label: 'Revival',
-  //           icon: 'spell_monk_revival',
-  //           cooldownType: CooldownType.HEALING,
-  //           cooldownTime: 180
-  //         }
-  //       ]
-  //     },
-  //     WINDWALKER: {
-  //       id: 2,
-  //       label: 'Windwalker',
-  //       icon: 'spell_monk_windwalker_spec',
-  //       isMelee: true,
-  //       role: Role.DPS,
-  //       cooldowns: [
-  //         {
-  //           id: 119381,
-  //           label: 'Leg Sweep',
-  //           icon: 'ability_monk_legsweep',
-  //           cooldownType: CooldownType.CROWD_CONTROL,
-  //           cooldownTime: 45
-  //         },
-  //         {
-  //           id: 116844,
-  //           label: 'Ring of Peace',
-  //           icon: 'spell_monk_ringofpeace',
-  //           cooldownType: CooldownType.CROWD_CONTROL,
-  //           cooldownTime: 45
-  //         }
-  //       ]
-  //     }
-  //   }
-  // },
-  // {
-  //   label: 'Paladin',
-  //   specs: {
-  //     HOLY: {
-  //       id: 0,
-  //       label: 'Holy',
-  //       icon: 'spell_holy_holybolt',
-  //       isMelee: false,
-  //       role: Role.HEALER,
-  //       cooldowns: [
-  //         {
-  //           id: 31821,
-  //           label: 'Aura Mastery',
-  //           icon: 'spell_holy_auramastery',
-  //           cooldownType: CooldownType.HEALING,
-  //           cooldownTime: 180
-  //         },
-  //         // AVENGING_WRATH: {
-  //         //   id: 31842,
-  //         //   label: 'Avenging Wrath2',
-  //         //   icon: 'spell_holy_avenginewrath',
-  //         //   cooldownType: CooldownType.HEALING,
-  //         //   cooldownTime: 120
-  //         // },
-  //         {
-  //           id: 1022,
-  //           label: 'Blessing of Protection',
-  //           icon: 'spell_holy_sealofprotection',
-  //           cooldownType: CooldownType.IMMUNITY,
-  //           cooldownTime: 300
-  //         },
-  //         {
-  //           id: 6940,
-  //           label: 'Blessing of Sacrifice',
-  //           icon: 'spell_holy_sealofsacrifice',
-  //           cooldownType: CooldownType.EXTERNAL,
-  //           cooldownTime: 150
-  //         },
-  //         {
-  //           id: 642,
-  //           label: 'Divine Shield',
-  //           icon: 'spell_holy_divineshield',
-  //           cooldownType: CooldownType.IMMUNITY,
-  //           cooldownTime: 300
-  //         },
-  //         {
-  //           id: 633,
-  //           label: 'Lay on Hands',
-  //           icon: 'spell_holy_layonhands',
-  //           cooldownType: CooldownType.EXTERNAL,
-  //           cooldownTime: 600
-  //         }
-  //       ]
-  //     },
-  //     PROTECTION: {
-  //       id: 1,
-  //       label: 'Protection',
-  //       icon: 'spell_holy_devotionaura',
-  //       isMelee: true,
-  //       role: Role.TANK,
-  //       cooldowns: [
-  //         {
-  //           id: 235169,
-  //           label: "Archimonde's Hatred Reborn",
-  //           icon: 'spell_nature_elementalshields',
-  //           cooldownType: CooldownType.DEFENSIVE,
-  //           cooldownTime: 85,
-  //           charges: 0
-  //         },
-  //         {
-  //           id: 204150,
-  //           label: 'Aegis of Light',
-  //           icon: 'spell_holy_greaterblessingoflight',
-  //           cooldownType: CooldownType.HEALING,
-  //           cooldownTime: 180
-  //         },
-  //         {
-  //           id: 1022,
-  //           label: 'Blessing of Protection',
-  //           icon: 'spell_holy_sealofprotection',
-  //           cooldownType: CooldownType.IMMUNITY,
-  //           cooldownTime: 300
-  //         },
-  //         {
-  //           id: 6940,
-  //           label: 'Blessing of Sacrifice',
-  //           icon: 'spell_holy_sealofsacrifice',
-  //           cooldownType: CooldownType.EXTERNAL,
-  //           cooldownTime: 150
-  //         },
-  //         {
-  //           id: 204018,
-  //           label: 'Blessing of Spellwarding',
-  //           icon: 'spell_holy_blessingofprotection',
-  //           cooldownType: CooldownType.IMMUNITY,
-  //           cooldownTime: 165
-  //         },
-  //         {
-  //           id: 642,
-  //           label: 'Divine Shield',
-  //           icon: 'spell_holy_divineshield',
-  //           cooldownType: CooldownType.IMMUNITY,
-  //           cooldownTime: 285
-  //         },
-  //         {
-  //           id: 633,
-  //           label: 'Lay on Hands',
-  //           icon: 'spell_holy_layonhands',
-  //           cooldownType: CooldownType.EXTERNAL,
-  //           cooldownTime: 600
-  //         },
-  //         {
-  //           id: 209202,
-  //           label: 'Eye of Tyr',
-  //           icon: 'inv_shield_1h_artifactnorgannon_d_01',
-  //           cooldownType: CooldownType.DEFENSIVE,
-  //           cooldownTime: 60
-  //         },
-  //         {
-  //           id: 31850,
-  //           label: 'Ardent Defender',
-  //           icon: 'spell_holy_ardentdefender',
-  //           cooldownType: CooldownType.IMMUNITY,
-  //           cooldownTime: 120
-  //         }
-  //       ]
-  //     },
-  //     RETRIBUTION: {
-  //       id: 2,
-  //       label: 'Retribution',
-  //       icon: 'spell_holy_auraoflight',
-  //       isMelee: true,
-  //       role: Role.DPS,
-  //       cooldowns: [
-  //         {
-  //           id: 1022,
-  //           label: 'Blessing of Protection',
-  //           icon: 'spell_holy_sealofprotection',
-  //           cooldownType: CooldownType.IMMUNITY,
-  //           cooldownTime: 300
-  //         },
-  //         {
-  //           id: 642,
-  //           label: 'Divine Shield',
-  //           icon: 'spell_holy_divineshield',
-  //           cooldownType: CooldownType.IMMUNITY,
-  //           cooldownTime: 300
-  //         },
-  //         {
-  //           id: 633,
-  //           label: 'Lay on Hands',
-  //           icon: 'spell_holy_layonhands',
-  //           cooldownType: CooldownType.EXTERNAL,
-  //           cooldownTime: 600
-  //         }
-  //       ]
-  //     }
-  //   }
-  // },
+  {
+    id: WOWClass.MONK,
+    label: 'Monk',
+    icon: 'class_monk',
+    classColor: '',
+    armorType: ArmorType.LEATHER,
+    specs: [
+      {
+        id: WOWSpec.BREWMASTER,
+        name: 'Brewmaster',
+        icon: 'spell_monk_brewmaster_spec',
+        isMelee: true,
+        role: Role.TANK,
+        primaryStatType: PrimaryStatType.AGILITY,
+        WOWClass: WOWClass.MONK,
+        weaponTypes: [WeaponType.POLEARM, WeaponType.STAFF],
+        cooldowns: [
+          {
+            spellId: 119381,
+            label: 'Leg Sweep',
+            icon: 'ability_monk_legsweep',
+            cooldownType: CooldownType.CROWD_CONTROL,
+            cooldownTime: 45,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.MONK,
+            WOWSpec: WOWSpec.BREWMASTER
+          }
+        ]
+      },
+      {
+        id: WOWSpec.MISTWEAVER,
+        name: 'Mistweaver',
+        icon: 'spell_monk_mistweaver_spec',
+        isMelee: false,
+        role: Role.HEALER,
+        primaryStatType: PrimaryStatType.INTELLECT,
+        WOWClass: WOWClass.MONK,
+        weaponTypes: [WeaponType.STAFF, WeaponType.ONEHAND_MACE, WeaponType.ONEHAND_SWORD, WeaponType.OFFHAND],
+        cooldowns: [
+          {
+            spellId: 119381,
+            label: 'Leg Sweep',
+            icon: 'ability_monk_legsweep',
+            cooldownType: CooldownType.CROWD_CONTROL,
+            cooldownTime: 45,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.MONK,
+            WOWSpec: WOWSpec.MISTWEAVER
+          },
+          {
+            spellId: 116844,
+            label: 'Ring of Peace',
+            icon: 'spell_monk_ringofpeace',
+            cooldownType: CooldownType.CROWD_CONTROL,
+            cooldownTime: 45,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.MONK,
+            WOWSpec: WOWSpec.MISTWEAVER
+          },
+          {
+            spellId: 198664,
+            label: 'Invoke Chi-Ji, the Red Crane',
+            icon: 'inv_pet_cranegod',
+            cooldownType: CooldownType.HEALING,
+            cooldownTime: 180,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.MONK,
+            WOWSpec: WOWSpec.MISTWEAVER
+          },
+          {
+            spellId: 116849,
+            label: 'Life Cocoon',
+            icon: 'ability_monk_chicocoon',
+            cooldownType: CooldownType.EXTERNAL,
+            cooldownTime: 180,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.MONK,
+            WOWSpec: WOWSpec.MISTWEAVER
+          },
+          {
+            spellId: 115310,
+            label: 'Revival',
+            icon: 'spell_monk_revival',
+            cooldownType: CooldownType.HEALING,
+            cooldownTime: 180,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.MONK,
+            WOWSpec: WOWSpec.MISTWEAVER
+          }
+        ]
+      },
+      {
+        id: WOWSpec.WINDWALKER,
+        name: 'Windwalker',
+        icon: 'spell_monk_windwalker_spec',
+        isMelee: true,
+        role: Role.DPS,
+        primaryStatType: PrimaryStatType.AGILITY,
+        WOWClass: WOWClass.MONK,
+        weaponTypes: [WeaponType.FIST, WeaponType.ONEHAND_SWORD, WeaponType.ONEHAND_MACE],
+        cooldowns: [
+          {
+            spellId: 119381,
+            label: 'Leg Sweep',
+            icon: 'ability_monk_legsweep',
+            cooldownType: CooldownType.CROWD_CONTROL,
+            cooldownTime: 45,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.MONK,
+            WOWSpec: WOWSpec.WINDWALKER
+          },
+          {
+            spellId: 116844,
+            label: 'Ring of Peace',
+            icon: 'spell_monk_ringofpeace',
+            cooldownType: CooldownType.CROWD_CONTROL,
+            cooldownTime: 45,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.MONK,
+            WOWSpec: WOWSpec.WINDWALKER
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: WOWClass.PALADIN,
+    label: 'Paladin',
+    icon: 'class_paladin',
+    classColor: '',
+    armorType: ArmorType.PLATE,
+    specs: [
+      {
+        id: WOWSpec.HOLY_PALADIN,
+        name: 'Holy',
+        icon: 'spell_holy_holybolt',
+        isMelee: false,
+        role: Role.HEALER,
+        primaryStatType: PrimaryStatType.INTELLECT,
+        WOWClass: WOWClass.PALADIN,
+        weaponTypes: [WeaponType.ONEHAND_SWORD, WeaponType.ONEHAND_MACE, WeaponType.SHIELD],
+        cooldowns: [
+          {
+            spellId: 31821,
+            label: 'Aura Mastery',
+            icon: 'spell_holy_auramastery',
+            cooldownType: CooldownType.HEALING,
+            cooldownTime: 180,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.HOLY_PALADIN
+          },
+          // AVENGING_WRATH: {
+          //   id: 31842,
+          //   label: 'Avenging Wrath2',
+          //   icon: 'spell_holy_avenginewrath',
+          //   cooldownType: CooldownType.HEALING,
+          //   cooldownTime: 120
+          // },
+          {
+            spellId: 1022,
+            label: 'Blessing of Protection',
+            icon: 'spell_holy_sealofprotection',
+            cooldownType: CooldownType.IMMUNITY,
+            cooldownTime: 300,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.HOLY_PALADIN
+          },
+          {
+            spellId: 6940,
+            label: 'Blessing of Sacrifice',
+            icon: 'spell_holy_sealofsacrifice',
+            cooldownType: CooldownType.EXTERNAL,
+            cooldownTime: 150,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.HOLY_PALADIN
+          },
+          {
+            spellId: 642,
+            label: 'Divine Shield',
+            icon: 'spell_holy_divineshield',
+            cooldownType: CooldownType.IMMUNITY,
+            cooldownTime: 300,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.HOLY_PALADIN
+          },
+          {
+            spellId: 633,
+            label: 'Lay on Hands',
+            icon: 'spell_holy_layonhands',
+            cooldownType: CooldownType.EXTERNAL,
+            cooldownTime: 600,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.HOLY_PALADIN
+          }
+        ]
+      },
+      {
+        id: WOWSpec.PROTECTION_PALADIN,
+        name: 'Protection',
+        icon: 'spell_holy_devotionaura',
+        isMelee: true,
+        role: Role.TANK,
+        primaryStatType: PrimaryStatType.STRENGTH,
+        WOWClass: WOWClass.PALADIN,
+        weaponTypes: [WeaponType.ONEHAND_SWORD, WeaponType.ONEHAND_MACE, WeaponType.ONEHAND_AXE, WeaponType.SHIELD],
+        cooldowns: [
+          {
+            spellId: 204150,
+            label: 'Aegis of Light',
+            icon: 'spell_holy_greaterblessingoflight',
+            cooldownType: CooldownType.HEALING,
+            cooldownTime: 180,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.PROTECTION_PALADIN
+          },
+          {
+            spellId: 1022,
+            label: 'Blessing of Protection',
+            icon: 'spell_holy_sealofprotection',
+            cooldownType: CooldownType.IMMUNITY,
+            cooldownTime: 300,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.PROTECTION_PALADIN
+          },
+          {
+            spellId: 6940,
+            label: 'Blessing of Sacrifice',
+            icon: 'spell_holy_sealofsacrifice',
+            cooldownType: CooldownType.EXTERNAL,
+            cooldownTime: 150,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.PROTECTION_PALADIN
+          },
+          {
+            spellId: 204018,
+            label: 'Blessing of Spellwarding',
+            icon: 'spell_holy_blessingofprotection',
+            cooldownType: CooldownType.IMMUNITY,
+            cooldownTime: 165,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.PROTECTION_PALADIN
+          },
+          {
+            spellId: 642,
+            label: 'Divine Shield',
+            icon: 'spell_holy_divineshield',
+            cooldownType: CooldownType.IMMUNITY,
+            cooldownTime: 285,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.PROTECTION_PALADIN
+          },
+          {
+            spellId: 633,
+            label: 'Lay on Hands',
+            icon: 'spell_holy_layonhands',
+            cooldownType: CooldownType.EXTERNAL,
+            cooldownTime: 600,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.PROTECTION_PALADIN
+          },
+          {
+            spellId: 31850,
+            label: 'Ardent Defender',
+            icon: 'spell_holy_ardentdefender',
+            cooldownType: CooldownType.IMMUNITY,
+            cooldownTime: 120,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.PROTECTION_PALADIN
+          }
+        ]
+      },
+      {
+        id: WOWSpec.RETRIBUTION,
+        name: 'Retribution',
+        icon: 'spell_holy_auraoflight',
+        isMelee: true,
+        role: Role.DPS,
+        primaryStatType: PrimaryStatType.STRENGTH,
+        WOWClass: WOWClass.PALADIN,
+        weaponTypes: [WeaponType.TWOHAND_AXE, WeaponType.TWOHAND_MACE, WeaponType.TWOHAND_SWORD],
+        cooldowns: [
+          {
+            spellId: 1022,
+            label: 'Blessing of Protection',
+            icon: 'spell_holy_sealofprotection',
+            cooldownType: CooldownType.IMMUNITY,
+            cooldownTime: 300,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.RETRIBUTION
+          },
+          {
+            spellId: 642,
+            label: 'Divine Shield',
+            icon: 'spell_holy_divineshield',
+            cooldownType: CooldownType.IMMUNITY,
+            cooldownTime: 300,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.RETRIBUTION
+          },
+          {
+            spellId: 633,
+            label: 'Lay on Hands',
+            icon: 'spell_holy_layonhands',
+            cooldownType: CooldownType.EXTERNAL,
+            cooldownTime: 600,
+            altCooldownTime: null,
+            charges: 1,
+            WOWClass: WOWClass.PALADIN,
+            WOWSpec: WOWSpec.RETRIBUTION
+          }
+        ]
+      }
+    ]
+  },
   // {
   //   id: WOWClass.DEMON_HUNTER,
   //   label: 'Demon Hunter',
@@ -1456,8 +1550,7 @@ const CLASSES: IWOWClass[] = [
   //       ]
   //     }
   //   ]
-  // },
-  // #endregion
+  // }
 ];
 
 export { CLASSES, IWOWClass };

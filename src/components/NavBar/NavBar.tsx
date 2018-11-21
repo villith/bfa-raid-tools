@@ -131,7 +131,7 @@ class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarStat
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant='title' color='inherit' className={classes.flex}>
+            <Typography variant='h6' color='inherit' className={classes.flex}>
               BFA Raid Tools
             </Typography>
             <div className={classes.action}>

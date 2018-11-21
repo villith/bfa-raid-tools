@@ -119,7 +119,7 @@ class BossAbilityListRow extends React.Component<WithStyles<any> & IBossAbilityL
               <Typography>{secondsToMinutes(timer)}</Typography>
             </Grid>
             <Grid item={true} xs={true} alignItems='center'>
-              <Button variant='flat' color='primary' onClick={this.toggleAddCooldown}>
+              <Button variant='text' color='primary' onClick={this.toggleAddCooldown}>
                   <AddIcon />
               </Button>
             </Grid>

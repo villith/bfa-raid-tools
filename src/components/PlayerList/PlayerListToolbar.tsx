@@ -73,11 +73,11 @@ class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToo
       <Toolbar>
         <div className={classes.title}>
           {numSelected > 0 ? (
-            <Typography color='inherit' variant='subheading'>
+            <Typography color='inherit' variant='subtitle1'>
               {numSelected} selected
             </Typography>
           ) : (
-            <Typography variant='title' id='tableTitle'>
+            <Typography variant='h6' id='tableTitle'>
               ROSTER
             </Typography>
           )}
@@ -87,12 +87,12 @@ class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToo
           {addPlayerVisible ? (
             <Aux>
               <Tooltip title='Confirm'>
-                <Button variant='flat' className={classes.confirmButton} onClick={confirmAddPlayer}>
+                <Button variant='text' className={classes.confirmButton} onClick={confirmAddPlayer}>
                   <DoneIcon />
                 </Button>
               </Tooltip>
               <Tooltip title='Cancel'>
-                <Button variant='flat' color='secondary' className={classes.cancelButton} onClick={toggleAddPlayer}>
+                <Button variant='text' color='secondary' className={classes.cancelButton} onClick={toggleAddPlayer}>
                   <ClearIcon />
                 </Button>
               </Tooltip> 
@@ -101,20 +101,20 @@ class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToo
             <Aux>
               {type === PlayerListType.ALL && 
                 <Tooltip title='Add Test Players'>
-                  <Button variant='flat' color='primary' onClick={buildTestPlayerList}>
+                  <Button variant='text' color='primary' onClick={buildTestPlayerList}>
                     <MoodIcon />
                   </Button>
                 </Tooltip>
               }
               {type === PlayerListType.BOSS_ROSTER &&
                 <Tooltip title='Import Players'>
-                  <Button variant='flat' color='primary' onClick={toggleImportPlayers}>
+                  <Button variant='text' color='primary' onClick={toggleImportPlayers}>
                     <GroupAddIcon />
                   </Button>
                 </Tooltip>
               }
               <Tooltip title='Add New Player'>
-                <Button variant='flat' color='primary' onClick={toggleAddPlayer}>
+                <Button variant='text' color='primary' onClick={toggleAddPlayer}>
                   <AddIcon />
                 </Button>
               </Tooltip>
@@ -122,7 +122,7 @@ class PlayerListToolbar extends React.Component<WithStyles<any> & IPlayerListToo
           )}
           {numSelected > 0 ? (
             <Tooltip title='Delete'>
-              <Button variant='flat' color='secondary' onClick={deletePlayers}>
+              <Button variant='text' color='secondary' onClick={deletePlayers}>
                 <DeleteIcon />
               </Button>
             </Tooltip>

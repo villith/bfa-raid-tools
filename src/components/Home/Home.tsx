@@ -5,6 +5,7 @@ import { IBossMap } from '../../classes/Boss';
 import { Player, PlayerListType } from '../../classes/Player';
 import { BossUldir } from '../../enums/bossUldir';
 import PlayerListContainer from '../PlayerList/PlayerListContainer';
+import TwitchWidgetContainer from '../Widgets/TwitchWidget/TwitchWidgetContainer';
 import { Aux } from '../winAux';
 
 export interface IHomeProps {
@@ -46,7 +47,9 @@ class Home extends React.Component<WithStyles<any> & IHomeProps, IHomeState> {
             changeFocusedPlayerId={changeFocusedPlayerId}
           />
         </Grid>
-        <Grid item={true} xs={6} md={8} />
+        <Grid item={true} xs={6} md={4}>
+          <TwitchWidgetContainer />
+        </Grid>
       </Aux>
     );
   }

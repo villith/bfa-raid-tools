@@ -93,7 +93,7 @@ class ConfirmPlayerDelete extends React.Component<WithStyles<any> & IConfirmPlay
                   <Grid container={true} className={classes.root} key={key}>
                     <Grid item={true} xs={12} className={classes.item}>
                       <Avatar className={classes.avatar} src={iconURL} />
-                      <Typography variant='title'>{boss.label}</Typography>
+                      <Typography variant='h6'>{boss.label}</Typography>
                     </Grid>
                     {bossRoster.map((player, index) => {
                       const classInfo = getClassInfo(player.playerClass);
@@ -102,7 +102,7 @@ class ConfirmPlayerDelete extends React.Component<WithStyles<any> & IConfirmPlay
                         <Grid item={true} xs={12} key={index} className={classes.item}>
                           <img className={classes.icon} src={`classIcons/${classInfo.icon}.jpg`} />
                           <img className={classes.icon} src={`classIcons/${specInfo.icon}.jpg`} />
-                          <Typography variant='body1'>{player.playerName}</Typography>
+                          <Typography>{player.playerName}</Typography>
                         </Grid>
                       );
                     })}

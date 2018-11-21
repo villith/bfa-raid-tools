@@ -1,7 +1,9 @@
 import { CustomTreeData, DataTypeProvider, TreeDataState } from '@devexpress/dx-react-grid';
 import { Grid, Table, TableColumnResizing, TableHeaderRow, TableTreeColumn } from '@devexpress/dx-react-grid-material-ui';
 import { Button, Paper, StyleRulesCallback, Theme, Tooltip, WithStyles, withStyles } from '@material-ui/core';
+import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { Add as AddIcon } from '@material-ui/icons';
+import * as classNames from 'classnames';
 import * as React from 'react';
 import { COOLDOWNTYPES } from 'src/constants/cooldownTypes';
 import { CooldownType } from 'src/enums/cooldownType';
@@ -23,6 +25,7 @@ export interface IBossAbilityListProps {
   bossAbilities: BossAbility[];
   cooldowns: Cooldown[];
   currentPhase: number;
+  focusedPlayerId: string;
   handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
   phases: Phase[];
   players: Player[];
@@ -35,6 +38,24 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   },
   cooldownTypeIcon: {
     padding: theme.spacing.unit / 2
+  },
+  row: {
+    borderLeftWidth: '4px',
+    borderLeftColor: 'transparent',
+    borderLeftStyle: 'solid'
+  },
+  focusedAbilityRow: {
+    borderLeftColor: theme.palette.secondary.main,
+  },
+  focusedCooldownRow: {
+    borderLeftColor: theme.palette.secondary.main,
+    backgroundColor: lighten(theme.palette.secondary.light, 0.95),
+    '& td': {
+      fontWeight: 'bold'
+    }
+  },
+  table: {
+    borderCollapse: 'collapse'
   }
 });
 
@@ -100,10 +121,11 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
     const { id } = row;
     if (row.hasOwnProperty('cooldownTypes')) {
       const addCooldownComponent =
-        // tslint:disable-next-line:jsx-no-lambda
-        <Button variant='flat' color='primary' onClick={() => this.toggleCooldownPicker(id)}>
-          <AddIcon />
-        </Button>
+        <Tooltip title='Assign Cooldown'>
+          <Button variant='text' color='primary' onClick={() => this.toggleCooldownPicker(id)}>
+            <AddIcon />
+          </Button>
+        </Tooltip>
       return addCooldownComponent;
     }
     return null;
@@ -181,6 +203,39 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
     }
   }
 
+  public getRowComponent = (tableRowProps: Table.DataRowProps) => {
+    const { cooldowns, classes, focusedPlayerId } = this.props;
+    const { row } = tableRowProps;
+    const { id } = row;
+    const filteredCooldowns = cooldowns.filter(cd => cd.owner === focusedPlayerId);
+    let abilityResult = false;
+    let cooldownResult = false;
+    for (const cd of filteredCooldowns) {
+      if (cd.id === id) {
+        cooldownResult = true;
+        break;
+      };
+      if (cd.bossAbilities.includes(id)) {
+        abilityResult = true;
+        break;
+      }
+    }
+    const rowClassesArray = [classes.row];
+    if (abilityResult) { rowClassesArray.push(classes.focusedAbilityRow); }
+    if (cooldownResult) { rowClassesArray.push(classes.focusedCooldownRow); }
+    const rowClasses = classNames(rowClassesArray);
+
+    return <Table.Row
+      {...tableRowProps}
+      className={rowClasses}
+    />
+  }
+
+  public getTableComponent = (tableProps: any) => {
+    const { classes } = this.props;
+    return <Table.Table {...tableProps} className={classes.table} />
+  }
+
   public toggleCooldownPicker = (id: string) => {
     const { addCooldownVisibleMap } = this.state;
     addCooldownVisibleMap[id] = !addCooldownVisibleMap[id];
@@ -221,7 +276,10 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
           <CustomTreeData            
             getChildRows={this.getChildRows}
           />
-          <Table />
+          <Table
+            tableComponent={this.getTableComponent}
+            rowComponent={this.getRowComponent}
+          />
           <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
           <TableHeaderRow /> 
           <TableTreeColumn for='icon' />

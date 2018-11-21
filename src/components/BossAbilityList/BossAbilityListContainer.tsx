@@ -50,7 +50,7 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
   
   public render() {
     const { angryAssignmentsExportOpen } = this.state;
-    const { bossAbilities, classes, cooldowns, currentPhase, handleChangePhase, handleChangePhaseTimer, handleCooldownPickerChange, phases, players } = this.props;
+    const { bossAbilities, classes, cooldowns, currentPhase, focusedPlayerId, handleChangePhase, handleChangePhaseTimer, handleCooldownPickerChange, phases, players } = this.props;
     const phaseStartTime = phases[phases.findIndex(p => p.id === currentPhase)].timer || 0;
     const phaseEndTime = currentPhase + 1 < phases.length
       ? phases[phases.findIndex(p => p.id === currentPhase + 1)].timer
@@ -72,7 +72,10 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
           toggleAngryAssignmentsDialog={this.toggleAngryAssignmentsDialog}
         />
         <PhaseTabContainer
+          bossAbilities={bossAbilities}
+          cooldowns={cooldowns}
           currentPhase={currentPhase}
+          focusedPlayerId={focusedPlayerId}
           handleChangePhase={handleChangePhase}
           handleChangePhaseTimer={handleChangePhaseTimer}
           phases={phases}
@@ -81,6 +84,7 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
           bossAbilities={filteredBossAbilities}
           cooldowns={cooldowns}
           currentPhase={currentPhase}
+          focusedPlayerId={focusedPlayerId}
           handleCooldownPickerChange={handleCooldownPickerChange}
           phases={phases}
           players={players}

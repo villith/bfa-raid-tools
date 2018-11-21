@@ -35,6 +35,8 @@ import MainContent from '../MainContent/MainContent';
 import NavBar from '../NavBar/NavBar';
 import SideMenu from '../SideMenu/SideMenu';
 import StrategyList from '../StrategyList/StrategyList';
+import TwitchWidgetContainer from '../Widgets/TwitchWidget/TwitchWidgetContainer';
+import { Aux } from '../winAux';
 
 const nullStrategy: Strategy = {
   id: null,
@@ -450,12 +452,19 @@ class App extends React.Component<WithStyles<any>, IAppState> {
         ) : (
           <Grid container={true} spacing={16} className={classes.content}>
             {currentStrategy.id === null ? (
-              <StrategyList
-                handleToggleFavourite={this.handleToggleFavourite}
-                preferences={preferences}
-                strategies={strategies}
-                selectStrategy={this.handleSelectStrategy}
-              />
+              <Aux>
+                <Grid item={true} xs={8} sm={9}>
+                  <StrategyList
+                    handleToggleFavourite={this.handleToggleFavourite}
+                    preferences={preferences}
+                    strategies={strategies}
+                    selectStrategy={this.handleSelectStrategy}
+                  />
+                </Grid>
+                <Grid item={true} xs={4} sm={3}>
+                  <TwitchWidgetContainer />
+                </Grid>
+              </Aux>
             ) : (
               <MainContent
                 boss={boss}

@@ -69,7 +69,7 @@ class StrategyCard extends React.Component<WithStyles<any> & IStrategyCardProps,
         <CardContent>
           <div className={classes.cardHeader}>
             <div className={classes.cardTitle} onClick={this.handleSelectStrategy}>
-              <Typography variant={'headline'}>
+              <Typography variant='h5'>
                 {title}
               </Typography>
             </div>

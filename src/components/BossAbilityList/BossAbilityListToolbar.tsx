@@ -30,14 +30,14 @@ class BossAbilityListToolbar extends React.Component<WithStyles<any> & IBossAbil
     return (
       <Toolbar>
         <div className={classes.title}>
-          <Typography variant='title' id='BossAbilityListTitle'>
+          <Typography variant='h6' id='BossAbilityListTitle'>
             COOLDOWNS
           </Typography>
         </div>
         <div className={classes.spacer} />
         <div className={classes.actions}>
           <Tooltip title='Filter List'>
-            <Button variant='flat' onClick={toggleAngryAssignmentsDialog}>
+            <Button variant='text' onClick={toggleAngryAssignmentsDialog}>
               <ShareIcon />
             </Button>
           </Tooltip>
