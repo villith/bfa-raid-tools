@@ -34,7 +34,7 @@ class PlayerList extends React.Component<WithStyles<any> & IPlayerListProps, IPl
     const { classes, focusedPlayerId, changeFocusedPlayerId, handleRequestSort, handleSelectAllClick, handleClick, order, orderBy, players, selected } = this.props;
     return (
       <div className={classes.tableWrapper}>
-        <Table style={{ tableLayout: 'auto' }}>
+        <Table padding='dense' style={{ tableLayout: 'auto' }}>
           <PlayerListHeader
             numSelected={selected.length}
             order={order}

@@ -1,5 +1,6 @@
 import { Paper, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
+import { Boss } from 'src/classes/Boss';
 
 import { BossAbility } from '../../classes/BossAbility';
 import { Cooldown } from '../../classes/Cooldown';
@@ -11,12 +12,14 @@ import BossAbilityList from './BossAbilityList';
 import BossAbilityListToolbar from './BossAbilityListToolbar';
 
 export interface IBossAbilityListContainerProps {
+  boss: Boss;
   bossAbilities: BossAbility[];
   cooldowns: Cooldown[];
   currentPhase: number;
   handleChangePhase: (event: any, newPhase: number) => void;
-  handleChangePhaseTimer: (event: any, phaseId: number) => void;
+  handleChangePhaseTimers: (timers: number[]) => void;
   handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
+  handleRemoveCooldown: (pid: string, cid: string, timer: number) => void;
   phases: Phase[];
   players: Player[];
   focusedPlayerId: string;
@@ -50,14 +53,17 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
   
   public render() {
     const { angryAssignmentsExportOpen } = this.state;
-    const { bossAbilities, classes, cooldowns, currentPhase, focusedPlayerId, handleChangePhase, handleChangePhaseTimer, handleCooldownPickerChange, phases, players } = this.props;
+    const { boss, bossAbilities, classes, cooldowns, currentPhase, focusedPlayerId, handleChangePhase, handleChangePhaseTimers, handleCooldownPickerChange, handleRemoveCooldown, phases, players } = this.props;
     const phaseStartTime = phases[phases.findIndex(p => p.id === currentPhase)].timer || 0;
     const phaseEndTime = currentPhase + 1 < phases.length
       ? phases[phases.findIndex(p => p.id === currentPhase + 1)].timer
       : 9999;
+    console.log(bossAbilities);
     const filteredBossAbilities = bossAbilities
       .filter(ba => ba.timer >= phaseStartTime && ba.timer < phaseEndTime)
       .sort((a, b) => a.timer - b.timer);
+    console.log(phaseStartTime, phaseEndTime);
+    console.log(filteredBossAbilities);
     return (
       <Paper className={classes.root}>
         <ExportAngryAssignments
@@ -68,7 +74,10 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
           closeDialog={this.closeAngryAssignmentsDialog}
           exportAngryAssignments={this.handleExportAngryAssignments}
         />
-        <BossAbilityListToolbar 
+        <BossAbilityListToolbar
+          boss={boss}
+          handleChangePhaseTimers={handleChangePhaseTimers}
+          phases={phases}
           toggleAngryAssignmentsDialog={this.toggleAngryAssignmentsDialog}
         />
         <PhaseTabContainer
@@ -77,7 +86,6 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
           currentPhase={currentPhase}
           focusedPlayerId={focusedPlayerId}
           handleChangePhase={handleChangePhase}
-          handleChangePhaseTimer={handleChangePhaseTimer}
           phases={phases}
         />
         <BossAbilityList
@@ -88,6 +96,7 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
           handleCooldownPickerChange={handleCooldownPickerChange}
           phases={phases}
           players={players}
+          handleRemoveCooldown={handleRemoveCooldown}
          />
       </Paper>
     );

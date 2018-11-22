@@ -28,6 +28,9 @@ const buildBossAbility = (id: SpellId) => {
 };
 
 const TalocEncounter = (phases: Phase[], existingAbilities: BossAbility[]) => {
+  console.log('===TALOC ENCOUNTER===');
+  console.log(phases);
+  console.log(existingAbilities);
   const bossAbilityList: BossAbility[] = [];
 
   const plasmaDischarge = bossAbilities[SpellId.PLASMA_DISCHARGE];
@@ -53,7 +56,7 @@ const TalocEncounter = (phases: Phase[], existingAbilities: BossAbility[]) => {
     pTwoAC[key] = 0
     pThreeAC[key] = 0
   });
-  
+
   // PHASE 1
 
   if (existingAbilities.length > 0) {
@@ -67,56 +70,61 @@ const TalocEncounter = (phases: Phase[], existingAbilities: BossAbility[]) => {
   else {
     bossAbilityList.push(createNewBossAbility(plasmaDischarge, plasmaDischarge.firstCast!));
     pOneAC[plasmaDischarge.spellId] += 1;
-
+  
     bossAbilityList.push(createNewBossAbility(cudgelOfGore, cudgelOfGore.firstCast!));
     pOneAC[cudgelOfGore.spellId] += 1;
-
+  
     bossAbilityList.push(createNewBossAbility(retrieveCudgel, retrieveCudgel.firstCast!));
     pOneAC[retrieveCudgel.spellId] += 1;
-
+  
     bossAbilityList.push(createNewBossAbility(enlargedHeart, enlargedHeart.firstCast!));
     pOneAC[enlargedHeart.spellId] += 1;
-
+  
     bossAbilityList.push(createNewBossAbility(cloggedArteries, cloggedArteries.firstCast!));
     pOneAC[cloggedArteries.spellId] += 1;
+  }
 
-    // PHASE 2 - Begins at 60%
+  // PHASE 2 - Begins at 60%
 
-    if (existingAbilities.length > 0) {
-      existingAbilities.map(ability => {
-        if (phaseWindow(pTwoTimer, pThreeTimer, ability.timer)) {
-          bossAbilityList.push(createExisitingBossAbility(ability, ability.timer));
-          pTwoAC[ability.spellId] += 1;
-        }
-      });
-    }
+  if (existingAbilities.length > 0) {
+    existingAbilities.map(ability => {
+      if (phaseWindow(pTwoTimer, pThreeTimer, ability.timer)) {
+        bossAbilityList.push(createExisitingBossAbility(ability, ability.timer));
+        pTwoAC[ability.spellId] += 1;
+      }
+    });
+  }
 
-    // PHASE 3 - Begins 88.8 seconds after Phase 2
-    
-    if (existingAbilities.length > 0) {
-      existingAbilities.map(ability => {
-        if (phaseWindow(pThreeTimer, 9999, ability.timer)) {
-          bossAbilityList.push(createExisitingBossAbility(ability, ability.timer));
-          pThreeAC[ability.spellId] += 1;
-        }
-      });
-    }
-
+  // PHASE 3 - Begins 88.8 seconds after Phase 2
+  
+  if (existingAbilities.length > 0) {
+    console.log('phase3');
+    existingAbilities.map(ability => {
+      console.log('phase3 loop');
+      if (phaseWindow(pThreeTimer, 9999, ability.timer)) {
+        console.log('phase3 passed timer');
+        bossAbilityList.push(createExisitingBossAbility(ability, ability.timer));
+        pThreeAC[ability.spellId] += 1;
+      }
+    });
+  }
+  else {
     bossAbilityList.push(createNewBossAbility(plasmaDischarge, plasmaDischarge.firstCast! + pThreeTimer));
     pOneAC[plasmaDischarge.spellId] += 1;
-
+  
     bossAbilityList.push(createNewBossAbility(cudgelOfGore, cudgelOfGore.firstCast! + pThreeTimer));
     pOneAC[cudgelOfGore.spellId] += 1;
-
+  
     bossAbilityList.push(createNewBossAbility(retrieveCudgel, retrieveCudgel.firstCast! + pThreeTimer));
     pOneAC[retrieveCudgel.spellId] += 1;
-
+  
     bossAbilityList.push(createNewBossAbility(enlargedHeart, enlargedHeart.firstCast! + pThreeTimer));
     pOneAC[enlargedHeart.spellId] += 1;
-
+  
     bossAbilityList.push(createNewBossAbility(cloggedArteries, cloggedArteries.firstCast! + pThreeTimer));
     pOneAC[cloggedArteries.spellId] += 1;
   }
+
   return bossAbilityList;
 };
 
@@ -146,7 +154,9 @@ const createExisitingBossAbility = (ability: BossAbility, timer: number) => {
 };
 
 const phaseWindow = (pOne: number, pTwo: number, timer: number) => {
-  return timer >= pOne && timer < pTwo;
+  console.log(pOne, pTwo, timer);
+  const result = timer >= pOne && timer < pTwo;
+  return result;
 };
 
 abilities.map(ability => buildBossAbility(ability.spellId));

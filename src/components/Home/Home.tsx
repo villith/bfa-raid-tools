@@ -33,13 +33,14 @@ class Home extends React.Component<WithStyles<any> & IHomeProps, IHomeState> {
     const { addPlayers, addPlayersToBoss, buildTestPlayerList, deletePlayers, deletePlayersFromBoss, focusedPlayerId, changeFocusedPlayerId, players } = this.props;
     return (
       <Aux>
-        <Grid item={true} xs={6} md={4}>
+        <Grid item={true} xs={6} sm={6}>
           <PlayerListContainer
             addPlayers={addPlayers}
             addPlayersToBoss={addPlayersToBoss}
             deletePlayers={deletePlayers}
             deletePlayersFromBoss={deletePlayersFromBoss}
             players={players}
+            playerList={players}
             currentBoss={BossUldir.HOME}
             buildTestPlayerList={buildTestPlayerList}
             type={PlayerListType.ALL}
@@ -47,7 +48,8 @@ class Home extends React.Component<WithStyles<any> & IHomeProps, IHomeState> {
             changeFocusedPlayerId={changeFocusedPlayerId}
           />
         </Grid>
-        <Grid item={true} xs={6} md={4}>
+        <Grid item={true} xs={3} sm={3} />
+        <Grid item={true} xs={3} sm={3}>
           <TwitchWidgetContainer />
         </Grid>
       </Aux>

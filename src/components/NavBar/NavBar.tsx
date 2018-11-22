@@ -89,6 +89,9 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
     marginRight: theme.spacing.unit,
     color: 'white',
     borderColor: 'white'
+  },
+  root: {
+    position: 'static'
   }
 });
 class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarState> {
@@ -117,7 +120,7 @@ class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarStat
     const { classes, handleSignOut, sideMenuOpen, toggleAuthDialog, toggleSideMenu, toggleImportStateDialog, toggleExportStateDialog, user } = this.props;
 
     return (
-      <div>
+      <div className={classes.root}>
         <AppBar
           position='absolute'
           className={classNames(classes.appBar, sideMenuOpen && classes.appBarShift)}
@@ -151,6 +154,7 @@ class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarStat
                   color='inherit'
                   aria-label='Import'
                   onClick={toggleImportStateDialog}
+                  disabled={true}
                 >
                   <SaveAltIcon />
                 </IconButton>
@@ -162,6 +166,7 @@ class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarStat
                   color='inherit'
                   aria-label='Export'
                   onClick={toggleExportStateDialog}                  
+                  disabled={true}
                 >
                   <ShareIcon />
                 </IconButton>

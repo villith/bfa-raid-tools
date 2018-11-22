@@ -7,12 +7,11 @@ import { BossType } from '../../classes/Boss';
 import { Player, PlayerListType } from '../../classes/Player';
 import { WOWClass } from '../../enums/WOWclass';
 import { WOWSpec } from '../../enums/WOWspec';
-import { getPlayersByBoss } from '../../helpers/bossFilter';
 import { getPlayerByPlayerName, getPlayerIndexById } from '../../helpers/getPlayer';
 import AddPlayer from '../AddPlayer/AddPlayer';
 import ConfirmPlayerDelete from '../Dialogs/ConfirmPlayerDelete';
 import ImportPlayers from '../Dialogs/ImportPlayers';
-import SegmentBarWrapper from '../SegmentBar/SegmentBarWrapper';
+// import SegmentBarWrapper from '../SegmentBar/SegmentBarWrapper';
 import PlayerList from './PlayerList';
 import PlayerListToolbar from './PlayerListToolbar';
 
@@ -25,6 +24,7 @@ export interface IPlayerListContainerProps {
   deletePlayersFromBoss: (playerIds: string[]) => void;
   buildTestPlayerList?: () => void;
   players: Player[];
+  playerList: Player[];
   currentBoss: BossType;
   type: PlayerListType;
   focusedPlayerId: string;
@@ -149,8 +149,9 @@ class PlayerListContainer extends React.Component<WithStyles<any> & IPlayerListC
   }
 
   public handleSelectAllClick = (event: any, checked: boolean) => {
+    const { playerList } = this.props;
     if (checked) {
-      this.setState(({ selected: getPlayersByBoss(this.props.currentBoss, this.props.players).map(p => p.id) }));
+      this.setState(({ selected: playerList.map(p => p.id) }));
       return;
     }
     this.setState({ selected: [] });
@@ -176,8 +177,7 @@ class PlayerListContainer extends React.Component<WithStyles<any> & IPlayerListC
   
   public render() {
     const { addPlayerVisible, importPlayersVisible, order, orderBy, selected } = this.state;
-    const { buildTestPlayerList, classes, currentBoss, focusedPlayerId, changeFocusedPlayerId, addPlayersToBoss, players, type } = this.props;
-    const playerList = getPlayersByBoss(currentBoss, players);
+    const { buildTestPlayerList, classes, currentBoss, focusedPlayerId, changeFocusedPlayerId, addPlayersToBoss, players, playerList, type } = this.props;
     return (
       <Paper className={classes.root}>
         <PlayerListToolbar
@@ -208,9 +208,9 @@ class PlayerListContainer extends React.Component<WithStyles<any> & IPlayerListC
             handleSpecChange={this.handleWOWSpecChange}
           />
          )}
-        <SegmentBarWrapper
+        {/* <SegmentBarWrapper
           players={playerList}
-        />
+        /> */}
         <PlayerList
           selected={selected}
           order={order}

@@ -47,14 +47,31 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   },
   characterName: {
     display: 'flex',
-    fontSize: 18,
+    fontSize: 17,
     lineHeight: 1.33,
     '&:hover': {
       textDecoration: 'underline'
     }
   },
   liveText: {
-    display: 'flex'
+    color: 'red',
+    WebkitAnimation: 'pulsate 3s ease-out',
+    WebkitAnimationIterationCount: 'infinite',
+    opacity: 0.5,
+    textIndent: 6,
+    fontSize: 12,
+    fontWeight: 'bolder'
+  },
+  '@keyframes pulsate': {
+    '0%': {
+      opacity: 0.5,
+    },
+    '50%': {
+      opacity: 1.0,
+    },
+    '100%': {
+      opacity: 0.5,
+    }
   },
   channelName: {
     display: 'flex',
@@ -92,10 +109,14 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
       cursor: 'pointer'
     }
   },
-  noChipAvatar: {
+  nameAndLive: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  chipAvatar: {
     display: 'inline-flex',
-    width: 32,
-    height: 32,
+    width: 24,
+    height: 24,
     borderRadius: 16,
     verticalAlign: 'middle',
     justifyContent: 'center'
@@ -107,6 +128,10 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
     paddingBottom: theme.spacing.unit / 2,
   },
   realm: {
+  },
+  chip: {
+    height: 24,
+    margin: theme.spacing.unit / 3
   }
 });
 
@@ -161,7 +186,7 @@ class TwitchWidget extends React.Component<WithStyles<any> & ITwitchWidgetProps,
   public render() {
     const { streamData } = this.state;
     const { classes, profile } = this.props;
-    const { characterName, realm, channelName, classes: cls, specs, roles, contentTypes } = profile;
+    const { characterName, realm, channelName, classes: cls, specs, contentTypes } = profile;
     const rIoLink = `https://raider.io/characters/us/${realm}/${characterName}`;
     const twitchLink = `https://twitch.tv/${channelName}`;
     return (
@@ -177,8 +202,8 @@ class TwitchWidget extends React.Component<WithStyles<any> & ITwitchWidgetProps,
                     {characterName}
                   </Typography>
                   {streamData && streamData.type === 'live' &&
-                    <Typography variant='caption' className={classes.liveText}>
-                      - LIVE! -
+                    <Typography variant='overline' className={classes.liveText}>
+                      LIVE
                     </Typography>
                   }
                 </div>
@@ -194,30 +219,36 @@ class TwitchWidget extends React.Component<WithStyles<any> & ITwitchWidgetProps,
               </div>
             </div>
             <div className={classes.characterProfile}>
-              {cls.map((c, index) => {
-                const classInfo = getClassInfo(c);
-                const classSpecs = classInfo.specs.filter(s => specs.includes(s.id));
-                const specInfoArray = classSpecs.map(s => getSpecInfo(c, s.id));
-                return (
-                  <Aux key={index}>
-                    <Chip key={index} label={classInfo.label} variant='outlined' avatar={<Avatar className={classes.noChipAvatar} src={`classIcons/${classInfo.icon}.jpg`} />} />
-                    {specInfoArray.map((spec, i) => {
-                      return <Chip key={i} label={spec.name} variant='outlined' avatar={<Avatar src={`classIcons/${spec.icon}.jpg`} />} />
-                    })}
-                  </Aux>
-                )
-              })}
-              {roles.map((role, index) => {
-                const roleLabels = ['Tank', 'Healer', 'DPS']; // temp                  
-                return (
-                  <Chip key={index} label={roleLabels[role]} variant='outlined' />
-                )
-              })}
-              {contentTypes.map((type, index) => {
-                return (
-                  <Chip key={index} label={type} variant='outlined' />
-                )
-              })}
+              <div className={classes.classChips}>
+                {cls.map((c, index) => {
+                  const classInfo = getClassInfo(c);
+                  const classSpecs = classInfo.specs.filter(s => specs.includes(s.id));
+                  const specInfoArray = classSpecs.map(s => getSpecInfo(c, s.id));
+                  return (
+                    <Aux key={index}>
+                      {/* <Chip className={classes.chip} key={index} avatar={<Avatar className={classes.chipAvatar} src={`classIcons/${classInfo.icon}.jpg`} />} /> */}
+                      {specInfoArray.map((spec, i) => {
+                        return <Chip className={classes.chip} key={i} label={spec.name} variant='outlined' avatar={<Avatar className={classes.chipAvatar} src={`classIcons/${spec.icon}.jpg`} />} />
+                      })}
+                    </Aux>
+                  )
+                })}
+              </div>
+              {/* <div className={classes.roleChips}>
+                {roles.map((role, index) => {
+                  const roleLabels = ['Tank', 'Healer', 'DPS']; // temp                  
+                  return (
+                    <Chip className={classes.chip} key={index} label={roleLabels[role]} variant='outlined' />
+                  )
+                })}
+              </div> */}
+              <div className={classes.contentTypeChips}>
+                {contentTypes.map((type, index) => {
+                  return (
+                    <Chip className={classes.chip} key={index} label={type} variant='outlined' />
+                  )
+                })}
+              </div>
             </div>
           </Aux>
         {/* )} */}

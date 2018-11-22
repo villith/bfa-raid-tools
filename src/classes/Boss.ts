@@ -15,6 +15,7 @@ interface IBossMap {
 
 interface IBoss {
   id: BossType;
+  raidId: Raid;
   label: string;
   title: string;
   icon: string;
@@ -26,6 +27,7 @@ interface IBoss {
 
 class Boss {
   public id: BossType;
+  public raidId: Raid;
   public label: string;
   public title: string;
   public icon: string;
@@ -33,8 +35,9 @@ class Boss {
   public cooldowns: Cooldown[] = [];
   public phases: Phase[];
 
-  constructor(id: BossType, label: string, title: string, icon: string) {
+  constructor(id: BossType, raidId: Raid, label: string, title: string, icon: string) {
     this.id = id;
+    this.raidId = raidId;
     this.label = label;
     this.title = title;
     this.icon = icon;

@@ -41,6 +41,9 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   avatar: {
     borderRadius: 0
   },
+  drawer: {
+    position: 'static'
+  },
   drawerPaper: {
     position: 'relative',
     whiteSpace: 'nowrap',

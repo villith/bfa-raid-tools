@@ -10,12 +10,13 @@ import Home from '../Home/Home';
 export interface IMainContentProps {
   boss: Boss;
   bosses: IBossMap;
-  addPlayers: ((players: Player[]) => void);
-  addPlayersToBoss: ((playerIds: string[]) => void);
-  deletePlayers: ((playerIds: string[]) => void);
-  deletePlayersFromBoss: ((playerIds: string[]) => void);
-  handleCooldownPickerChange: ((cooldownId: string, bossAbilityId: string, timer: number) => void);
-  handleChangePhaseTimer: ((event: any, phaseId: number) => void);
+  addPlayers: (players: Player[]) => void;
+  addPlayersToBoss: (playerIds: string[]) => void;
+  deletePlayers: (playerIds: string[]) => void;
+  deletePlayersFromBoss: (playerIds: string[]) => void;
+  handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
+  handleChangePhaseTimers: (timers: number[]) => void;
+  handleRemoveCooldown: (pid: string, cid: string, timer: number) => void;
   buildTestPlayerList: () => void;
   players: Player[];
 }
@@ -50,7 +51,7 @@ class MainContent extends React.Component<WithStyles<any> & IMainContentProps, I
 
   public render() {
     const { focusedPlayerId } = this.state;
-    const { boss, bosses, buildTestPlayerList, addPlayers, addPlayersToBoss, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimer, handleCooldownPickerChange, players } = this.props;
+    const { boss, bosses, buildTestPlayerList, addPlayers, addPlayersToBoss, handleRemoveCooldown, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimers, handleCooldownPickerChange, players } = this.props;
     return (
       boss.id === BossUldir.HOME ? (
         <Home
@@ -72,7 +73,8 @@ class MainContent extends React.Component<WithStyles<any> & IMainContentProps, I
           addPlayersToBoss={addPlayersToBoss}
           deletePlayersFromBoss={deletePlayersFromBoss}
           handleCooldownPickerChange={handleCooldownPickerChange}
-          handleChangePhaseTimer={handleChangePhaseTimer}
+          handleChangePhaseTimers={handleChangePhaseTimers}
+          handleRemoveCooldown={handleRemoveCooldown}
           players={players}
           focusedPlayerId={focusedPlayerId}
           changeFocusedPlayerId={this.changeFocusedPlayerId}

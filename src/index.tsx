@@ -5,8 +5,9 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import AppContainer from './components/AppContainer/AppContainer';
-import registerServiceWorker from './registerServiceWorker';
+import { unregister } from './registerServiceWorker';
 
+unregister();
 // tslint:disable-next-line:no-string-literal
 axios.defaults.headers.common['Authorization'] = 'AUTH TOKEN';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
@@ -35,5 +36,3 @@ ReactDOM.render(
   <AppContainer />,
   document.getElementById('root') as HTMLElement
 );
-
-registerServiceWorker();

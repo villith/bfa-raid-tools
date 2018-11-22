@@ -505,7 +505,7 @@ const CLASSES: IWOWClass[] = [
       {
         id: WOWSpec.ASSASSINATION,
         name: 'Assassination',
-        icon: 'ability_backstab',
+        icon: 'ability_rogue_deadlybrew',
         isMelee: true,
         role: Role.DPS,
         primaryStatType: PrimaryStatType.AGILITY,

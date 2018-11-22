@@ -16,6 +16,7 @@ const RAIDS: IRaid[] = [
     bosses: [
       {
         id: BossUldir.HOME,
+        raidId: Raid.ULDIR,
         label: 'Uldir',
         title: 'Halls of Control',
         icon: '',
@@ -24,6 +25,7 @@ const RAIDS: IRaid[] = [
       },
       {
         id: BossUldir.TALOC,
+        raidId: Raid.ULDIR,
         label: 'Taloc',
         title: ' the Corrupted',
         icon: 'talocthecorrupted',
@@ -97,6 +99,7 @@ const RAIDS: IRaid[] = [
       },
       {
         id: BossUldir.MOTHER,
+        raidId: Raid.ULDIR,
         label: 'MOTHER',
         title: '',
         icon: 'mother',
@@ -124,6 +127,7 @@ const RAIDS: IRaid[] = [
       },
       {
         id: BossUldir.FETID_DEVOURER,
+        raidId: Raid.ULDIR,
         label: 'Fetid Devourer',
         title: '',
         icon: 'fetiddevourer',
@@ -151,6 +155,7 @@ const RAIDS: IRaid[] = [
       },
       {
         id: BossUldir.ZEKVOZ,
+        raidId: Raid.ULDIR,
         label: 'Zek\'voz',
         title: 'Herald of N\'zoth',
         icon: 'zekvoz',
@@ -178,6 +183,7 @@ const RAIDS: IRaid[] = [
       },
       {
         id: BossUldir.VECTIS,
+        raidId: Raid.ULDIR,
         label: 'Vectis',
         title: '',
         icon: 'bloodofghuun',
@@ -205,6 +211,7 @@ const RAIDS: IRaid[] = [
       },
       {
         id: BossUldir.ZUL,
+        raidId: Raid.ULDIR,
         label: 'Zul',
         title: 'Reborn',
         icon: 'zul',
@@ -232,6 +239,7 @@ const RAIDS: IRaid[] = [
       },
       {
         id: BossUldir.MYTHRAX,
+        raidId: Raid.ULDIR,
         label: 'Mythrax',
         title: 'the Unraveler',
         icon: 'mythraxtheunraveler',
@@ -259,6 +267,7 @@ const RAIDS: IRaid[] = [
       },
       {
         id: BossUldir.GHUUN,
+        raidId: Raid.ULDIR,
         label: 'G\'huun',
         title: '',
         icon: 'ghuun',

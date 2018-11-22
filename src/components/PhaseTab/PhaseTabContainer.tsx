@@ -10,8 +10,7 @@ export interface IPhaseTabContainerProps {
   cooldowns: Cooldown[];
   currentPhase: number;
   focusedPlayerId: string;
-  handleChangePhase: ((event: any, newPhase: number) => void);
-  handleChangePhaseTimer: ((event: any, phaseId: number, timer: number) => void);
+  handleChangePhase: (event: any, newPhase: number) => void;
   phases: Phase[];
 }
 
@@ -40,10 +39,6 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 });
 
 class PhaseTabContainer extends React.Component<WithStyles<any> & IPhaseTabContainerProps, IPhaseTabContainerState> {
-  public handleChange = (phaseId: number, timer: number) => (event: any) => {
-    this.props.handleChangePhaseTimer(event, phaseId, timer);
-  }
-
   public getFocusedPlayerCooldownCount = (): number[] => {
     const { bossAbilities, cooldowns, focusedPlayerId, phases } = this.props;
     console.log(focusedPlayerId);
@@ -78,7 +73,6 @@ class PhaseTabContainer extends React.Component<WithStyles<any> & IPhaseTabConta
   public render() {
     const { classes, currentPhase, handleChangePhase, phases } = this.props;
     const focusedPlayerCooldownCounts = this.getFocusedPlayerCooldownCount();
-    console.log(focusedPlayerCooldownCounts);
     return (
       <div className={classes.root}>
         {/* {phases.map((phase, index) => {

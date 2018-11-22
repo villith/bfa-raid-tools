@@ -2,7 +2,7 @@ import { CustomTreeData, DataTypeProvider, TreeDataState } from '@devexpress/dx-
 import { Grid, Table, TableColumnResizing, TableHeaderRow, TableTreeColumn } from '@devexpress/dx-react-grid-material-ui';
 import { Button, Paper, StyleRulesCallback, Theme, Tooltip, WithStyles, withStyles } from '@material-ui/core';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
-import { Add as AddIcon } from '@material-ui/icons';
+import { Add as AddIcon, Close as CloseIcon, Delete as DeleteIcon } from '@material-ui/icons';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import { COOLDOWNTYPES } from 'src/constants/cooldownTypes';
@@ -19,6 +19,7 @@ export interface IBossAbilityListState {
   addCooldownVisibleMap: { [index: string]: boolean };
   columns: any[];
   defaultColumnWidths: any[];
+  hoverIndex: string;
 }
 
 export interface IBossAbilityListProps {
@@ -29,6 +30,7 @@ export interface IBossAbilityListProps {
   handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
   phases: Phase[];
   players: Player[];
+  handleRemoveCooldown: (pid: string, cid: string, timer: number) => void;
 }
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
@@ -39,10 +41,16 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   cooldownTypeIcon: {
     padding: theme.spacing.unit / 2
   },
+  hidden: {
+    visibility: 'hidden'
+  },
   row: {
     borderLeftWidth: '4px',
     borderLeftColor: 'transparent',
-    borderLeftStyle: 'solid'
+    borderLeftStyle: 'solid',
+    '&:hover div': {
+      visibility: 'visible'
+    }
   },
   focusedAbilityRow: {
     borderLeftColor: theme.palette.secondary.main,
@@ -62,8 +70,8 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityListProps, IBossAbilityListState> {
   public state = {
     columns: [
-      { name: 'icon', title: 'Icon'},
-      { name: 'label', title: 'Ability Name'},
+      { name: 'icon', title: 'Icon' },
+      { name: 'label', title: 'Ability Name' },
       { name: 'timer', title: 'Time' },
       { name: 'cooldownTypes', title: 'Cooldown Types' },
       { name: 'addCooldown', title: ' ' },
@@ -77,7 +85,8 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
       { columnName: 'addCooldown', width: 100 },
       { columnName: 'cooldownPicker', width: 300 }
     ],
-    addCooldownVisibleMap: {}
+    addCooldownVisibleMap: {},
+    hoverIndex: ''
   }
 
   public getCooldownTypesComponent = (bossAbilityRow: any) => {
@@ -116,19 +125,47 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
     return abilityIconComponent;
   }
 
-  public getAddCooldownComponent = (bossAbilityRow: any) => {
-    const { row } = bossAbilityRow;
+  public getAddCooldownComponent = (column: any, row: any) => {
+    const { addCooldownVisibleMap } = this.state;
+    const { classes } = this.props;
     const { id } = row;
     if (row.hasOwnProperty('cooldownTypes')) {
-      const addCooldownComponent =
-        <Tooltip title='Assign Cooldown'>
-          <Button variant='text' color='primary' onClick={() => this.toggleCooldownPicker(id)}>
-            <AddIcon />
-          </Button>
-        </Tooltip>
-      return addCooldownComponent;
+      if (addCooldownVisibleMap[id]) {
+        return (
+          <Tooltip placement='left-start' title='Hide Cooldown Picker'>
+            <Button variant='text' color='secondary' onClick={() => this.toggleCooldownPicker(id)}>
+              <CloseIcon />
+            </Button>
+          </Tooltip>
+        )
+      }
+      else {
+        return (
+          <div className={classes.hidden}>
+            <Tooltip placement='left-start' title='Assign Cooldown'>
+              <Button variant='text' color='primary' onClick={() => this.toggleCooldownPicker(id)}>
+                <AddIcon />
+              </Button>
+            </Tooltip>
+          </div>
+        )
+      }
     }
-    return null;
+    else {
+      return (
+        <div className={classes.hidden}>
+          <Tooltip placement='left-start' title='Remove Cooldown'>
+            <Button variant='text' color='secondary' onClick={() => this.removeCooldown(row.parentId, row.id, row.timer)}>
+              <DeleteIcon />
+            </Button>
+          </Tooltip>
+        </div>
+      )
+    }
+  }
+
+  public removeCooldown = (pid: string, cid: string, timer: number) => {
+    this.props.handleRemoveCooldown(pid, cid, timer);
   }
 
   public getCooldownPickerComponent = (bossAbilityRow: any) => {
@@ -148,7 +185,7 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
         toggleVisible={this.toggleCooldownPicker}
         timer={timer}
       />
-    ) : ( null );
+    ) : (null)
   }
 
   public populateCooldownPicker = (bossAbility: BossAbility) => {
@@ -177,7 +214,7 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
           console.log(`Number of charges left is greater than number of charges used`);
           isOnCooldown = false;
         }
-        if (isOnCooldown === false) {          
+        if (isOnCooldown === false) {
           newCooldowns.push(cooldown);
         }
       }
@@ -186,7 +223,7 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
   }
 
   public getChildRows = (row: any, data: Array<BossAbility | Cooldown>) => {
-    if (row) { 
+    if (row) {
       const childRows = data.filter(r => {
         if (r.hasOwnProperty('bossAbilities')) {
           const cooldownRow = r as Cooldown;
@@ -196,7 +233,12 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
         }
         return false;
       });
-      return childRows.length > 0 ? childRows : null;
+      const childRowsWithParentId = childRows.map((cr: any) => {
+        cr.parentId = row.id;
+        cr.timer = row.timer;
+        return cr;
+      });
+      return childRows.length > 0 ? childRowsWithParentId : null;
     }
     else {
       return data.filter(r => r.hasOwnProperty('cooldownTypes'));
@@ -231,6 +273,10 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
     />
   }
 
+  public setHoverIndex = (id: string) => {
+    this.setState({ hoverIndex: id });
+  }
+
   public getTableComponent = (tableProps: any) => {
     const { classes } = this.props;
     return <Table.Table {...tableProps} className={classes.table} />
@@ -263,7 +309,7 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
           />
           <DataTypeProvider
             for={['addCooldown']}
-            formatterComponent={this.getAddCooldownComponent}
+            formatterComponent={({ column, row }) => this.getAddCooldownComponent(column, row)}
           />
           <DataTypeProvider
             for={['cooldownPicker']}
@@ -273,7 +319,7 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
             for={['cooldownTypes']}
             formatterComponent={this.getCooldownTypesComponent}
           />
-          <CustomTreeData            
+          <CustomTreeData
             getChildRows={this.getChildRows}
           />
           <Table
@@ -281,7 +327,7 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
             rowComponent={this.getRowComponent}
           />
           <TableColumnResizing defaultColumnWidths={defaultColumnWidths} />
-          <TableHeaderRow /> 
+          <TableHeaderRow />
           <TableTreeColumn for='icon' />
         </Grid>
       </Paper>

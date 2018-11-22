@@ -1,5 +1,3 @@
-import './App.css';
-
 import { CircularProgress, Grid, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -69,12 +67,14 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
     overflow: 'hidden',
     position: 'relative',
     display: 'flex',
+    height: '100%'
   },
   content: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
     padding: theme.spacing.unit * 3,
-    marginTop: theme.spacing.unit * 6
+    marginTop: theme.spacing.unit * 6,
+    overflowY: 'scroll'
   },
   loading: {
     margin: 'auto'
@@ -192,6 +192,7 @@ class App extends React.Component<WithStyles<any>, IAppState> {
     raidInfo.bosses.map((boss, index) => newBosses.push(
       new Boss(
         boss.id,
+        raidInfo.id,
         boss.label,
         boss.title,
         boss.icon,
@@ -316,26 +317,44 @@ class App extends React.Component<WithStyles<any>, IAppState> {
     this.setState({ currentStrategy: strategy }, () => this.handleUpdateStrategy(strategy));
   }
 
-  public handleChangePhaseTimer = (event: any, phaseId: number) => {
+  public handleRemoveCooldown = (bossAbilityId: string, cooldownId: string, timer: number) => {
+    console.log(`[handleRemoveCooldown]: ${bossAbilityId}, ${cooldownId}, ${timer}`);
     const { accessor, boss, bosses, strategy } = this.getCurrentStrategy();
-    const phases = boss.phases;
-    let abilities = boss.abilities;
-    const phaseIndex = phases.findIndex(p => p.id === phaseId);
-    if (phaseIndex > -1) {
-      const phase = phases[phaseIndex];
-      const nextPhase = phases[phaseIndex + 1];
-      let newValue = parseInt(event.target.value, 10);
-      if (newValue > 600) { newValue = 600 }
-      if (newValue < 0) { newValue = 0 }
-      if (nextPhase && newValue > nextPhase.timer) {
-        console.log(newValue, nextPhase);
-        newValue = nextPhase.timer - 1;
+    const cooldownIndex = findById(cooldownId, boss.cooldowns);
+    const cooldowns = boss.cooldowns[cooldownIndex]
+    const { bossAbilities, timers } = cooldowns;
+    const bossAbilityIndex = findById(bossAbilityId, bossAbilities);
+    const timerIndex = timers.findIndex(t => timer === t);
+    bossAbilities.splice(bossAbilityIndex, 1);
+    timers.splice(timerIndex, 1);
+    bosses[accessor] = boss;
+    this.setState({ currentStrategy: strategy }, () => this.handleUpdateStrategy(strategy));
+  }
+
+  public handleChangePhaseTimers = (timers: number[]) => {
+    console.log(timers);
+    const { accessor, boss, bosses, strategy } = this.getCurrentStrategy();
+    const { abilities, phases } = boss;
+    const newPhases = phases.map((phase, index) => {
+      let timer = timers[index];
+      if (timer > 600) { timer = 600 }
+      if (timer < 0) { timer = 0 }
+      if (index < timers.length - 1) {
+        const nextTimer = timers[index + 1];
+        if (timer > nextTimer) {
+          timer = nextTimer - 1;
+        }
       }
-      phase.timer = newValue;
-      abilities = buildBossAbilityList(boss.id, phases, abilities);
-      bosses[accessor] = boss;
-      this.setState({ currentStrategy: strategy }, () => this.handleUpdateStrategy(strategy));
-    }
+      phase.timer = timer;
+      return phase;
+    });
+    console.log(newPhases);
+    const newAbilities = buildBossAbilityList(boss.id, newPhases, abilities);
+    console.log(newAbilities);
+    boss.phases = newPhases;
+    boss.abilities = newAbilities;
+    bosses[accessor] = boss;
+    this.setState({ currentStrategy: strategy }, () => this.handleUpdateStrategy(strategy));
   }
 
   public handleImportState = (importString: string) => {
@@ -475,8 +494,9 @@ class App extends React.Component<WithStyles<any>, IAppState> {
                 deletePlayers={this.handleDeletePlayers}
                 deletePlayersFromBoss={this.handleDeletePlayersFromBoss}
                 handleCooldownPickerChange={this.handleCooldownPickerChange}
-                handleChangePhaseTimer={this.handleChangePhaseTimer}
+                handleChangePhaseTimers={this.handleChangePhaseTimers}
                 buildTestPlayerList={this.buildTestPlayerList}
+                handleRemoveCooldown={this.handleRemoveCooldown}
               />
             )}
           </Grid>
