@@ -12,6 +12,7 @@ export interface ITwitchWidgetProps {
 export interface ITwitchWidgetState {
   error: any;
   streamData: ITwitchStreamsData;
+  lastUpdate: number;
 }
 
 export interface ITwitchStreamsResponse {
@@ -135,10 +136,13 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   }
 });
 
+const UPDATE_INTERVAL = 300000; // 5 seconds
+
 class TwitchWidget extends React.Component<WithStyles<any> & ITwitchWidgetProps, ITwitchWidgetState> {
   public state = {
     error: {},
-    streamData: {} as ITwitchStreamsData
+    streamData: {} as ITwitchStreamsData,
+    lastUpdate: 0
   }
   // public buildClassesComponent = () => {
 
@@ -153,7 +157,13 @@ class TwitchWidget extends React.Component<WithStyles<any> & ITwitchWidgetProps,
 
   // }
   public componentDidMount() {
-    this.getStreamData();
+    // console.log('TWITCH WIDGET MOUNT');
+    const { lastUpdate } = this.state;
+    const currentTime = Date.now();
+    const diff = currentTime - lastUpdate;
+    if (diff > UPDATE_INTERVAL) {
+      this.getStreamData();
+    }
   }
 
   public getStreamData = () => {
@@ -172,10 +182,10 @@ class TwitchWidget extends React.Component<WithStyles<any> & ITwitchWidgetProps,
       .then((response: ITwitchStreamsResponse) => {
         const { data } = response;
         if (data) {
-          this.setState({ streamData: data[0] });
+          this.setState({ streamData: data[0], lastUpdate: Date.now() });
         }
         else {
-          console.log(response);
+          // console.log(response);
         }
     });
 

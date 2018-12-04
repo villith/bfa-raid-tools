@@ -66,7 +66,7 @@ class ExportAngryAssignments extends React.Component<WithStyles<any> & IExportAn
   }
 
   public componentDidMount() {
-    console.log('exportAngryAssignments MOUNT');
+    // console.log('exportAngryAssignments MOUNT');
     this.buildAngryAssignmentsString();
   }
 

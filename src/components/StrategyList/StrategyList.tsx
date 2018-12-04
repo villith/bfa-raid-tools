@@ -3,13 +3,15 @@ import * as React from 'react';
 
 import { Strategy } from '../../classes/Strategy';
 import { IPreferences } from '../App/App';
+import AddStrategyCard from './AddStrategyCard';
 import StrategyCard from './StrategyCard';
 
 export interface IStrategyListProps {
-  handleToggleFavourite: ((id: string) => void);
+  buildNewStrategy: (callback: (sid: string) => void) => void;
+  handleToggleFavourite: (id: string) => void;
   preferences: IPreferences;
   strategies: Strategy[];
-  selectStrategy: ((id: string | null) => void);
+  handleSelectStrategy: (id: string | null) => void;
 }
 
 export interface IStrategyListState {
@@ -31,25 +33,33 @@ class StrategyList extends React.Component<WithStyles<any> & IStrategyListProps,
     }
   }
   public render() {
-    const { handleToggleFavourite, selectStrategy, strategies } = this.props;
+    const { buildNewStrategy, handleToggleFavourite, handleSelectStrategy, strategies } = this.props;
     return (
-      strategies
-        .filter(strategy => strategy.id !== null)
-        .sort(this.sortByFavourite())
-        .map((strategy, index) => {
-          const favourite = this.props.preferences.favourites.indexOf(strategy.id!) !== -1;
-          return (
-            strategy.id &&
-              <Grid key={index} item={true} xs={6} sm={4} md={3}>
-                <StrategyCard
-                  toggleFavourite={handleToggleFavourite}
-                  favourite={favourite}
-                  strategy={strategy}
-                  selectStrategy={selectStrategy}
-                />
-              </Grid>
-          )
-      })
+      <Grid container={true} spacing={8}>
+        {strategies
+          .filter(strategy => strategy.id !== null)
+          .sort(this.sortByFavourite())
+          .map((strategy, index) => {
+            const favourite = this.props.preferences.favourites.indexOf(strategy.id!) !== -1;
+            return (
+              strategy.id &&
+                <Grid key={index} item={true} xs={6} sm={4} md={3}>
+                  <StrategyCard
+                    toggleFavourite={handleToggleFavourite}
+                    favourite={favourite}
+                    strategy={strategy}
+                    selectStrategy={handleSelectStrategy}
+                  />
+                </Grid>
+            )
+        })}
+        <Grid item={true} xs={6} sm={4} md={3}>
+          <AddStrategyCard
+            buildNewStrategy={buildNewStrategy}
+            handleSelectStrategy={handleSelectStrategy}
+          />
+        </Grid>
+      </Grid>
     );
   }
 }

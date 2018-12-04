@@ -28,9 +28,9 @@ const buildBossAbility = (id: SpellId) => {
 };
 
 const TalocEncounter = (phases: Phase[], existingAbilities: BossAbility[]) => {
-  console.log('===TALOC ENCOUNTER===');
-  console.log(phases);
-  console.log(existingAbilities);
+  // console.log('===TALOC ENCOUNTER===');
+  // console.log(phases);
+  // console.log(existingAbilities);
   const bossAbilityList: BossAbility[] = [];
 
   const plasmaDischarge = bossAbilities[SpellId.PLASMA_DISCHARGE];
@@ -98,11 +98,11 @@ const TalocEncounter = (phases: Phase[], existingAbilities: BossAbility[]) => {
   // PHASE 3 - Begins 88.8 seconds after Phase 2
   
   if (existingAbilities.length > 0) {
-    console.log('phase3');
+    // console.log('phase3');
     existingAbilities.map(ability => {
-      console.log('phase3 loop');
+      // console.log('phase3 loop');
       if (phaseWindow(pThreeTimer, 9999, ability.timer)) {
-        console.log('phase3 passed timer');
+        // console.log('phase3 passed timer');
         bossAbilityList.push(createExisitingBossAbility(ability, ability.timer));
         pThreeAC[ability.spellId] += 1;
       }
@@ -154,7 +154,7 @@ const createExisitingBossAbility = (ability: BossAbility, timer: number) => {
 };
 
 const phaseWindow = (pOne: number, pTwo: number, timer: number) => {
-  console.log(pOne, pTwo, timer);
+  // console.log(pOne, pTwo, timer);
   const result = timer >= pOne && timer < pTwo;
   return result;
 };

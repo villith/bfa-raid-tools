@@ -41,7 +41,7 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 class PhaseTabContainer extends React.Component<WithStyles<any> & IPhaseTabContainerProps, IPhaseTabContainerState> {
   public getFocusedPlayerCooldownCount = (): number[] => {
     const { bossAbilities, cooldowns, focusedPlayerId, phases } = this.props;
-    console.log(focusedPlayerId);
+    // console.log(focusedPlayerId);
     if (focusedPlayerId.length > 0) {
       const cooldownCounts = phases.map(phase => {
         const currentPhase = phase.id;
@@ -50,9 +50,9 @@ class PhaseTabContainer extends React.Component<WithStyles<any> & IPhaseTabConta
           ? phases[phases.findIndex(p => p.id === currentPhase + 1)].timer
           : 9999;
         const filteredBossAbilities = bossAbilities.filter(ba => ba.timer >= phaseStartTime && ba.timer < phaseEndTime);
-        console.log(filteredBossAbilities);
+        // console.log(filteredBossAbilities);
         const filteredCooldowns = cooldowns.filter(cd => cd.owner === focusedPlayerId);
-        console.log(filteredCooldowns);
+        // console.log(filteredCooldowns);
         const filterByFocusedPlayer = filteredBossAbilities.filter(ba => {
           let result = false;
           for (const cd of filteredCooldowns) {

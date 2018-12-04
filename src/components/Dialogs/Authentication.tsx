@@ -14,26 +14,38 @@ import {
   withStyles,
 } from '@material-ui/core';
 import axios from 'axios';
-import * as firebase from 'firebase';
-import * as firebaseui from 'firebaseui';
 import * as React from 'react';
 
-import { auth } from '../../firebase/firebase';
 import { Aux } from '../winAux';
 
-// tslint:disable-next-line:no-var-requires
-const reactFirebaseui = require('react-firebaseui');
-
-interface IDialogText {
+interface IDialogState {
   submitText: string;
   toggleText: string;
   linkText: string;
+  errorText: string;
+  state: SignInState | ResetPasswordState | null;
 }
+
+enum SignInState {
+  SIGNED_IN,
+  SIGNED_OUT,
+  SIGNING_IN
+}
+
+enum ResetPasswordState {
+  NO_REQUEST,
+  SENDING_REQUEST,
+  RESQUEST_SENT
+}
+
+export type AuthDialogState = 'signIn' | 'signUp' | 'resetPassword';
 
 export interface IAuthenticationProps {
   authCredential: firebase.auth.AuthCredential | null;
+  authDialogState: AuthDialogState;
   open: boolean;
   closeDialog: () => void;
+  handleChangeAuthDialogState: (newState: AuthDialogState) => void;
   handleSignIn: (email: string, password: string) => void;
   handleSignUp: (email: string, password: string, credential?: firebase.auth.AuthCredential) => void;
   user: firebase.User | null;
@@ -43,27 +55,14 @@ export interface IAuthenticationState {
   email: string;
   password: string;
   loading: boolean;
-  active: 'signIn' | 'signUp' | 'resetPassword';
-  signUp: IDialogText;
-  signIn: IDialogText;
-  resetPassword: IDialogText;
-}
-
-const uiConfig = {
-  signInFlow: 'popup',
-  signInOptions: [
-    {
-      provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      authMethod: 'https://accounts.google.com',
-      clientId: '836078052823-7ua37cl65bblfe79ahqsaciacvqit5ng.apps.googleusercontent.com',          
-    }
-  ],
-  credentialHelper: firebaseui.auth.CredentialHelper.GOOGLE_YOLO
+  states: { [key in AuthDialogState]: IDialogState };
 }
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   root: {
-    padding: theme.spacing.unit * 3
+    paddingTop: theme.spacing.unit * 3,
+    paddingLeft: theme.spacing.unit * 3,
+    paddingRight: theme.spacing.unit * 3
   },
   extraActions: {
     display: 'flex',
@@ -99,21 +98,28 @@ class Authentication extends React.Component<WithStyles<any> & IAuthenticationPr
     email: '',
     password: '',
     loading: false,
-    active: 'signIn',
-    signIn: {
-      submitText: 'Log In',
-      toggleText: 'Don\'t have an account?',
-      linkText: 'Register',
-    },
-    signUp: {
-      submitText: 'Register',
-      toggleText: 'Already have an account?',
-      linkText: 'Log In',
-    },
-    resetPassword: {
-      submitText: 'Send Reset Link',
-      toggleText: 'Remember your password?',
-      linkText: 'Log In',
+    states: {
+      signIn: {
+        submitText: 'Log In',
+        toggleText: 'Don\'t have an account?',
+        linkText: 'Register',
+        errorText: '',
+        state: SignInState.SIGNED_OUT
+      },
+      signUp: {
+        submitText: 'Register',
+        toggleText: 'Already have an account?',
+        linkText: 'Log In',
+        errorText: '',
+        state: null
+      },
+      resetPassword: {
+        submitText: 'Send Reset Link',
+        toggleText: 'Remember your password?',
+        linkText: 'Log In',
+        errorText: '',
+        state: ResetPasswordState.NO_REQUEST
+      }
     }
   }
 
@@ -126,9 +132,9 @@ class Authentication extends React.Component<WithStyles<any> & IAuthenticationPr
   }
 
   public submitForm = () => {
-    const { active } = this.state;
-    if (active === 'signIn') { this.props.handleSignIn(this.state.email, this.state.password) }
-    if (active === 'signUp') {
+    const { authDialogState } = this.props;
+    if (authDialogState === 'signIn') { this.props.handleSignIn(this.state.email, this.state.password) }
+    if (authDialogState === 'signUp') {
       if (this.props.authCredential) {
         this.props.handleSignUp(this.state.email, this.state.password, this.props.authCredential)
       }
@@ -136,7 +142,7 @@ class Authentication extends React.Component<WithStyles<any> & IAuthenticationPr
         this.props.handleSignUp(this.state.email, this.state.password);
       }
     }
-    if (active === 'resetPassword') { this.sendPasswordReset() }
+    if (authDialogState === 'resetPassword') { this.sendPasswordReset() }
   }
 
   public sendPasswordReset = () => {
@@ -144,7 +150,7 @@ class Authentication extends React.Component<WithStyles<any> & IAuthenticationPr
       requestType: 'PASSWORD_RESET',
       email: this.state.email,
     };
-    axios.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/getOobConfirmationCode?key=AIzaSyAEriQFaLDbLuyhz0chlMeLQREMM0mLaJk', payload)
+    axios.post(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/getOobConfirmationCode?key=${process.env.REACT_APP_FB_RESET_PW_KEY}`, payload)
       .then(resp => {
         this.handleSendPasswordResetSuccess(resp.data);
       })
@@ -154,26 +160,29 @@ class Authentication extends React.Component<WithStyles<any> & IAuthenticationPr
   }
 
   public handleSendPasswordResetSuccess = (data: any) => {
-    console.log(`Password reset sent to ${data.email}`);
+    // console.log(`Password reset sent to ${data.email}`);
   }
+  
   public handleSendPasswordResetError = (error: any) => {
-    console.log(error);
+    // console.log(error);
   }
 
   public showPasswordReset = () => {
-    this.setState({ active: 'resetPassword' });
+    const { handleChangeAuthDialogState } = this.props;
+    handleChangeAuthDialogState('resetPassword');
   }
 
   public toggleSignUp = () => {
-    this.state.active === 'signIn'
-    ? this.setState({ active: 'signUp' })
-    : this.setState({ active: 'signIn' });
+    const { authDialogState, handleChangeAuthDialogState } = this.props;
+    authDialogState === 'signIn'
+    ? handleChangeAuthDialogState('signUp')
+    : handleChangeAuthDialogState('signIn')
   }
 
   public render() {
-    const { active, email, password } = this.state;
-    const { classes, open, closeDialog } = this.props;
-    const activeText = this.state[active];
+    const { email, password, states } = this.state;
+    const { authDialogState, classes, open, closeDialog } = this.props;
+    const activeText = states[authDialogState];
     return (
       <Dialog
         open={open}
@@ -193,11 +202,11 @@ class Authentication extends React.Component<WithStyles<any> & IAuthenticationPr
                 type={'email'}
                 autoComplete={'email'}
                 onChange={this.handleEmailChange}
-                error={true}
+                error={activeText.errorText.length > 0}
               />
-              <FormHelperText id='inputEmailError'>Error Message</FormHelperText>
+              <FormHelperText id='inputEmailError'>{activeText.errorText}</FormHelperText>
             </FormControl>
-            {this.state.active !== 'resetPassword' &&
+            {authDialogState !== 'resetPassword' &&
               <FormControl fullWidth={true} className={classes.formControl}>
                 <InputLabel htmlFor='inputPassword'>Password</InputLabel>
                 <Input 
@@ -207,16 +216,12 @@ class Authentication extends React.Component<WithStyles<any> & IAuthenticationPr
                   type={'password'}
                   autoComplete={'current-password'}
                   onChange={this.handlePasswordChange}
+                  error={activeText.errorText.length > 0}
                 />
-                <FormHelperText id='inputPasswordError'>Error Message</FormHelperText>
+                <FormHelperText id='inputPasswordError'>{activeText.errorText}</FormHelperText>
               </FormControl>
             }
           </form>
-          {this.state.active === 'signIn' &&
-            <div className={classes.hidden}>
-              <reactFirebaseui.StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
-            </div>
-          }
         </DialogContent>
         <DialogActions>
           <Button variant='contained' color='secondary' fullWidth={true} onClick={this.submitForm}>
@@ -224,7 +229,7 @@ class Authentication extends React.Component<WithStyles<any> & IAuthenticationPr
           </Button>
         </DialogActions>
           <div className={classes.extraActions}>
-            {this.state.active !== 'resetPassword' &&
+            {authDialogState !== 'resetPassword' &&
               <Aux>
                 <div role='button' className={classes.forgotPassword} onClick={this.showPasswordReset}>
                   <Typography color='primary' variant={'caption'}>Forgot Password?</Typography>

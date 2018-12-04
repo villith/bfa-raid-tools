@@ -1,5 +1,3 @@
-import './PlayerList.css';
-
 import { Paper, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 

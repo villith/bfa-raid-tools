@@ -198,9 +198,9 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
       let isOnCooldown = timers.length > 0 ? true : false;
       if (cooldownTypes.indexOf(cooldown.cooldownType) !== -1) {
         let usedCharges = 0;
-        console.log(timers);
+        // console.log(timers);
         timers.map(time => {
-          console.log(time, ability.timer);
+          // console.log(time, ability.timer);
           const diff = Math.abs(time - ability.timer);
           // console.log(`Time since use: ${diff}`);
           if (diff < cooldown.cooldownTime) {
@@ -208,10 +208,10 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
             usedCharges += 1;
           }
         });
-        console.log(cooldown.charges, usedCharges);
+        // console.log(cooldown.charges, usedCharges);
         if (cooldown.charges > usedCharges) {
-          console.log(`[${cooldown.label}]`);
-          console.log(`Number of charges left is greater than number of charges used`);
+          // console.log(`[${cooldown.label}]`);
+          // console.log(`Number of charges left is greater than number of charges used`);
           isOnCooldown = false;
         }
         if (isOnCooldown === false) {

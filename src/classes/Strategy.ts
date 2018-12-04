@@ -1,40 +1,41 @@
-import { PermissionRole } from '../enums/permissionRole';
+import { PermissionRole } from 'src/enums/permissionRole';
+
 import { IBossMap } from './Boss';
 import { Player } from './Player';
 
-interface IPermissionMap {
-  [PermissionRole.ADMIN]: string[],
-  [PermissionRole.OFFICER]: string[],
-  [PermissionRole.MEMBER]: string[],
-  [PermissionRole.GUEST]: string[],
-}
-
-interface IStrategy {
-  id: string | null;
+interface IStrategyDescriptors {
+  id: string;
   title: string;
   description: string;
-  bosses: IBossMap;
-  players: Player[];
-  users: IPermissionMap;
 }
 
+interface IBooleanMap { [index: string]: boolean };
+
+interface IPermissionsMap { [index: string]: PermissionRole };
+
 class Strategy {
-  public id: string | null;
+  public id: string;
   public title: string;
   public description: string;
   public bosses: IBossMap;
   public players: Player[];
-  public users: IPermissionMap;
+  public admins: IBooleanMap;
+  public officers?: IBooleanMap;
+  public members?: IBooleanMap;
+  public guests?: IBooleanMap;
 
-  constructor(id: string | null, title: string, description: string, bosses: IBossMap, 
-    players: Player[], users: IPermissionMap) {
+  constructor(id: string, title: string, description: string, admins: IBooleanMap, officers?: IBooleanMap,
+    members?: IBooleanMap, guests?: IBooleanMap, bosses?: IBossMap, players?: Player[]) {
     this.id = id;
     this.title = title;
     this.description = description;
-    this.bosses = bosses;
-    this.players = players;
-    this.users = users;
+    this.bosses = bosses || {} as IBossMap;
+    this.players = players || [] as Player[];    
+    this.admins = admins;
+    this.officers = officers || {} as IBooleanMap;
+    this.members = members || {} as IBooleanMap;
+    this.guests = guests || {} as IBooleanMap;
   }
 }
 
-export { Strategy, IStrategy, IPermissionMap };
+export { Strategy, IStrategyDescriptors, IBooleanMap, IPermissionsMap };

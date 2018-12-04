@@ -12,14 +12,15 @@ import {
 } from '@material-ui/core';
 import { Favorite as FavoriteIcon, FavoriteBorder as FavoriteBorderIcon } from '@material-ui/icons';
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 
 import { Strategy } from '../../classes/Strategy';
 
 export interface IStrategyCardProps {
   favourite: boolean;
   strategy: Strategy;
-  selectStrategy: ((id: string | null) => void);
-  toggleFavourite: ((id: string) => void);
+  selectStrategy: (id: string) => void;
+  toggleFavourite: (id: string) => void;
 }
 
 export interface IStrategyCardState {
@@ -30,6 +31,9 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   root: {},
   actions: {
     float: 'right'
+  },
+  favorite: {
+    marginLeft: 'auto'
   },
   cardHeader: {
     display: 'flex',
@@ -46,6 +50,10 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
       cursor: 'pointer'
     }
   },
+  link: {
+    textDecoration: 'none',
+    textOverflow: 'ellipsis'
+  }
 });
 
 class StrategyCard extends React.Component<WithStyles<any> & IStrategyCardProps, IStrategyCardState> {
@@ -58,7 +66,7 @@ class StrategyCard extends React.Component<WithStyles<any> & IStrategyCardProps,
   }
 
   public handleToggleFavourite = () => {
-    this.props.toggleFavourite(this.props.strategy.id!);
+    this.props.toggleFavourite(this.props.strategy.id);
   }
 
   public render() {
@@ -68,13 +76,14 @@ class StrategyCard extends React.Component<WithStyles<any> & IStrategyCardProps,
       <Card>
         <CardContent>
           <div className={classes.cardHeader}>
-            <div className={classes.cardTitle} onClick={this.handleSelectStrategy}>
-              <Typography variant='h5'>
-                {title}
-              </Typography>
-            </div>
-            <div className={classes.spacer} />
-            <div className={classes.actions}>
+            <Link className={classes.link} to={`/${strategy.id}`}>
+              <div className={classes.cardTitle} onClick={this.handleSelectStrategy}>
+                <Typography variant='h5'>
+                  {title}
+                </Typography>
+              </div>
+            </Link>
+            <div className={classes.favorite}>
               <Checkbox
                 icon={<FavoriteBorderIcon />}
                 checkedIcon={<FavoriteIcon />}
@@ -86,6 +95,9 @@ class StrategyCard extends React.Component<WithStyles<any> & IStrategyCardProps,
           </div>
           <Typography component='p'>
             {description}
+          </Typography>
+          <Typography component='p'>
+            {strategy.id}
           </Typography>
         </CardContent>
         <CardActions className={classes.actions}>

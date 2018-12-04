@@ -87,7 +87,7 @@ class ConfirmPlayerDelete extends React.Component<WithStyles<any> & IConfirmPlay
               const bossRoster: Player[] = bossMap[key];
               const boss = getBossInfo(Raid.ULDIR, keyInt as BossUldir);
               const iconURL = `https://wow.zamimg.com/images/wow/icons/large/achievement_nazmir_boss_${boss.icon}.jpg`;
-              console.log(iconURL);
+              // console.log(iconURL);
               return (
                 keyInt > 0 ? (
                   <Grid container={true} className={classes.root} key={key}>

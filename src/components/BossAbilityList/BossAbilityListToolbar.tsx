@@ -67,7 +67,7 @@ class BossAbilityListToolbar extends React.Component<WithStyles<any> & IBossAbil
   public componentDidMount = () => {
     const { phases } = this.props;
     const phaseTimers = phases.map(phase => `${phase.timer}`);
-    console.log('a');
+    // console.log('a');
     this.setState({ phaseTimers, tempPhaseTimers: [...phaseTimers] });
   }
 

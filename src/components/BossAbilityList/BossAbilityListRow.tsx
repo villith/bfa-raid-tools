@@ -71,24 +71,24 @@ class BossAbilityListRow extends React.Component<WithStyles<any> & IBossAbilityL
     const newCooldowns: Cooldown[] = [];
     const cooldowns = [ ...this.props.cooldowns ];
     cooldowns.map(cooldown => {
-      console.log(`[${cooldown.label}]`);
+      // console.log(`[${cooldown.label}]`);
       const { timers } = cooldown;
       let isOnCooldown = timers.length > 0 ? true : false;
       if (this.props.cooldownTypes.indexOf(cooldown.cooldownType) !== -1) {
         let usedCharges = 0;
-        console.log(timers);
+        // console.log(timers);
         timers.map(time => {
-          console.log(time, ability.timer);
+          // console.log(time, ability.timer);
           const diff = Math.abs(time - ability.timer);
-          console.log(`Time since use: ${diff}`);
+          // console.log(`Time since use: ${diff}`);
           if (diff < cooldown.cooldownTime) {
-            console.log(`Used within cooldown time, adding 1 to use count`);
+            // console.log(`Used within cooldown time, adding 1 to use count`);
             usedCharges += 1;
           }
         });
-        console.log(cooldown.charges, usedCharges);
+        // console.log(cooldown.charges, usedCharges);
         if (cooldown.charges > usedCharges) {
-          console.log(`Number of charges left is greater than number of charges used`);
+          // console.log(`Number of charges left is greater than number of charges used`);
           isOnCooldown = false;
         }
         if (isOnCooldown === false) {

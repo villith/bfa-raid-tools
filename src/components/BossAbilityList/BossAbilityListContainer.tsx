@@ -48,7 +48,7 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
   }
 
   public handleExportAngryAssignments = (exportString: string) => {
-    console.log(exportString);
+    // console.log(exportString);
   }
   
   public render() {
@@ -58,12 +58,12 @@ class BossAbilityListContainer extends React.Component<WithStyles<any> & IBossAb
     const phaseEndTime = currentPhase + 1 < phases.length
       ? phases[phases.findIndex(p => p.id === currentPhase + 1)].timer
       : 9999;
-    console.log(bossAbilities);
+    // console.log(bossAbilities);
     const filteredBossAbilities = bossAbilities
       .filter(ba => ba.timer >= phaseStartTime && ba.timer < phaseEndTime)
       .sort((a, b) => a.timer - b.timer);
-    console.log(phaseStartTime, phaseEndTime);
-    console.log(filteredBossAbilities);
+    // console.log(phaseStartTime, phaseEndTime);
+    // console.log(filteredBossAbilities);
     return (
       <Paper className={classes.root}>
         <ExportAngryAssignments

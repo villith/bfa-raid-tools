@@ -15,6 +15,7 @@ import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { ChevronLeft as ChevronLeftIcon } from '@material-ui/icons';
 import * as classNames from 'classnames';
 import * as React from 'react';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 
 import { Boss, BossType } from '../../classes/Boss';
 
@@ -26,9 +27,10 @@ export interface ISideMenuProps {
   bosses: IBossMap;
   closeMenu: (() => void);
   currentBoss: BossType;
-  handleChange: ((event: React.MouseEvent<HTMLElement>) => void);
+  handleChange: (id: number) => void;
   open: boolean;
   openMenu: (() => void);
+  strategyId: string;
 }
 
 export interface ISideMenuState {
@@ -74,6 +76,9 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
     borderRightColor: theme.palette.primary.main,
     borderRightStyle: 'solid',
   },
+  sideMenuContainer: {
+    height: '100%'
+  },
   toolbar: {
     display: 'flex',
     alignItems: 'center',
@@ -83,9 +88,11 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   },
 });
 
-class SideMenu extends React.Component<WithStyles<any> & ISideMenuProps, ISideMenuState> {
+class SideMenu extends React.Component<RouteComponentProps<any> & WithStyles<any> & ISideMenuProps, ISideMenuState> {
   public render() {
-    const { bosses, classes, closeMenu, currentBoss, handleChange, open } = this.props;
+    const { bosses, classes, closeMenu, currentBoss, location, open, strategyId } = this.props;
+    // console.log(bosses);
+    // console.log(location);
     return (
       <Drawer
         open={open}
@@ -94,36 +101,41 @@ class SideMenu extends React.Component<WithStyles<any> & ISideMenuProps, ISideMe
           paper: classNames(classes.drawer, classes.drawerPaper, !open && classes.drawerPaperClose),
         }}
       >
-        <div className={classes.toolbar}>
-          <IconButton onClick={closeMenu}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </div>
-        <Divider />
-        <List>
-          {Object.keys(bosses).map((key, index) => {
-            const boss = bosses[key];
-            let iconURL = `https://wow.zamimg.com/images/wow/icons/large/achievement_nazmir_`;
-            iconURL += boss.id === 0 ? 'zone' : `boss_${boss.icon}`;
-            iconURL += '.jpg';
-            const iconURLAlt = `${boss.label} Icon`;
-            return (
-              <ListItem 
-                key={index}
-                className={classNames(classes.listItem, currentBoss === boss.id && classes.selected)}                
-                button={true}
-                id={boss.id}
-                onClick={handleChange}
-              >
-                <Avatar className={classes.avatar} src={iconURL} alt={iconURLAlt} />
-                <ListItemText primary={boss.label} secondary={boss.title} />
-              </ListItem>
-            )
-          })}
-        </List>
+        {location.pathname !== '/' &&
+          <div className={classes.sideMenuContainer}>
+            <div className={classes.toolbar}>
+              <IconButton onClick={closeMenu}>
+                <ChevronLeftIcon />
+              </IconButton>
+            </div>
+            <Divider />
+            <List>
+              {Object.keys(bosses).map((key, index) => {
+                const boss = bosses[key];
+                let iconURL = `https://wow.zamimg.com/images/wow/icons/large/achievement_nazmir_`;
+                iconURL += boss.id === 0 ? 'zone' : `boss_${boss.icon}`;
+                iconURL += '.jpg';
+                const iconURLAlt = `${boss.label} Icon`;
+                const linkString = `/${strategyId}/${boss.id}`;
+                return (
+                  <Link key={index} to={linkString}>
+                    <ListItem 
+                      className={classNames(classes.listItem, currentBoss === boss.id && classes.selected)}                
+                      button={true}
+                      id={boss.id}
+                    >
+                      <Avatar className={classes.avatar} src={iconURL} alt={iconURLAlt} />
+                      <ListItemText primary={boss.label} secondary={boss.title} />
+                    </ListItem>
+                  </Link>
+                )
+              })}
+            </List>
+          </div>
+        }
       </Drawer>
     );
   }
 }
 
-export default withStyles(styles)(SideMenu)
+export default withRouter(withStyles(styles)(SideMenu));

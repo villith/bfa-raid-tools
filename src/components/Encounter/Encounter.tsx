@@ -9,11 +9,15 @@ import PlayerListContainer from '../PlayerList/PlayerListContainer';
 import { Aux } from '../winAux';
 
 export interface IEncounterProps {
+  encounterId?: string;
+  strategyId: string;
   boss: Boss;
   addPlayers: (player: Player[]) => void;
   addPlayersToBoss: (playerIds: string[]) => void;
   deletePlayers: (playerIds: string[]) => void;
   deletePlayersFromBoss: (playerIds: string[]) => void;
+  handleChangeBoss: (id: number) => void;
+  handleSelectStrategy: (id: string) => void;
   handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
   handleChangePhaseTimers: (timers: number[]) => void;
   handleRemoveCooldown: (pid: string, cid: string, timer: number) => void;
@@ -34,9 +38,34 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
   public state = {
     currentPhase: 0
   }
+
+  public componentDidMount() {
+    const { encounterId, handleSelectStrategy, strategyId } = this.props;
+    handleSelectStrategy(strategyId);
+    this.changeBoss(encounterId);
+  }
+
+  public shouldComponentUpdate(nextProps: IEncounterProps, nextState: IEncounterState) {
+    if (this.props.encounterId !== nextProps.encounterId) {
+      // console.log('abc');
+      this.changeBoss(nextProps.encounterId);
+    }
+    return true;
+  }
+
+  public changeBoss = (encounterId: string | undefined) => {
+    const { handleChangeBoss } = this.props;
+    if (encounterId) {
+      // console.log(`ENCOUNTER ID: ${encounterId}`);
+      handleChangeBoss(parseInt(encounterId, 10));
+    }
+    else {
+      // console.log(`NO ENCOUNTER ID: ${encounterId}`);
+    }
+  }
   
   public handleChangePhase = (event: any, newPhase: number) => {
-    console.log(`[handleChangePhase]: ${newPhase}`);
+    // console.log(`[handleChangePhase]: ${newPhase}`);
     this.setState({ currentPhase: newPhase });
   }
 
