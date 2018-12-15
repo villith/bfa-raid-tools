@@ -1,17 +1,20 @@
 import { Grid, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 
-import { Strategy } from '../../classes/Strategy';
+import { IStrategyDescriptors, Strategy } from '../../classes/Strategy';
 import { IPreferences } from '../App/App';
 import AddStrategyCard from './AddStrategyCard';
 import StrategyCard from './StrategyCard';
 
 export interface IStrategyListProps {
   buildNewStrategy: (callback: (sid: string) => void) => void;
+  handleEditStrategyDescriptors: (a: IStrategyDescriptors) => void;
+  handleFinishedLoading: () => void;
   handleToggleFavourite: (id: string) => void;
   preferences: IPreferences;
   strategies: Strategy[];
   handleSelectStrategy: (id: string | null) => void;
+  userId: string;
 }
 
 export interface IStrategyListState {
@@ -25,6 +28,9 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 });
 
 class StrategyList extends React.Component<WithStyles<any> & IStrategyListProps, IStrategyListState> {
+  public componentDidMount() {
+    this.props.handleFinishedLoading();
+  }
   public sortByFavourite = () => {
     return (a: Strategy, b: Strategy) => {
       const x = this.props.preferences.favourites.indexOf(a.id!) === -1 ? -1 : 1;
@@ -33,7 +39,8 @@ class StrategyList extends React.Component<WithStyles<any> & IStrategyListProps,
     }
   }
   public render() {
-    const { buildNewStrategy, handleToggleFavourite, handleSelectStrategy, strategies } = this.props;
+    const { buildNewStrategy, handleToggleFavourite, handleSelectStrategy, handleEditStrategyDescriptors, strategies, userId } = this.props;
+    console.log(strategies);
     return (
       <Grid container={true} spacing={8}>
         {strategies
@@ -45,10 +52,12 @@ class StrategyList extends React.Component<WithStyles<any> & IStrategyListProps,
               strategy.id &&
                 <Grid key={index} item={true} xs={6} sm={4} md={3}>
                   <StrategyCard
+                    handleEditStrategyDescriptors={handleEditStrategyDescriptors}
                     toggleFavourite={handleToggleFavourite}
                     favourite={favourite}
                     strategy={strategy}
                     selectStrategy={handleSelectStrategy}
+                    userId={userId}
                   />
                 </Grid>
             )

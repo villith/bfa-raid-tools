@@ -1,3 +1,5 @@
+import { IBooleanMap, Strategy } from 'src/classes/Strategy';
+
 import { BossType } from '../classes/Boss';
 import { Player } from '../classes/Player';
 import { CLASSES } from '../constants/classes';
@@ -85,4 +87,24 @@ const getPlayersBySpec = (ws: WOWSpec, players: Player[]) => {
   return r;
 };
 
-export { getBossInfo, getRaidInfo, getPlayerById, getPlayerIndexById, getPlayerByPlayerName, getPlayersByClass, getPlayersBySpec, getClassInfo, getClassColor, getRoleIcon, getSpecInfo };
+const getPermissionBoolean = (uid: string, strategy: Strategy, roles: string[]) => {
+  const { admins, officers, members, guests } = strategy;
+  const roleMap = {
+    'admins': admins,
+    'officers': officers,
+    'members': members,
+    'guests': guests
+  };
+  let canEdit = false;
+  
+  const checkPermissionGroup = (group: IBooleanMap) => {
+    if (group) {
+      Object.keys(group).map(x => x === uid && (group[x] === true) && (canEdit = true));
+    }
+  };
+
+  roles.map(role => checkPermissionGroup(roleMap[role]));
+  return canEdit;  
+}
+
+export { getBossInfo, getRaidInfo, getPermissionBoolean, getPlayerById, getPlayerIndexById, getPlayerByPlayerName, getPlayersByClass, getPlayersBySpec, getClassInfo, getClassColor, getRoleIcon, getSpecInfo };

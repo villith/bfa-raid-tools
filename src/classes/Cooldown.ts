@@ -2,7 +2,9 @@ import { CooldownType } from '../enums/cooldownType';
 import { WOWClass } from '../enums/WOWclass';
 import { WOWSpec } from '../enums/WOWspec';
 import { uuid } from '../helpers/createGuid';
+import { BossType } from './Boss';
 
+export type CooldownBossMap = { [key in BossType]: number[]; };
 /**
  *
  *
@@ -21,7 +23,7 @@ class Cooldown {
   public cdSpec: WOWSpec;
   public owner: string;
   public bossAbilities: string[] = [];
-  public timers: number[] = [];
+  public timers: CooldownBossMap = {} as CooldownBossMap;
 
   /**
    * Creates an instance of Cooldown.

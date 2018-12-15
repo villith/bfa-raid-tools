@@ -1,25 +1,27 @@
 import { Grid, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import { Route, RouteComponentProps, StaticContext, Switch } from 'react-router';
-import { Strategy } from 'src/classes/Strategy';
+import { IStrategyDescriptors, Strategy } from 'src/classes/Strategy';
+import { findById } from 'src/helpers/getGeneric';
 
-import { IBossMap } from '../../classes/Boss';
 import { Player } from '../../classes/Player';
 import { IPreferences } from '../App/App';
 import Encounter from '../Encounter/Encounter';
 import Home from '../Home/Home';
+import ErrorPage from '../Pages/ErrorPage';
 import StrategyList from '../StrategyList/StrategyList';
 import TwitchWidgetContainer from '../Widgets/TwitchWidget/TwitchWidgetContainer';
 import { Aux } from '../winAux';
 
 export interface IMainContentProps {
-  bosses: IBossMap;
   addPlayers: (players: Player[]) => void;
   addPlayersToBoss: (playerIds: string[]) => void;
   buildNewStrategy: (callback: (sid: string) => void) => void;
   deletePlayers: (playerIds: string[]) => void;
   deletePlayersFromBoss: (playerIds: string[]) => void;
   handleChangeBoss: (id: number) => void;
+  handleEditStrategyDescriptors: (a: IStrategyDescriptors) => void;
+  handleFinishedLoading: () => void;
   handleSelectStrategy: (id: string, callback?: (id: string) => void) => void;
   handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
   handleChangePhaseTimers: (timers: number[]) => void;
@@ -28,7 +30,8 @@ export interface IMainContentProps {
   preferences: IPreferences;
   strategies: Strategy[];
   buildTestPlayerList: () => void;
-  players: Player[];
+  currentStrategy: string;
+  userId: string;
 }
 
 export interface IMainContentState {
@@ -56,17 +59,20 @@ class MainContent extends React.Component<WithStyles<any> & IMainContentProps, I
 
   public render() {
     const { focusedPlayerId } = this.state;
-    const { buildNewStrategy, handleSelectStrategy, handleChangeBoss, handleToggleFavourite, preferences, strategies, bosses, buildTestPlayerList, addPlayers, addPlayersToBoss, handleRemoveCooldown, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimers, handleCooldownPickerChange, players } = this.props;
+    const { buildNewStrategy, handleSelectStrategy, handleFinishedLoading, handleEditStrategyDescriptors, handleChangeBoss, handleToggleFavourite, preferences, strategies, buildTestPlayerList, addPlayers, addPlayersToBoss, handleRemoveCooldown, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimers, handleCooldownPickerChange, userId } = this.props;
     const strategyListPage = () => {
       return (
         <Aux>
           <Grid item={true} xs={8} sm={9}>
             <StrategyList
               buildNewStrategy={buildNewStrategy}
+              handleEditStrategyDescriptors={handleEditStrategyDescriptors}
               handleToggleFavourite={handleToggleFavourite}
               preferences={preferences}
               strategies={strategies}
               handleSelectStrategy={handleSelectStrategy}
+              userId={userId}
+              handleFinishedLoading={handleFinishedLoading}
             />
           </Grid>
           <Grid item={true} xs={4} sm={3}>
@@ -78,46 +84,61 @@ class MainContent extends React.Component<WithStyles<any> & IMainContentProps, I
 
     const encounterPage = (props: RouteComponentProps<any, StaticContext, any>) => {
       const { strategyId, encounterId } = props.match.params;
-      const boss = bosses[encounterId];
-      return (
-        encounterId === 0 || encounterId === undefined ? (
-          <Home
-            addPlayers={addPlayers}
-            deletePlayers={deletePlayers}
-            addPlayersToBoss={addPlayersToBoss}
-            deletePlayersFromBoss={deletePlayersFromBoss}
-            players={players}
-            bosses={bosses}
-            focusedPlayerId={focusedPlayerId}
-            changeFocusedPlayerId={this.changeFocusedPlayerId}
-            buildTestPlayerList={buildTestPlayerList}
-            strategyId={strategyId}
-            handleSelectStrategy={handleSelectStrategy}
-          />
-        ) : (
-          boss ? (
-            <Encounter
-              encounterId={encounterId}
-              strategyId={strategyId}
-              boss={boss}
+      const strategy = strategies[findById(strategyId, strategies)];
+      if (strategy) {
+        const { bosses, players } = strategy;
+        const boss = bosses[encounterId];
+        return (
+          encounterId === '0' || encounterId === undefined ? (
+            <Home
               addPlayers={addPlayers}
               deletePlayers={deletePlayers}
               addPlayersToBoss={addPlayersToBoss}
               deletePlayersFromBoss={deletePlayersFromBoss}
-              handleSelectStrategy={handleSelectStrategy}
-              handleChangeBoss={handleChangeBoss}
-              handleCooldownPickerChange={handleCooldownPickerChange}
-              handleChangePhaseTimers={handleChangePhaseTimers}
-              handleRemoveCooldown={handleRemoveCooldown}
               players={players}
+              bosses={bosses}
               focusedPlayerId={focusedPlayerId}
               changeFocusedPlayerId={this.changeFocusedPlayerId}
+              buildTestPlayerList={buildTestPlayerList}
+              strategyId={strategyId}
+              handleSelectStrategy={handleSelectStrategy}
+              handleChangeBoss={handleChangeBoss}
+              handleFinishedLoading={handleFinishedLoading}
             />
           ) : (
-            <div>ABC</div>
+            boss ? (
+              <Encounter
+                encounterId={encounterId}
+                strategyId={strategyId}
+                boss={boss}
+                addPlayers={addPlayers}
+                deletePlayers={deletePlayers}
+                addPlayersToBoss={addPlayersToBoss}
+                deletePlayersFromBoss={deletePlayersFromBoss}
+                handleSelectStrategy={handleSelectStrategy}
+                handleChangeBoss={handleChangeBoss}
+                handleCooldownPickerChange={handleCooldownPickerChange}
+                handleChangePhaseTimers={handleChangePhaseTimers}
+                handleRemoveCooldown={handleRemoveCooldown}
+                players={players}
+                focusedPlayerId={focusedPlayerId}
+                changeFocusedPlayerId={this.changeFocusedPlayerId}
+                handleFinishedLoading={handleFinishedLoading}
+              />
+            ) : (
+              <div>ABC</div>
+            )
           )
         )
-      )
+      }
+      else {
+        return (
+          <ErrorPage 
+            handleFinishedLoading={handleFinishedLoading}
+            reason={'Strategy does not exist'}
+          />
+        )
+      }
     }
 
     return (

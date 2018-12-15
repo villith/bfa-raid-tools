@@ -11,11 +11,13 @@ import {
 import { Menu as MenuIcon } from '@material-ui/icons';
 import * as classNames from 'classnames';
 import * as React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 export interface INavBarProps {
   sideMenuOpen: boolean;
   importOpen: boolean;
   exportOpen: boolean;
+  strategyTitle: string;
   toggleSideMenu: () => void;
 }
 
@@ -51,6 +53,9 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   hide: {
     display: 'none',
   },
+  hidden: {
+    visibility: 'hidden'
+  },
   outlined: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit,
@@ -61,10 +66,20 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
     position: 'static'
   }
 });
-class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarState> {
+
+class NavBar extends React.Component<RouteComponentProps<any> & WithStyles<any> & INavBarProps, INavBarState> {
+  public getNavBarText = () => {
+    const { strategyTitle } = this.props;
+    let titleString = 'BFA Raid Tools';
+    if (strategyTitle !== '') {
+      titleString += ` - ${strategyTitle}`;
+    }
+    return titleString;
+  }
   public render() {
     // console.log('NAVBAR RENDER');
-    const { classes, sideMenuOpen, toggleSideMenu } = this.props;
+    const { classes, location, sideMenuOpen, toggleSideMenu } = this.props;
+    const navBarText = this.getNavBarText();
     return (
       <div className={classes.root}>
         <AppBar
@@ -76,12 +91,12 @@ class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarStat
               color='inherit'
               aria-label='Menu'
               onClick={toggleSideMenu}
-              className={classNames(classes.menuButton, sideMenuOpen && classes.hide)}
+              className={classNames(classes.menuButton, sideMenuOpen && classes.hide, location.pathname === '/' && classes.hidden)}
             >
               <MenuIcon />
             </IconButton>
             <Typography variant='h6' color='inherit' className={classes.flex}>
-              BFA Raid Tools
+              {navBarText} 
             </Typography>
             {this.props.children}
           </Toolbar>
@@ -91,4 +106,4 @@ class NavBar extends React.Component<WithStyles<any> & INavBarProps, INavBarStat
   }
 };
 
-export default withStyles(styles)(NavBar);
+export default withRouter(withStyles(styles)(NavBar));

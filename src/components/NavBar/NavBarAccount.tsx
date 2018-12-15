@@ -6,13 +6,16 @@ import { AuthDialogState } from '../Dialogs/Authentication';
 import { Aux } from '../winAux';
 
 export interface INavBarAccountProps {
-  handleSignOut: () => void;
+  anchorEl: HTMLElement | undefined;
+  handleClick: (event: any) => void;
+  handleClose: () => void;
+  handleSignOut: () => Promise<void>;
   toggleAuthDialog: (authDialogState: AuthDialogState) => void;
   user: firebase.User | null;
 }
 
 export interface INavBarAccountState {
-  anchorEl: HTMLElement | undefined;
+  placeholder?: string;
 }
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
@@ -29,21 +32,8 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 });
 
 class NavBarAccount extends React.Component<WithStyles<any> & INavBarAccountProps, INavBarAccountState> {
-  public state = {
-    anchorEl: undefined
-  }
-
-  public handleClick = (event: any) => {
-    this.setState({ anchorEl: event.currentTarget });
-  }
-
-  public handleClose = () => {
-    this.setState({ anchorEl: undefined });
-  }
-
   public render() {
-    const { anchorEl } = this.state;
-    const { classes, handleSignOut, toggleAuthDialog, user } = this.props;
+    const { anchorEl, classes, handleClick, handleClose, handleSignOut, toggleAuthDialog, user } = this.props;
     return (
       (!user || user && user.isAnonymous) ? (
         <Aux>
@@ -52,12 +42,12 @@ class NavBarAccount extends React.Component<WithStyles<any> & INavBarAccountProp
         </Aux>
       ) : (
         <div className={classes.userAccount}>
-          <Button className={classes.accountMenuButton} onClick={this.handleClick}>{user.displayName}  &#9660; {user.uid}</Button>
+          <Button className={classes.accountMenuButton} onClick={handleClick}>{user.displayName}  &#9660; {user.uid}</Button>
           <Menu
             id='accountOptions-menu'
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
-            onClose={this.handleClose}
+            onClose={handleClose}
           >
             <Link to='profile'><MenuItem>Profile</MenuItem></Link>
             <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>

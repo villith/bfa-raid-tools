@@ -5,12 +5,13 @@ import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { Add as AddIcon, Close as CloseIcon, Delete as DeleteIcon } from '@material-ui/icons';
 import * as classNames from 'classnames';
 import * as React from 'react';
+import { BossType } from 'src/classes/Boss';
 import { COOLDOWNTYPES } from 'src/constants/cooldownTypes';
 import { CooldownType } from 'src/enums/cooldownType';
 import { findById } from 'src/helpers/getGeneric';
 
 import { BossAbility } from '../../classes/BossAbility';
-import { Cooldown } from '../../classes/Cooldown';
+import { Cooldown, CooldownBossMap } from '../../classes/Cooldown';
 import { Phase } from '../../classes/Phase';
 import { Player } from '../../classes/Player';
 import CooldownPicker from '../CooldownPicker/CooldownPicker';
@@ -26,6 +27,7 @@ export interface IBossAbilityListProps {
   bossAbilities: BossAbility[];
   cooldowns: Cooldown[];
   currentPhase: number;
+  encounterId: string;
   focusedPlayerId: string;
   handleCooldownPickerChange: (cooldownId: string, bossAbilityId: string, timer: number) => void;
   phases: Phase[];
@@ -190,16 +192,20 @@ class BossAbilityList extends React.Component<WithStyles<any> & IBossAbilityList
 
   public populateCooldownPicker = (bossAbility: BossAbility) => {
     const { id, cooldownTypes } = bossAbility;
-    const { bossAbilities, cooldowns } = this.props;
+    const { bossAbilities, cooldowns, encounterId } = this.props;
+    const bossId = parseInt(encounterId, 10) as BossType;
     const ability = bossAbilities[findById(id, bossAbilities)];
     const newCooldowns: Cooldown[] = [];
     cooldowns.map(cooldown => {
+      if (!cooldown.hasOwnProperty('timers')) { cooldown.timers = {} as CooldownBossMap; }
       const { timers } = cooldown;
-      let isOnCooldown = timers.length > 0 ? true : false;
+      if (!timers.hasOwnProperty(bossId)) { timers[bossId] = [] as number[]; }
+      const bossTimers = timers[bossId];
+      let isOnCooldown = bossTimers.length > 0 ? true : false;
       if (cooldownTypes.indexOf(cooldown.cooldownType) !== -1) {
         let usedCharges = 0;
         // console.log(timers);
-        timers.map(time => {
+        bossTimers.map(time => {
           // console.log(time, ability.timer);
           const diff = Math.abs(time - ability.timer);
           // console.log(`Time since use: ${diff}`);

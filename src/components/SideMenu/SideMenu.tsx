@@ -16,20 +16,18 @@ import { ChevronLeft as ChevronLeftIcon } from '@material-ui/icons';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
+import { Raid } from 'src/enums/raid';
+import { getRaidInfo } from 'src/helpers/getRaidInfo';
 
-import { Boss, BossType } from '../../classes/Boss';
-
-interface IBossMap {
-  [index: number]: Boss;
-}
+import { BossType } from '../../classes/Boss';
 
 export interface ISideMenuProps {
-  bosses: IBossMap;
-  closeMenu: (() => void);
+  closeMenu: () => void;
   currentBoss: BossType;
+  currentRaid: Raid;
   handleChange: (id: number) => void;
   open: boolean;
-  openMenu: (() => void);
+  openMenu: () => void;
   strategyId: string;
 }
 
@@ -90,9 +88,8 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class SideMenu extends React.Component<RouteComponentProps<any> & WithStyles<any> & ISideMenuProps, ISideMenuState> {
   public render() {
-    const { bosses, classes, closeMenu, currentBoss, location, open, strategyId } = this.props;
-    // console.log(bosses);
-    // console.log(location);
+    const { classes, closeMenu, currentBoss, currentRaid, location, open, strategyId } = this.props;
+    const { bosses } = getRaidInfo(currentRaid);
     return (
       <Drawer
         open={open}
@@ -101,14 +98,14 @@ class SideMenu extends React.Component<RouteComponentProps<any> & WithStyles<any
           paper: classNames(classes.drawer, classes.drawerPaper, !open && classes.drawerPaperClose),
         }}
       >
-        {location.pathname !== '/' &&
-          <div className={classes.sideMenuContainer}>
-            <div className={classes.toolbar}>
-              <IconButton onClick={closeMenu}>
-                <ChevronLeftIcon />
-              </IconButton>
-            </div>
-            <Divider />
+        <div className={classes.sideMenuContainer}>
+          <div className={classes.toolbar}>
+            <IconButton onClick={closeMenu}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </div>
+          <Divider />
+          {location.pathname !== '/' &&
             <List>
               {Object.keys(bosses).map((key, index) => {
                 const boss = bosses[key];
@@ -131,8 +128,8 @@ class SideMenu extends React.Component<RouteComponentProps<any> & WithStyles<any
                 )
               })}
             </List>
-          </div>
-        }
+          }
+        </div>
       </Drawer>
     );
   }

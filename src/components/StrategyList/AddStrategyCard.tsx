@@ -1,4 +1,4 @@
-import { Card, CardContent, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
+import { Card, CardContent, IconButton, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { Add as AddIcon } from '@material-ui/icons';
 import * as React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -13,7 +13,18 @@ export interface IAddStrategyCardState {
 }
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
-  root: {},
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    width: '100%'
+  },
+  addIcon: {
+    height: 64,
+    width: 64,
+    opacity: 0.85
+  },
   actions: {
     float: 'right'
   },
@@ -48,11 +59,16 @@ class AddStrategyCard extends React.Component<RouteComponentProps<any> & WithSty
   }
 
   public render() {
-    const { buildNewStrategy } = this.props;
+    const { buildNewStrategy, classes } = this.props;
     return (
-      <Card>
-        <CardContent>
-          <AddIcon onClick={() => buildNewStrategy(this.handleNewStrategy)} />
+      <Card className={classes.root}>
+        <CardContent className={classes.content}>
+          <IconButton className={classes.addButton}>
+            <AddIcon
+              className={classes.addIcon}
+              onClick={() => buildNewStrategy(this.handleNewStrategy)}
+            />
+          </IconButton>
         </CardContent>
       </Card>
     );

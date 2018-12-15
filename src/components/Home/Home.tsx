@@ -20,6 +20,8 @@ export interface IHomeProps {
   strategyId: string;
   handleSelectStrategy: (id: string) => void;
   changeFocusedPlayerId: (id: string) => void;
+  handleChangeBoss: (id: number) => void;
+  handleFinishedLoading: () => void;
 }
 
 export interface IHomeState {
@@ -32,8 +34,13 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
 
 class Home extends React.Component<WithStyles<any> & IHomeProps, IHomeState> {
   public componentDidMount() {
-    this.props.handleSelectStrategy(this.props.strategyId);
+    console.log('[home] componentDidMount');
+    const { handleChangeBoss, handleFinishedLoading, handleSelectStrategy, strategyId } = this.props;
+    handleSelectStrategy(strategyId);
+    handleChangeBoss(0);
+    handleFinishedLoading();
   }
+  
   public render() {
     const { addPlayers, addPlayersToBoss, buildTestPlayerList, deletePlayers, deletePlayersFromBoss, focusedPlayerId, changeFocusedPlayerId, players } = this.props;
     return (

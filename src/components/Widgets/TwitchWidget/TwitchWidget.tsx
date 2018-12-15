@@ -10,7 +10,7 @@ export interface ITwitchWidgetProps {
 }
 
 export interface ITwitchWidgetState {
-  error: any;
+  controller: AbortController;
   streamData: ITwitchStreamsData;
   lastUpdate: number;
 }
@@ -140,9 +140,9 @@ const UPDATE_INTERVAL = 300000; // 5 seconds
 
 class TwitchWidget extends React.Component<WithStyles<any> & ITwitchWidgetProps, ITwitchWidgetState> {
   public state = {
-    error: {},
+    controller: new AbortController(),
     streamData: {} as ITwitchStreamsData,
-    lastUpdate: 0
+    lastUpdate: 0,
   }
   // public buildClassesComponent = () => {
 
@@ -157,7 +157,6 @@ class TwitchWidget extends React.Component<WithStyles<any> & ITwitchWidgetProps,
 
   // }
   public componentDidMount() {
-    // console.log('TWITCH WIDGET MOUNT');
     const { lastUpdate } = this.state;
     const currentTime = Date.now();
     const diff = currentTime - lastUpdate;
@@ -166,15 +165,25 @@ class TwitchWidget extends React.Component<WithStyles<any> & ITwitchWidgetProps,
     }
   }
 
+  public componentWillUnmount() {
+    const { controller } = this.state;
+    controller.abort();
+  }
+
   public getStreamData = () => {
+    const { controller } = this.state;
+    const { signal } = controller;
     const { profile } = this.props;
     const { userId } = profile;
-    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+    const corsProxy = process.env.NODE_ENV !== 'production' ? 'https://cors-anywhere.herokuapp.com/' : '';
     const url = `${corsProxy}https://api.twitch.tv/helix/streams?user_id=${userId}`;
     const headers = new Headers();
     headers.append('Content-Type', 'application/json');
     headers.append('Client-ID', `${process.env.REACT_APP_CLIENT_ID}`);
-    const request = fetch(url, { headers });
+    const request = fetch(url, {
+      headers,
+      signal
+    });
     request
       .then(result => {
         return result.json()
@@ -187,11 +196,8 @@ class TwitchWidget extends React.Component<WithStyles<any> & ITwitchWidgetProps,
         else {
           // console.log(response);
         }
-    });
-
-    request.catch(e => {
-      this.setState({ error: e });
-    });
+      })
+      .catch(error => console.log(error));
   }
   public render() {
     const { streamData } = this.state;

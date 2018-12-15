@@ -1,5 +1,6 @@
 import { CircularProgress, Grid, StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core';
 import { Apps as AppIcon, SaveAlt as SaveAltIcon, Share as ShareIcon } from '@material-ui/icons';
+import * as classNames from 'classnames';
 import * as React from 'react';
 import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 
@@ -16,6 +17,7 @@ import {
   handleSignIn,
   handleSignOut,
   handleSignUp,
+  listenForStrategyUpdates,
   saveUpdatedStrategy,
   saveUser,
   updateUserPreferences,
@@ -35,6 +37,7 @@ import NavBarAccount from '../NavBar/NavBarAccount';
 import NavBarAction from '../NavBar/NavBarAction';
 import NavBarActions from '../NavBar/NavBarActions';
 import SideMenu from '../SideMenu/SideMenu';
+import { Aux } from '../winAux';
 
 // import * as _ from 'lodash';
 const defaultStrategy: Strategy = {
@@ -51,7 +54,7 @@ const defaultStrategy: Strategy = {
 
 export interface IAppState {
   user: firebase.User;
-  currentStrategy: Strategy;
+  currentStrategy: string;
   authCredential: firebase.auth.AuthCredential | null;
   authOpen: boolean;
   authDialogState: AuthDialogState;
@@ -60,10 +63,12 @@ export interface IAppState {
   currentRaid: Raid;
   exportOpen: boolean;
   importOpen: boolean;
+  initLoading: boolean;
   loading: boolean;
   preferences: IPreferences;
   sideMenuOpen: boolean;
   strategies: Strategy[];
+  navBarAnchorEl: HTMLElement | undefined;
 }
 
 const styles: StyleRulesCallback<any> = (theme: Theme) => ({
@@ -88,6 +93,9 @@ const styles: StyleRulesCallback<any> = (theme: Theme) => ({
   },
   loading: {
     margin: 'auto'
+  },
+  hidden: {
+    display: 'none'
   }
 });
 
@@ -99,7 +107,7 @@ export interface IPreferences {
 class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IAppState> {
   public state = {
     user: {} as firebase.User,
-    currentStrategy: defaultStrategy,
+    currentStrategy: '',
     authCredential: null,
     authOpen: false,
     authDialogState: 'signIn' as AuthDialogState,
@@ -108,6 +116,7 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
     currentRaid: Raid.ULDIR,
     exportOpen: false,
     importOpen: false,
+    initLoading: true,
     loading: true,
     preferences: {
       darkMode: false,
@@ -115,18 +124,41 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
     },
     sideMenuOpen: false,
     strategies: [] as Strategy[],
+    navBarAnchorEl: undefined
   };
 
   public componentDidMount() {
+    const { history } = this.props;
     auth.onAuthStateChanged(user => {
+      console.log('auth state changed');
       if (user) {
         this.setState({ user }, () => { 
           saveUser(user, () => {
             const promiseArray = [] as Array<Promise<any>>;
             const strategiesPromise = getUserStrategies(user.uid).then((results: Strategy[]) => {
-              console.log(results);
-              this.setState({ strategies: results });
-            });
+              this.setState({ strategies: results }, () => {
+                listenForStrategyUpdates(results.map(r => r.id), result => {
+                  console.log('RESULT');
+                  console.log(result);
+                  const { strategies } = this.state;
+                  if (result) {
+                    const index = findById(result.id, strategies);
+                    if (index !== -1) {
+                      strategies[index] = result;
+                      console.log('NEW STRATEGY UPDATE... UPDATING STATE');
+                      this.setState({ strategies });
+                    }
+                    else {
+                      console.log('could not find strategy in strategies');
+                    }
+                  }
+                  else {
+                    console.log('Result undefined');
+                  }
+                });
+              });
+            })
+            .catch(reason => console.log(reason));
 
             const preferencesPromise = getUserPreferences(user.uid).then((result: any) => {
               const { preferences }: { preferences: IPreferences } = result;
@@ -138,31 +170,72 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
             promiseArray.push(preferencesPromise);
 
             Promise.all(promiseArray).then(() => {
-              this.setState({ loading: false });
+              this.setState({ initLoading: false });
             }).catch(reason => {
-              console.log(reason)
-              this.setState({ loading: false });
+              console.log(reason);
+              this.setState({ initLoading: false }, () => {
+                console.log('push history base');
+                history.push('/')
+              });
             });
           });
         });
       }
       else {
+        console.log('abc');
         auth.signInAnonymously().then(resp => {
-          this.setState({ authCredential: resp.credential, user: {} as firebase.User });
+          const promiseArray = [] as Array<Promise<any>>;
+          const strategiesPromise = getUserStrategies(resp.user!.uid).then((results: Strategy[]) => {
+            console.log(results);
+            this.setState({ strategies: results });
+          });
+
+          const preferencesPromise = getUserPreferences(resp.user!.uid).then((result: any) => {
+            const { preferences }: { preferences: IPreferences } = result;
+            // console.log(preferences);
+            console.log('preferencesPromise done');
+            this.setState({ preferences });
+          });
+          promiseArray.push(strategiesPromise);
+          promiseArray.push(preferencesPromise);
+
+          Promise.all(promiseArray).then(() => {
+            this.setState({ loading: false }, () => {
+              console.log('push history');
+              history.push('/');
+            });
+          }).catch(reason => {
+            console.log(reason);
+            this.setState({ loading: false }, () => {
+              console.log('push history');
+              history.push('/');
+            });
+          });
         });
       }
     });
   }
 
+  public setLoadingTrue = () => {
+    console.log('[setLoadingTrue]');
+    this.setState({ loading: true });
+  }
+
   public handleSelectStrategy = (id: string, callback?: (id: string) => void) => {
-    console.log('handleSelectStrategy');
+    console.log('[handleSelectStrategy]');
+    this.setLoadingTrue();
     if (id) {
-      const strategy = this.state.strategies[findById(id, this.state.strategies)];
-      if (strategy) {
-        this.setState({ currentStrategy: strategy }, () => { if (callback) { callback(id) } });
+      if (this.state.currentStrategy !== id) {
+        const strategy = this.state.strategies[findById(id, this.state.strategies)];
+        if (strategy) {
+          this.setState({ currentStrategy: strategy.id }, () => { if (callback) { callback(id) } });
+        }
+        else {
+          console.log(`[selectNewStrategy] Could not find strategy with id: ${id}`);
+        }
       }
       else {
-        console.log(`[selectNewStrategy] Could not find strategy with id: ${id}`);
+        console.log('Already on selected strategy');
       }
     }
     else {
@@ -171,8 +244,10 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
   }
 
   public getCurrentStrategy = () => {
-    const accessor = this.state.currentBoss;
-    const strategy: Strategy = dc(this.state.currentStrategy);
+    const { currentBoss, currentStrategy, strategies } = this.state;
+    const accessor = currentBoss;
+    const strategyId = currentStrategy || '';
+    const strategy = strategies[findById(strategyId, strategies)] || defaultStrategy;
     const bosses = strategy.bosses;
     const boss = bosses[accessor];
 
@@ -190,10 +265,23 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
     const description = `This is a test description, used to fill out test strategies. DELETE ME.`;
     const strategy = new Strategy(uuid(), 'New Strategy', description, admins, undefined, undefined, undefined, this.buildBossList());
     this.setState(prevState => ({ strategies: prevState.strategies.concat(strategy) }), () => callback(strategy.id));
-  }
+  };
+
+  public handleFinishedLoading = () => {
+    console.log('[handleFinishedLoading]');
+    this.setState({ loading: false });
+  };
 
   public buildTestPlayerList = () => {
     this.handleAddPlayers(testPlayers);
+  }
+
+  public navBarhandleClick = (event: any) => {
+    this.setState({ navBarAnchorEl: event.currentTarget });
+  }
+
+  public navBarHandleClose = () => {
+    this.setState({ navBarAnchorEl: undefined });
   }
 
   public buildBossList = () => {
@@ -213,6 +301,7 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
 
   public handleAddPlayers = (players: Player[]) => {
     // console.log(`[handleAddPlayers]`);
+    const { strategies } = this.state;
     const { strategy } = this.getCurrentStrategy();
     const newPlayers = strategy.players;
     players.map(player => {
@@ -222,11 +311,13 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
         newPlayers.push(player);
       }
     });
-    this.setState({ currentStrategy: strategy }, () => this.handleUpdateStrategy(strategy));
+    strategies[findById(strategy.id, strategies)] = strategy;
+    this.setState({ strategies }, () => this.handleUpdateStrategy(strategy));
   }
 
   public handleAddPlayersToBoss = (playerIds: string[]) => {
     // console.log(`[handleAddPlayersToBoss]`);
+    const { strategies } = this.state;
     const { accessor, boss, bosses, strategy } = this.getCurrentStrategy();
     const newPlayers = strategy.players;
     
@@ -239,10 +330,12 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
     });
 
     bosses[accessor] = boss;
-    this.setState({ currentStrategy: strategy }, () => this.handleUpdateStrategy(strategy));
+    strategies[findById(strategy.id, strategies)] = strategy;
+    this.setState({ strategies }, () => this.handleUpdateStrategy(strategy));
   };
 
   public handleDeletePlayers = (playerIds: string[]) => {
+    const { strategies } = this.state;
     const { bosses, strategy } = this.getCurrentStrategy();
     const newPlayers = strategy.players;
     playerIds.map(playerId => {
@@ -264,10 +357,12 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
         }
       });
     });
-    this.setState({ currentStrategy: strategy }, () => this.handleUpdateStrategy(strategy));
+    strategies[findById(strategy.id, strategies)] = strategy;
+    this.setState({ strategies }, () => this.handleUpdateStrategy(strategy));
   }
 
   public handleDeletePlayersFromBoss = (playerIds: string[]) => {
+    const { strategies } = this.state;
     const { accessor, boss, bosses, strategy } = this.getCurrentStrategy();
     const newPlayers = strategy.players;
     playerIds.map(playerId => {
@@ -282,7 +377,8 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
     });
 
     bosses[accessor] = boss;
-    this.setState({ currentStrategy: strategy }, () => this.handleUpdateStrategy(strategy));
+    strategies[findById(strategy.id, strategies)] = strategy;
+    this.setState({ strategies }, () => this.handleUpdateStrategy(strategy));
   }
 
   public toggleSideMenu = () => {
@@ -314,34 +410,41 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
   }
 
   public handleChangeBoss = (id: number) => {
+    console.log('[handleChangeBoss]');
+    this.setLoadingTrue();
     this.setState({ currentBoss: id });
   }
 
   public handleCooldownPickerChange = (cooldownId: string, bossAbilityId: string, timer: number) => {
+    const { strategies } = this.state;
     const { accessor, boss, bosses, strategy } = this.getCurrentStrategy();
     const cooldownIndex = findById(cooldownId, boss.cooldowns);
     boss.cooldowns[cooldownIndex].bossAbilities.push(bossAbilityId);
-    boss.cooldowns[cooldownIndex].timers.push(timer);
+    boss.cooldowns[cooldownIndex].timers[boss.id].push(timer);
     bosses[accessor] = boss;
-    this.setState({ currentStrategy: strategy }, () => this.handleUpdateStrategy(strategy));
+    strategies[findById(strategy.id, strategies)] = strategy;
+    this.setState({ strategies }, () => this.handleUpdateStrategy(strategy));
   }
 
   public handleRemoveCooldown = (bossAbilityId: string, cooldownId: string, timer: number) => {
     // console.log(`[handleRemoveCooldown]: ${bossAbilityId}, ${cooldownId}, ${timer}`);
+    const { strategies } = this.state;
     const { accessor, boss, bosses, strategy } = this.getCurrentStrategy();
     const cooldownIndex = findById(cooldownId, boss.cooldowns);
     const cooldowns = boss.cooldowns[cooldownIndex]
     const { bossAbilities, timers } = cooldowns;
     const bossAbilityIndex = findById(bossAbilityId, bossAbilities);
-    const timerIndex = timers.findIndex(t => timer === t);
+    const timerIndex = timers[boss.id].findIndex(t => timer === t);
     bossAbilities.splice(bossAbilityIndex, 1);
-    timers.splice(timerIndex, 1);
+    timers[boss.id].splice(timerIndex, 1);
     bosses[accessor] = boss;
-    this.setState({ currentStrategy: strategy }, () => this.handleUpdateStrategy(strategy));
+    strategies[findById(strategy.id, strategies)] = strategy;
+    this.setState({ strategies }, () => this.handleUpdateStrategy(strategy));
   }
 
   public handleChangePhaseTimers = (timers: number[]) => {
     // console.log(timers);
+    const { strategies } = this.state;
     const { accessor, boss, bosses, strategy } = this.getCurrentStrategy();
     const { abilities, phases } = boss;
     const newPhases = phases.map((phase, index) => {
@@ -363,7 +466,8 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
     boss.phases = newPhases;
     boss.abilities = newAbilities;
     bosses[accessor] = boss;
-    this.setState({ currentStrategy: strategy }, () => this.handleUpdateStrategy(strategy));
+    strategies[findById(strategy.id, strategies)] = strategy;
+    this.setState({ strategies }, () => this.handleUpdateStrategy(strategy));
   }
 
   public handleImportState = (importString: string) => {
@@ -383,7 +487,7 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
   }
 
   public closeAuthDialog = () => {
-    this.setState({ authOpen: false });
+    this.setState({ authOpen: false, navBarAnchorEl: undefined });
   }
 
   // public buildUpdateStrategyPath = (strategy: Strategy) => {
@@ -439,9 +543,25 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
     this.setState({ authDialogState: newState });
   }
 
+  public getStrategyTitle = () => {
+    const { currentStrategy, strategies } = this.state;
+    const strategy = strategies[findById(currentStrategy, strategies)];
+    if (strategy) { return strategy.title; }
+    else { return ''; }
+  };
+
+  public handleEditStrategyDescriptors = (a: IStrategyDescriptors) => {
+    console.log('HANDLE EDIT STRATEGY DESCRIPTORS');
+    const { strategies } = this.state;
+    const { id, description, title } = a;
+    const index = findById(id, strategies);
+    const strategy = strategies[index];
+    strategy.description = description;
+    strategy.title = title;
+    this.setState({ strategies }, () => this.handleUpdateStrategy(strategy));
+  }
   public render() {
-    const { authCredential, authOpen, authDialogState, currentBoss, sideMenuOpen, exportOpen, importOpen, currentStrategy, preferences, strategies, user, loading } = this.state;
-    const { bosses, players } = currentStrategy;
+    const { authCredential, authOpen, authDialogState, currentBoss, currentRaid, navBarAnchorEl, sideMenuOpen, exportOpen, importOpen, currentStrategy, preferences, strategies, user, loading, initLoading } = this.state;
     const { classes } = this.props;
     return (
       <div className={classes.root}>
@@ -450,12 +570,13 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
           sideMenuOpen={sideMenuOpen}
           importOpen={importOpen}
           exportOpen={exportOpen}
+          strategyTitle={this.getStrategyTitle()}
         >
           <NavBarActions>
             <Link to='/'>
               <NavBarAction
                 title='Show Strategy List'
-                onClick={() => { console.log('placeholder'); }}
+                onClick={() => { this.setState({ currentStrategy: '' }) }}
                 iconComponent={<AppIcon />}
               />
             </Link>
@@ -472,19 +593,22 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
           </NavBarActions>
           <div className={classes.divider}>|</div>
           <NavBarAccount
+            anchorEl={navBarAnchorEl}
+            handleClick={this.navBarhandleClick}
+            handleClose={this.navBarHandleClose}
             handleSignOut={handleSignOut}
             toggleAuthDialog={this.toggleAuthDialog}
             user={user}
           />
         </NavBar>
         <SideMenu
-          bosses={bosses}
           closeMenu={this.closeSideMenu}
           currentBoss={currentBoss}
+          currentRaid={currentRaid}
           handleChange={this.handleChangeBoss}
           openMenu={this.openSideMenu}
           open={sideMenuOpen}
-          strategyId={currentStrategy.id}
+          strategyId={currentStrategy}
         />
         <ImportState
           open={importOpen}
@@ -506,29 +630,34 @@ class App extends React.Component<RouteComponentProps<any> & WithStyles<any>, IA
           handleSignUp={handleSignUp}
           closeDialog={this.closeAuthDialog}
         />
-        {loading === true ? (
+        {initLoading === true ? (
           <CircularProgress className={classes.loading} size={96} />
         ) : (
-          <Grid container={true} spacing={16} className={classes.content}>
-            <MainContent
-              bosses={bosses}
-              players={players}
-              addPlayers={this.handleAddPlayers}
-              addPlayersToBoss={this.handleAddPlayersToBoss}
-              deletePlayers={this.handleDeletePlayers}
-              deletePlayersFromBoss={this.handleDeletePlayersFromBoss}
-              handleChangeBoss={this.handleChangeBoss}
-              handleSelectStrategy={this.handleSelectStrategy}
-              handleCooldownPickerChange={this.handleCooldownPickerChange}
-              handleChangePhaseTimers={this.handleChangePhaseTimers}
-              buildTestPlayerList={this.buildTestPlayerList}
-              handleRemoveCooldown={this.handleRemoveCooldown}
-              handleToggleFavourite={this.handleToggleFavourite}
-              preferences={preferences}
-              strategies={strategies}
-              buildNewStrategy={this.buildNewStrategy}
-            />
-          </Grid>
+          <Aux>
+            { loading && <CircularProgress className={classes.loading} size={96} /> }
+            <Grid container={true} spacing={16} className={classNames(classes.content, loading && classes.hidden)}>
+              <MainContent
+                addPlayers={this.handleAddPlayers}
+                addPlayersToBoss={this.handleAddPlayersToBoss}
+                currentStrategy={currentStrategy}
+                deletePlayers={this.handleDeletePlayers}
+                deletePlayersFromBoss={this.handleDeletePlayersFromBoss}
+                handleChangeBoss={this.handleChangeBoss}
+                handleEditStrategyDescriptors={this.handleEditStrategyDescriptors}
+                handleFinishedLoading={this.handleFinishedLoading}
+                handleSelectStrategy={this.handleSelectStrategy}
+                handleCooldownPickerChange={this.handleCooldownPickerChange}
+                handleChangePhaseTimers={this.handleChangePhaseTimers}
+                buildTestPlayerList={this.buildTestPlayerList}
+                handleRemoveCooldown={this.handleRemoveCooldown}
+                handleToggleFavourite={this.handleToggleFavourite}
+                preferences={preferences}
+                strategies={strategies}
+                buildNewStrategy={this.buildNewStrategy}
+                userId={user.uid}
+              />
+            </Grid>
+          </Aux>
         )}
       </div>
     );

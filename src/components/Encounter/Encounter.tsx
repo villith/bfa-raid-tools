@@ -9,7 +9,7 @@ import PlayerListContainer from '../PlayerList/PlayerListContainer';
 import { Aux } from '../winAux';
 
 export interface IEncounterProps {
-  encounterId?: string;
+  encounterId: string;
   strategyId: string;
   boss: Boss;
   addPlayers: (player: Player[]) => void;
@@ -24,6 +24,7 @@ export interface IEncounterProps {
   players: Player[];
   focusedPlayerId: string;
   changeFocusedPlayerId: (id: string) => void;
+  handleFinishedLoading: () => void;
 }
 
 export interface IEncounterState {
@@ -40,15 +41,18 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
   }
 
   public componentDidMount() {
-    const { encounterId, handleSelectStrategy, strategyId } = this.props;
+    console.log('[encounter] componentDidMount');
+    const { encounterId, handleFinishedLoading, handleSelectStrategy, strategyId } = this.props;
     handleSelectStrategy(strategyId);
     this.changeBoss(encounterId);
+    handleFinishedLoading();
   }
 
   public shouldComponentUpdate(nextProps: IEncounterProps, nextState: IEncounterState) {
     if (this.props.encounterId !== nextProps.encounterId) {
       // console.log('abc');
       this.changeBoss(nextProps.encounterId);
+      this.props.handleFinishedLoading();
     }
     return true;
   }
@@ -60,7 +64,7 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
       handleChangeBoss(parseInt(encounterId, 10));
     }
     else {
-      // console.log(`NO ENCOUNTER ID: ${encounterId}`);
+      handleChangeBoss(0);
     }
   }
   
@@ -71,7 +75,7 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
 
   public render() {
     const { currentPhase } = this.state;
-    const { addPlayers, addPlayersToBoss, boss, changeFocusedPlayerId, handleRemoveCooldown, focusedPlayerId, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimers, handleCooldownPickerChange, players } = this.props;
+    const { addPlayers, addPlayersToBoss, boss, changeFocusedPlayerId, encounterId, handleRemoveCooldown, focusedPlayerId, deletePlayers, deletePlayersFromBoss, handleChangePhaseTimers, handleCooldownPickerChange, players } = this.props;
     const { abilities, cooldowns, phases } = boss;
     const playerList = getPlayersByBoss(boss.id, players);
     return (
@@ -96,6 +100,7 @@ class Encounter extends React.Component<WithStyles<any> & IEncounterProps, IEnco
             bossAbilities={abilities}
             cooldowns={cooldowns}
             currentPhase={currentPhase}
+            encounterId={encounterId}
             handleCooldownPickerChange={handleCooldownPickerChange}
             handleChangePhase={this.handleChangePhase}
             handleChangePhaseTimers={handleChangePhaseTimers}

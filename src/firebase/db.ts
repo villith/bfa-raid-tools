@@ -6,7 +6,7 @@ import { Cooldown } from '../classes/Cooldown';
 import { Phase } from '../classes/Phase';
 import { IBooleanMap, Strategy } from '../classes/Strategy';
 import { IPreferences } from '../components/App/App';
-import { auth, db } from './firebase';
+import { auth, authBase, db } from './firebase';
 
 const getState = (id: string) => {
   const ref = db.ref(`users/${id}`);
@@ -57,39 +57,38 @@ const getState = (id: string) => {
 // };
 
 const handleSignUp = async (email: string, password: string) => {
-  try {
-    const resp = await auth.createUserWithEmailAndPassword(email, password);
-    // console.log(resp);
-    return resp;
+  if (auth.currentUser) {
+    if (auth.currentUser.isAnonymous) {
+      return await handleLinkAnonymousAccount(email, password);
+    }
+    else {
+      console.log('Probably should never be fired. CHECK');
+      return await auth.createUserWithEmailAndPassword(email, password);
+    }
   }
-  catch (err) {
-    // console.log(err);
-    return err;
+  else {
+    return await auth.createUserWithEmailAndPassword(email, password);
   }
-}
+};
 
 const handleSignIn = async (email: string, password: string) => {
-  try {
-    const resp = await auth.signInWithEmailAndPassword(email, password);
-    // console.log(resp);
-    return resp;
+  return await auth.signInWithEmailAndPassword(email, password);
+};
+
+const handleLinkAnonymousAccount = async (email: string, password: string) => {
+  const credential = authBase.EmailAuthProvider.credential(email, password);
+  if (auth.currentUser) {
+    return await auth.currentUser.linkWithCredential(credential);
   }
-  catch (err) {
-    // console.log(err);
-    return err;
-  }
+  return 'No current user';
 }
 
+type FirebaseCreateUserWithEmailAndPasswordErrorCodes = 'auth/email-already-in-use' | 'auth/invalid-email' | 'auth/operation-not-allowed' | 'auth/weak-password';
+type FirebaseSignInWithEmailAndPasswordErrorCodes = 'auth/invalid-email' | 'auth/user-disabled' | 'auth/user-not-found' | 'auth/wrong-password';
+type FirebaseLinkWithCredentialErrorCodes = 'auth/provider-already-linked' | 'auth/invalid-credential' | 'auth/credential-already-in-use' | 'auth/email-already-in-use' | 'auth/operation-not-allowed' | 'auth/invalid-email' | 'auth/wrong-password' | 'auth/invalid-verification-code' | 'auth/invalid-verification-id';
+
 const handleSignOut = async () => {
-  try {
-    const resp = await auth.signOut();
-    // console.log(resp);
-    return resp;
-  }
-  catch (err) {
-    // console.log(err);
-    return err;
-  }
+  return await auth.signOut();  
 }
 
 const saveUser = (user: firebase.User, callback: () => void) => {
@@ -125,18 +124,30 @@ const testFunc = (uid: string) => {
 //   }).then(callback);
 // };
 
-const changeUserPermissions = (uid: string, sid: string, pid: PermissionRole, callback?: () => void) => {
-  console.log(uid, sid, pid);
-  const ref = db.ref(`permissions/${uid}/${sid}`);
-  ref.set(pid).then(callback).catch(reason => console.log(reason));
-}
-
-const removeUserFromStrategy = (uid: string, sid: string, callback?: () => void) => {
-  const ref = db.ref(`permissions/${uid}/${sid}`);
-  ref.remove().then(callback);
+const addStrategyShortLink = async (sid: string, shortlink: string, callback?: () => void) => {
+  console.log(sid, shortlink);
+  const ref = db.ref(`shortLinks/${shortlink}`);
+  return await ref.set(sid);
 };
 
-const updateUserPermissions = (permissions: Array<IBooleanMap | undefined>, sid: string, callback?: () => void) => {
+const changeUserPermissions = (uid: string, sid: string, pid: PermissionRole, callback: () => void) => {
+  console.log(uid, sid, pid);
+  const ref = db.ref(`permissions/${uid}/${sid}`);
+  ref.set(pid).then(callback).catch(reason => { 
+    console.log(reason);
+    callback();
+  });
+};
+
+const removeUserFromStrategy = (uid: string, sid: string, callback: () => void) => {
+  const ref = db.ref(`permissions/${uid}/${sid}`);
+  ref.remove().then(callback).catch(reason => {
+    console.log(reason);
+    callback();
+  });
+};
+
+const updateUserPermissions = (permissions: Array<IBooleanMap | undefined>, sid: string, callback: () => void) => {
   permissions.map((p, index) => {
     if (p) {
       Object.keys(p).map(uid => {
@@ -165,6 +176,7 @@ const saveUpdatedStrategy = (strategy: Strategy) => {
     }
     else {
       console.log('values do not exist');
+      console.log(strategy);
       ref.set(strategy).then(() => {
         updateUserPermissions([admins, officers, members, guests], strategy.id, () => {
           ref.set(strategy);
@@ -185,28 +197,32 @@ const getUserStrategies = (uid: string) => {
         console.log(values);
         const keys = Object.keys(values);
         Object.keys(values).map((key: string) => {
-          getStrategyById(key).then(result => {
+          getStrategyById(key, true).then(result => {
             results.push(result);
+            console.log(result);
             console.log(results.length, keys.length);
             if (results.length === keys.length) {
-              resolve(results);
+              resolve(results.filter(r => r));
             };
-          })
+          }).catch(reason => console.log(reason));
         });
       }
       else {
-        console.log(`No strategies available for user with id: ${uid}`);
+        reject(`No strategies available for user with id: ${uid}`);
       }
     }, (reason: any) => console.log(reason));
   });
 }
 
-const getStrategyById = (sid: string): Promise<Strategy> => {
-  const ref = db.ref(`strategies/${sid}`) ;
-  return new Promise((resolve, reject) => {
-    ref.once('value', (snapshot: any) => {
+const listenForStrategyUpdates = (sids: string[], callback: (strategy: Strategy | undefined) => void) => {
+  console.log('[listenForStrategyUpdates]');
+  sids.map(sid => {
+    console.log(sid);
+    const ref = db.ref(`strategies/${sid}`) ;
+    ref.on('value', (snapshot: any) => {
+      console.log('new update');
       const strategy: Strategy = snapshot.val();
-      if (strategy) {        
+      if (strategy) {
         Object.keys(strategy.bosses).map(bossKey => {
           const boss = strategy.bosses[parseInt(bossKey, 10)];
 
@@ -214,7 +230,6 @@ const getStrategyById = (sid: string): Promise<Strategy> => {
           if (!boss.cooldowns) { boss.cooldowns = [] as Cooldown[] }
           boss.cooldowns.map(cooldown => {
             if (!cooldown.bossAbilities) { cooldown.bossAbilities = [] as string[] }
-            if (!cooldown.timers) { cooldown.timers = [] as number[] }
           });
 
           if (!boss.abilities) { boss.abilities = [] as BossAbility[] }
@@ -228,16 +243,93 @@ const getStrategyById = (sid: string): Promise<Strategy> => {
           // console.log(player);
           player.cooldowns.map(cooldown => {
             if (!cooldown.bossAbilities) { cooldown.bossAbilities = [] as string[] }
-            if (!cooldown.timers) { cooldown.timers = [] as number[] }
           });
           return player;
         });
-        resolve(strategy);
+        callback(strategy);
       }
       else {
-        reject(`Could not find strategy with id: ${sid}`);
+        callback(undefined);
       }
-    }, (reason: string) => console.log(reason));
+    });
+  });
+};
+
+const getStrategyById = (sid: string, once: boolean): Promise<Strategy> => {
+  const ref = db.ref(`strategies/${sid}`) ;
+  return new Promise((resolve, reject) => {
+    if (once) {
+      console.log('ONCE');
+      ref.once('value', (snapshot: any) => {
+        console.log('aaa');
+        const strategy: Strategy = snapshot.val();
+        if (strategy) {
+          console.log('bbb');
+          Object.keys(strategy.bosses).map(bossKey => {
+            const boss = strategy.bosses[parseInt(bossKey, 10)];
+
+            // Reinstantiate empty boss arrays
+            if (!boss.cooldowns) { boss.cooldowns = [] as Cooldown[] }
+            boss.cooldowns.map(cooldown => {
+              if (!cooldown.bossAbilities) { cooldown.bossAbilities = [] as string[] }
+            });
+
+            if (!boss.abilities) { boss.abilities = [] as BossAbility[] }
+            if (!boss.phases) { boss.phases = [] as Phase[] }
+
+            return boss;
+          });
+          Object.keys(strategy.players).map(playerKey => {
+            const player = strategy.players[parseInt(playerKey, 10)];
+            if (!player.cooldowns) { player.cooldowns = [] as Cooldown[]; }
+            // console.log(player);
+            player.cooldowns.map(cooldown => {
+              if (!cooldown.bossAbilities) { cooldown.bossAbilities = [] as string[] }
+            });
+            return player;
+          });
+          console.log('ccc');
+          resolve(strategy);
+        }
+        else {
+          resolve(undefined);
+        }
+      }, (reason: string) => console.log(reason));
+    }
+    else {
+      ref.on('value', (snapshot: any) => {
+        const strategy: Strategy = snapshot.val();
+        if (strategy) {
+          Object.keys(strategy.bosses).map(bossKey => {
+            const boss = strategy.bosses[parseInt(bossKey, 10)];
+
+            // Reinstantiate empty boss arrays
+            if (!boss.cooldowns) { boss.cooldowns = [] as Cooldown[] }
+            boss.cooldowns.map(cooldown => {
+              if (!cooldown.bossAbilities) { cooldown.bossAbilities = [] as string[] }
+            });
+
+            if (!boss.abilities) { boss.abilities = [] as BossAbility[] }
+            if (!boss.phases) { boss.phases = [] as Phase[] }
+
+            return boss;
+          });
+          Object.keys(strategy.players).map(playerKey => {
+            const player = strategy.players[parseInt(playerKey, 10)];
+            if (!player.cooldowns) { player.cooldowns = [] as Cooldown[]; }
+            // console.log(player);
+            player.cooldowns.map(cooldown => {
+              if (!cooldown.bossAbilities) { cooldown.bossAbilities = [] as string[] }
+            });
+            return player;
+          });
+          resolve(strategy);
+        }
+        else {
+          reject(`Could not find strategy with id: ${sid}`);
+        }
+      }, (reason: string) => console.log(reason));
+    }
   });
 };
 
@@ -260,7 +352,7 @@ const getUserPreferences = (uid: string) => {
 const updateUserPreferences = (userId: string, preferences: IPreferences) => {
   const ref = db.ref(`users/${userId}`);
   return ref.child('preferences').set(preferences);
-}
+};
 
 // const handleSignUpSuccess = (data: any) => {
 //   const newAuthData = {
@@ -343,5 +435,5 @@ const updateUserPreferences = (userId: string, preferences: IPreferences) => {
 //   this.setState({ authData: newAuthData });
 // }
 
-export { changeUserPermissions, getState, saveUpdatedStrategy, handleSignIn, handleSignUp, handleSignOut,
-  getUserPreferences, getUserStrategies, getStrategyById, saveUser, testFunc, updateUserPreferences };
+export { addStrategyShortLink, listenForStrategyUpdates, changeUserPermissions, getState, saveUpdatedStrategy, handleSignIn, handleSignUp, handleSignOut,
+  getUserPreferences, getUserStrategies, getStrategyById, saveUser, testFunc, updateUserPreferences, FirebaseSignInWithEmailAndPasswordErrorCodes, FirebaseCreateUserWithEmailAndPasswordErrorCodes, FirebaseLinkWithCredentialErrorCodes };

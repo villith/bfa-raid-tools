@@ -41,22 +41,22 @@ class Boss {
     this.label = label;
     this.title = title;
     this.icon = icon;
-    this.phases = this.buildPhaseList();
+    this.phases = buildPhaseList(this.id, this.raidId);
     this.abilities = buildBossAbilityList(this.id, this.phases)
   }
+}
 
-  public buildPhaseList = () => {
-    const newPhases: Phase[] = [];
-    const bossInfo = getBossInfo(Raid.ULDIR, this.id);
-    bossInfo.phases.map((phase, index) => newPhases.push(
-      new Phase(
-        index,
-        phase.label,
-        phase.estimatedStartTime,
-      )
-    ));
-    return newPhases;
-  }
+const buildPhaseList = (bossId: BossType, raidId: Raid) => {
+  const newPhases: Phase[] = [];
+  const bossInfo = getBossInfo(raidId, bossId);
+  bossInfo.phases.map((phase, index) => newPhases.push(
+    new Phase(
+      index,
+      phase.label,
+      phase.estimatedStartTime,
+    )
+  ));
+  return newPhases;
 }
 
 export { Boss, BossType, IBoss, IBossMap };
